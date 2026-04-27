@@ -27,7 +27,7 @@ window.onscroll = () => {
 };
 
 // TYPING EFFECT
-const texts = ["Graphic Designer", "Web Developer", "Freelancer"];
+const texts = ["Digital Marketing", "Graphic Designer", "Freelancer"];
 let i = 0;
 let j = 0;
 let currentText = "";
