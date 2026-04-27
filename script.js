@@ -1,74 +1,64 @@
-// ===== SMOOTH SCROLL + ACTIVE NAV =====
-const navLinks = document.querySelectorAll("nav a");
+// MOBILE MENU
+const menuIcon = document.getElementById("menu-icon");
+const navbar = document.getElementById("navbar");
 
-navLinks.forEach(link => {
-    link.addEventListener("click", function(e) {
-        e.preventDefault();
+menuIcon.onclick = () => {
+    navbar.classList.toggle("active");
+};
 
-        // remove active
-        navLinks.forEach(l => l.classList.remove("active"));
+// ACTIVE LINK SCROLL
+let sections = document.querySelectorAll("section");
+let navLinks = document.querySelectorAll("header nav a");
 
-        // add active
-        this.classList.add("active");
+window.onscroll = () => {
+    sections.forEach(sec => {
+        let top = window.scrollY;
+        let offset = sec.offsetTop - 150;
+        let height = sec.offsetHeight;
+        let id = sec.getAttribute("id");
 
-        // scroll to section
-        const targetId = this.getAttribute("href");
-        const targetSection = document.querySelector(targetId);
-
-        targetSection.scrollIntoView({
-            behavior: "smooth"
-        });
+        if(top >= offset && top < offset + height){
+            navLinks.forEach(link => {
+                link.classList.remove("active");
+                document.querySelector("header nav a[href*=" + id + "]").classList.add("active");
+            });
+        }
     });
-});
+};
 
-
-// ===== MOBILE MENU TOGGLE =====
-const logo = document.querySelector(".logo");
-const nav = document.querySelector("nav");
-
-logo.addEventListener("click", () => {
-    nav.classList.toggle("active");
-});
-
-
-// ===== TYPING EFFECT =====
-const words = ["Graphic Designer", "Web Developer", "Freelancer"];
+// TYPING EFFECT
+const texts = ["Graphic Designer", "Web Developer", "Freelancer"];
 let i = 0;
 let j = 0;
-let currentWord = "";
+let currentText = "";
 let isDeleting = false;
 
-const typingSpan = document.querySelector(".typing-text span");
+function typeEffect() {
+    let typing = document.getElementById("typing");
 
-function type() {
-    currentWord = words[i];
+    if (i < texts.length) {
+        if (!isDeleting && j <= texts[i].length) {
+            currentText = texts[i].substring(0, j++);
+        } else if (isDeleting && j >= 0) {
+            currentText = texts[i].substring(0, j--);
+        }
 
-    if (isDeleting) {
-        typingSpan.textContent = currentWord.substring(0, j--);
-    } else {
-        typingSpan.textContent = currentWord.substring(0, j++);
+        typing.innerHTML = currentText;
+
+        if (j == texts[i].length) {
+            isDeleting = true;
+            setTimeout(typeEffect, 1000);
+            return;
+        }
+
+        if (j == 0 && isDeleting) {
+            isDeleting = false;
+            i++;
+            if (i == texts.length) i = 0;
+        }
     }
 
-    if (!isDeleting && j === currentWord.length) {
-        isDeleting = true;
-        setTimeout(type, 1000);
-    } else if (isDeleting && j === 0) {
-        isDeleting = false;
-        i = (i + 1) % words.length;
-        setTimeout(type, 300);
-    } else {
-        setTimeout(type, isDeleting ? 50 : 100);
-    }
+    setTimeout(typeEffect, isDeleting ? 50 : 100);
 }
 
-type();
-
-
-// ===== HIRE ME BUTTON =====
-const hireBtn = document.querySelector(".btn");
-
-hireBtn.addEventListener("click", () => {
-    document.querySelector("#contact").scrollIntoView({
-        behavior: "smooth"
-    });
-});
+typeEffect();
