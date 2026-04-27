@@ -202,7 +202,7 @@ span{
 }
 
 .typing-text span::before{
-    content: "Digital Marketing";
+    content: "";
     color: #b74b4b;
     animation: words 20s infinite;
 }
@@ -226,10 +226,10 @@ span{
 
 @keyframes words{
     0%, 20%{
-        content: "Graphic Designer";
+        content: "";
     }
     21%, 40%{
-        content: "Designer";
+        content: "";
     
    
     }
