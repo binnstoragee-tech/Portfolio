@@ -45,6 +45,17 @@ header{
     transition: 0.5s ease;
 }
 
+#menu-icon{
+    font-size: 2.5rem;
+    display: none;
+    cursor: pointer;
+}
+
+@media(max-width:995px){
+    #menu-icon{
+        display: block;
+    }
+}
 .logo:hover{
     transform: scale(1.1);
 }
@@ -138,9 +149,8 @@ span{
     position: relative;
     width: 32vw;
     border-radius: 50%;
-    box-shadow: 0 0 25px solid #b74b4b;
-    cursor: pointer;
-    transition: 0.2s linear;
+    box-shadow: 0 0 25px #b74b4b; /* FIXED */
+
 }
 
 .home-img img:hover{
@@ -201,10 +211,15 @@ span{
     position: relative;
 }
 
-.typing-text span::before{
-    content: "Digital Marketing";
-    color: #b74b4b;
-    animation: words 20s infinite;
+.typing-text span::after{
+    content: "";
+    background-color: black;
+    position: absolute;
+    width: calc(100% + 8px);
+    height: 100%;
+    border-left: 3px solid black;
+    right: -8px; /* FIXED */
+    animation: cursor 0.6s infinite;
 }
 
 .typing-text span::after{
