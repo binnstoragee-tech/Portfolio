@@ -4,11 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Robin - Portfolio</title>
+
+
 <!-- Favicon -->
-<link rel="icon" type="image/x-icon" href="IMG/favicon2.png">
-<link rel="icon" type="image/png" sizes="32x32" href="IMG/favicon2.png">
-<link rel="icon" type="image/png" href="IMG/favicon2.png?v=2">
-  
+
+
+<link rel="icon" type="image/x-icon" href="img/favicon2.png">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon2.png">
+<link rel="shortcut icon" href="img/favicon.ico?v=2">
+
+
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -467,6 +472,8 @@
     transition: width 1.2s ease;
     box-shadow: 0 0 8px rgba(0,245,212,0.5);
   }
+
+  
 
   .skill-pct {
     font-family: 'Share Tech Mono', monospace;
@@ -1026,12 +1033,16 @@
     footer { flex-direction: column; gap: 0.5rem; text-align: center; padding: 1.5rem; }
   }
 
-  @media (max-width: 480px) {
-    .section-title { font-size: clamp(2.2rem, 10vw, 3.5rem); }
-    .home-name { font-size: clamp(2.8rem, 14vw, 4rem); }
-    .works-grid { grid-template-columns: 1fr; }
-    .skills-grid { grid-template-columns: repeat(2, 1fr); }
+ @media (max-width: 768px) {
+
+  .nav-links {
+    justify-content: flex-start !important;
+    padding-top: 70px !important;
+    gap: 18px;
   }
+
+}
+  
 
   /* ===== CONTACT FIX ===== */
 .contact-layout {
@@ -1099,10 +1110,108 @@
   transform: translateY(-2px);
 }
 
-@media (max-width: 600px) {
-  .form-row {
-    flex-direction: column;
+/* ===== MODERN MOBILE NAV DESIGN ONLY ===== */
+
+@media (max-width: 768px) {
+
+  .nav-links {
+
+    /* existing structure remains */
+    background:
+      linear-gradient(
+        180deg,
+        rgba(3, 10, 25, 0.96),
+        rgba(2, 8, 20, 0.92)
+      );
+
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+
+    border-left: 1px solid rgba(0,255,255,0.08);
+
+    box-shadow:
+      -10px 0 35px rgba(0,0,0,0.45),
+      inset 0 0 30px rgba(0,255,255,0.03);
+
   }
+
+  .nav-links a {
+
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+
+    color: rgba(255,255,255,0.58);
+
+    transition: all 0.3s ease;
+
+    position: relative;
+  }
+
+  .nav-links a:hover,
+  .nav-links a.active {
+
+    color: #00ffff;
+
+    text-shadow:
+      0 0 10px rgba(0,255,255,0.7);
+
+    transform: translateX(6px);
+
+  }
+
+  /* glowing left line */
+  .nav-links a::before {
+
+    content: "";
+
+    position: absolute;
+
+    left: -14px;
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    width: 0;
+    height: 2px;
+
+    background: #00ffff;
+
+    box-shadow:
+      0 0 10px rgba(0,255,255,0.8);
+
+    transition: 0.3s ease;
+  }
+
+  .nav-links a:hover::before,
+  .nav-links a.active::before {
+
+    width: 8px;
+
+  }
+
+  /* modern close button */
+  .close-btn,
+  .menu-close,
+  .hamburger-close {
+
+    color: #00ffff;
+
+    text-shadow:
+      0 0 12px rgba(0,255,255,0.8);
+
+    transition: 0.3s ease;
+  }
+
+  .close-btn:hover,
+  .menu-close:hover,
+  .hamburger-close:hover {
+
+    transform: rotate(90deg) scale(1.1);
+
+  }
+
 }
 </style>
 </head>
@@ -1243,14 +1352,14 @@ Bridging creative vision with strategic execution to build brand experiences tha
       <div class="skill-card reveal" data-category="technical">
         <span class="skill-icon"></span>
         <div class="skill-name">HTML</div>
-        <div class="skill-bar-bg"><div class="skill-bar" data-pct="85"></div></div>
+        <div class="skill-bar-bg"><div class="skill-bar" data-pct="50"></div></div>
         <div class="skill-pct">50%</div>
       </div>
 
       <div class="skill-card reveal" data-category="technical">
         <span class="skill-icon"></span>
         <div class="skill-name">CSS</div>
-        <div class="skill-bar-bg"><div class="skill-bar" data-pct="80"></div></div>
+        <div class="skill-bar-bg"><div class="skill-bar" data-pct="50"></div></div>
         <div class="skill-pct">50%</div>
       </div>
 
@@ -1278,14 +1387,14 @@ Bridging creative vision with strategic execution to build brand experiences tha
        <div class="skill-card reveal" data-category="design">
         <span class="skill-icon"></span>
         <div class="skill-name">After Effects</div>
-        <div class="skill-bar-bg"><div class="skill-bar" data-pct="75"></div></div>
+        <div class="skill-bar-bg"><div class="skill-bar" data-pct="50"></div></div>
         <div class="skill-pct">50%</div>
       </div>
 
       <div class="skill-card reveal" data-category="design">
         <span class="skill-icon"></span>
         <div class="skill-name">Canva</div>
-        <div class="skill-bar-bg"><div class="skill-bar" data-pct="75"></div></div>
+        <div class="skill-bar-bg"><div class="skill-bar" data-pct="95"></div></div>
         <div class="skill-pct">95%</div>
       </div>
 
@@ -1299,29 +1408,29 @@ Bridging creative vision with strategic execution to build brand experiences tha
       <div class="skill-card reveal" data-category="design">
         <span class="skill-icon"></span>
         <div class="skill-name">Capcut</div>
-        <div class="skill-bar-bg"><div class="skill-bar" data-pct="75"></div></div>
+        <div class="skill-bar-bg"><div class="skill-bar" data-pct="95"></div></div>
         <div class="skill-pct">95%</div>
       </div>
 
       <div class="skill-card reveal" data-category="soft">
         <span class="skill-icon"></span>
         <div class="skill-name">Problem-Solving</div>
-        <div class="skill-bar-bg"><div class="skill-bar" data-pct="92"></div></div>
-        <div class="skill-pct">92%</div>
+        <div class="skill-bar-bg"><div class="skill-bar" data-pct="100"></div></div>
+        <div class="skill-pct">100%</div>
       </div>
 
       <div class="skill-card reveal" data-category="soft">
         <span class="skill-icon"></span>
         <div class="skill-name">Team Collaboration</div>
-        <div class="skill-bar-bg"><div class="skill-bar" data-pct="88"></div></div>
-        <div class="skill-pct">88%</div>
+        <div class="skill-bar-bg"><div class="skill-bar" data-pct="100"></div></div>
+        <div class="skill-pct">100%</div>
       </div>
 
 <div class="skill-card reveal" data-category="soft">
         <span class="skill-icon"></span>
         <div class="skill-name">Communication Skills</div>
-        <div class="skill-bar-bg"><div class="skill-bar" data-pct="88"></div></div>
-        <div class="skill-pct">88%</div>
+        <div class="skill-bar-bg"><div class="skill-bar" data-pct="100"></div></div>
+        <div class="skill-pct">100%</div>
       </div>
 
       
@@ -1499,7 +1608,8 @@ Management Strand
 </h3>
           <div class="edu-school">Iba National Senior High school</div>
           <p class="edu-desc">
-            [Describe your studies here. What strand, track, or program? What were your key takeaways or accomplishments?]
+            Studied Accountancy, Business, and Management, developing skills in entrepreneurship, finance, communication, leadership, marketing, and business operations.
+
           </p>
           <span class="edu-badge">HONORS</span>
         </div>
@@ -1685,7 +1795,7 @@ identity across digital platforms
 
 <!-- FOOTER -->
 <footer>
-  <div class="footer-logo">BINN</div>  <!-- 🔧 -->
+  <div class="footer-logo">KIRITO</div>  <!-- 🔧 -->
   <div class="footer-text">© 2026 — All Rights Reserved</div>  <!-- 🔧 -->
 </footer>
 
