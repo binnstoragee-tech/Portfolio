@@ -9,9 +9,9 @@
 <!-- Favicon -->
 
 
-<link rel="icon" type="image/x-icon" href="IMG/favicon2.png">
-<link rel="icon" type="image/png" sizes="32x32" href="IMG/favicon2.png">
-<link rel="shortcut icon" href="IMG/favicon.png?v=2">
+<link rel="icon" type="image/x-icon" href="img/favicon2.png">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon2.png">
+<link rel="shortcut icon" href="img/favicon.ico?v=2">
 
 
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -1281,199 +1281,237 @@
 </head>
 <body>
 
-  <!-- SMOOTH PACMAN LOADER -->
+  <!-- PACMAN LOADING SCREEN -->
 <div id="loader">
-  <div class="scene">
+  <div class="pacman-wrapper">
 
     <!-- PACMAN -->
     <div class="pacman">
-      <div class="pacman-top"></div>
-      <div class="pacman-bottom"></div>
+      <div class="mouth top"></div>
+      <div class="mouth bottom"></div>
       <div class="eye"></div>
     </div>
 
     <!-- FOOD -->
-    <div class="food food1"></div>
-    <div class="food food2"></div>
-    <div class="food food3"></div>
-    <div class="food food4"></div>
-    <div class="food food5"></div>
-    <div class="food food6"></div>
-
+    <div class="dots">
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
     </div>
 
-    <div style="padding:20px;">
-  
-</div>
-
+    <!-- TEXT -->
     <div class="loading-text">LOADING...</div>
 
   </div>
 </div>
 
 <style>
+
+/* COLORS */
 :root{
-  --pacman:#19e3cf;
-  --food:#ffd400;
+  --pacman-color:#19e3cf;
+  --food-color:#ffd600;
   --bg:#0d1117;
 }
 
-/* FULLSCREEN */
+/* BACKGROUND */
 #loader{
   position:fixed;
   inset:0;
+  width:100%;
+  height:100vh;
+
   background:var(--bg);
+
   display:flex;
   justify-content:center;
   align-items:center;
+
   overflow:hidden;
   z-index:9999;
 
-  animation:loaderOut .8s ease forwards;
+  animation:fadeOut .8s ease forwards;
   animation-delay:5s;
 }
 
-/* SCENE */
-.scene{
+/* WRAPPER */
+.pacman-wrapper{
   position:relative;
-  width:700px;
-  height:160px;
+
+  width:min(90vw,520px);
+
+  /* MAS MALAKING SPACE */
+  height:190px;
 }
 
 /* PACMAN */
 .pacman{
   position:absolute;
   left:0;
-  top:35px;
-  width:90px;
-  height:90px;
 
-  animation:pacmanMove 5s linear forwards;
+  /* INANGAT PARA DI MALAPIT SA TEXT */
+  top:10px;
+
+  width:80px;
+  height:80px;
+
+  animation:movePacman 5s linear forwards;
   z-index:5;
 }
 
-/* TOP */
-.pacman-top{
+/* MOUTH */
+.mouth{
   position:absolute;
-  width:90px;
-  height:45px;
-  background:var(--pacman);
-  border-radius:90px 90px 0 0;
+  width:80px;
+  height:40px;
+
+  background:var(--pacman-color);
+}
+
+/* TOP */
+.top{
+  border-radius:80px 80px 0 0;
 
   transform-origin:bottom center;
-  animation:mouthTop .15s ease-in-out infinite alternate;
+
+  animation:chompTop .16s ease-in-out infinite alternate;
 }
 
 /* BOTTOM */
-.pacman-bottom{
-  position:absolute;
-  top:45px;
-  width:90px;
-  height:45px;
-  background:var(--pacman);
-  border-radius:0 0 90px 90px;
+.bottom{
+  top:40px;
+
+  border-radius:0 0 80px 80px;
 
   transform-origin:top center;
-  animation:mouthBottom .15s ease-in-out infinite alternate;
+
+  animation:chompBottom .16s ease-in-out infinite alternate;
 }
 
 /* EYE */
 .eye{
   position:absolute;
+
   width:10px;
   height:10px;
+
   background:#000;
   border-radius:50%;
+
   top:18px;
-  right:20px;
+  right:18px;
+
   z-index:10;
 }
 
-/* FOOD */
-.food{
+/* DOTS */
+.dots{
   position:absolute;
-  top:70px;
-  width:18px;
-  height:18px;
-  border-radius:50%;
-  background:var(--food);
 
-  animation:foodEat .5s linear forwards;
+  left:130px;
+  top:42px;
+
+  display:flex;
+  gap:45px;
 }
 
-/* FOOD POSITIONS */
-.food1{ left:170px; animation-delay:.55s; }
-.food2{ left:250px; animation-delay:1.25s; }
-.food3{ left:330px; animation-delay:1.95s; }
-.food4{ left:410px; animation-delay:2.65s; }
-.food5{ left:490px; animation-delay:3.35s; }
-.food6{ left:570px; animation-delay:4.05s; }
+/* DOT STYLE */
+.dots span{
+  width:18px;
+  height:18px;
+
+  border-radius:50%;
+
+  background:var(--food-color);
+
+  animation:dotFade 5s linear forwards;
+}
+
+/* DOT TIMING */
+.dots span:nth-child(1){ animation-delay:0s; }
+.dots span:nth-child(2){ animation-delay:1s; }
+.dots span:nth-child(3){ animation-delay:2s; }
+.dots span:nth-child(4){ animation-delay:3s; }
+.dots span:nth-child(5){ animation-delay:4s; }
 
 /* TEXT */
 .loading-text{
   position:absolute;
   width:100%;
-  bottom:0;
+
+  /* MAS MALAYO NA */
+  bottom:-25px;
+
   text-align:center;
 
-  color:#fff;
   font-size:24px;
-  letter-spacing:8px;
   font-family:Arial,sans-serif;
+  letter-spacing:6px;
 
-  animation:textPulse 1s ease-in-out infinite;
+  color:white;
+
+  animation:pulse 1s infinite;
 }
 
 /* ANIMATIONS */
-@keyframes pacmanMove{
-  from{
-    transform:translateX(0);
-  }
-  to{
-    transform:translateX(560px);
-  }
-}
-
-@keyframes mouthTop{
+@keyframes chompTop{
   from{
     transform:rotate(0deg);
   }
+
   to{
-    transform:rotate(-32deg);
+    transform:rotate(-35deg);
   }
 }
 
-@keyframes mouthBottom{
+@keyframes chompBottom{
   from{
     transform:rotate(0deg);
   }
+
   to{
-    transform:rotate(32deg);
+    transform:rotate(35deg);
+  }
+}
+
+@keyframes movePacman{
+  from{
+    left:0;
+  }
+
+  to{
+    left:calc(100% - 140px);
   }
 }
 
 /* SMOOTH EATING */
-@keyframes foodEat{
+@keyframes dotFade{
+
   0%{
     opacity:1;
     transform:scale(1);
-    filter:blur(0);
   }
 
-  70%{
+  15%{
     opacity:1;
     transform:scale(1);
-    filter:blur(0);
+  }
+
+  20%{
+    opacity:0;
+    transform:scale(0);
   }
 
   100%{
     opacity:0;
-    transform:scale(.1);
-    filter:blur(4px);
+    transform:scale(0);
   }
 }
 
-@keyframes textPulse{
+/* TEXT EFFECT */
+@keyframes pulse{
   0%,100%{
     opacity:.5;
   }
@@ -1483,12 +1521,53 @@
   }
 }
 
-@keyframes loaderOut{
+/* LOADER OUT */
+@keyframes fadeOut{
   to{
     opacity:0;
     visibility:hidden;
   }
 }
+
+/* MOBILE */
+@media(max-width:600px){
+
+  .pacman-wrapper{
+    height:170px;
+  }
+
+  .pacman{
+    width:65px;
+    height:65px;
+  }
+
+  .mouth{
+    width:65px;
+    height:32.5px;
+  }
+
+  .bottom{
+    top:32.5px;
+  }
+
+  .dots{
+    left:95px;
+    top:35px;
+    gap:28px;
+  }
+
+  .dots span{
+    width:14px;
+    height:14px;
+  }
+
+  .loading-text{
+    font-size:18px;
+    letter-spacing:4px;
+    bottom:-10px;
+  }
+}
+
 </style>
 
 <!-- CURSOR -->
@@ -1633,6 +1712,13 @@ Bridging creative vision with strategic execution to build brand experiences tha
       <div class="skill-card reveal" data-category="technical">
         <span class="skill-icon"></span>
         <div class="skill-name">CSS</div>
+        <div class="skill-bar-bg"><div class="skill-bar" data-pct="50"></div></div>
+        <div class="skill-pct">50%</div>
+      </div>
+
+      <div class="skill-card reveal" data-category="design">
+        <span class="skill-icon"></span>
+        <div class="skill-name">JAVA</div>
         <div class="skill-bar-bg"><div class="skill-bar" data-pct="50"></div></div>
         <div class="skill-pct">50%</div>
       </div>
