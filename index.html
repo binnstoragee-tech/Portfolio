@@ -9,10 +9,9 @@
 <!-- Favicon -->
 
 
-<link rel="icon" type="image/x-icon" href="IMG/favicon2.png">
-<link rel="icon" type="image/png" sizes="32x32" href="IMG/favicon2.png">
-<link rel="shortcut icon" href="IMG/favicon.png?v=2">
-
+<link rel="icon" type="image/x-icon" href="img/favicon2.png">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon2.png">
+<link rel="shortcut icon" href="img/favicon.ico?v=2">
 
 
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -1214,6 +1213,70 @@
   }
 
 }
+
+/* NOTE TEXT */
+.scroll-note{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  margin-top:35px;
+  animation:fadeMove 2s infinite;
+}
+
+/* TEXT */
+.scroll-note span{
+  color:#00f7ff;
+  font-size:11px;
+  letter-spacing:6px; /* dagdag space */
+  text-transform:uppercase;
+  margin-bottom:14px;
+  opacity:0.9;
+  font-weight:500;
+  text-shadow:
+    0 0 5px #00f7ff,
+    0 0 10px #00f7ff33;
+}
+
+/* ARROW */
+.arrow-down{
+  width:14px;
+  height:14px;
+  border-right:2px solid #00f7ff;
+  border-bottom:2px solid #00f7ff;
+  transform:rotate(45deg);
+  box-shadow:
+    2px 2px 10px #00f7ff55;
+}
+
+/* ANIMATION */
+@keyframes fadeMove{
+  0%{
+    opacity:0.3;
+    transform:translateY(0);
+  }
+
+  50%{
+    opacity:1;
+    transform:translateY(10px);
+  }
+
+  100%{
+    opacity:0.3;
+    transform:translateY(0);
+  }
+}
+
+.scroll-note{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  margin-top:35px;
+  margin-bottom:50px; /* dagdag space pababa */
+  animation:fadeMove 2s infinite;
+}
+
 </style>
 </head>
 <body>
@@ -1455,6 +1518,11 @@ Bridging creative vision with strategic execution to build brand experiences tha
       <button class="cat-btn" data-filter="website">Website</button>
       <button class="cat-btn" data-filter="video">Others</button>
     </div>
+
+<div class="scroll-note">
+  <span>C L I C K &nbsp; B E L O W</span>
+  <div class="arrow-down"></div>
+</div>
 
     <div class="works-grid" id="worksGrid">
 
