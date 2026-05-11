@@ -1281,6 +1281,210 @@
 </head>
 <body>
 
+  <!-- SMOOTH PACMAN LOADER -->
+<div id="loader">
+  <div class="scene">
+
+    <!-- PACMAN -->
+    <div class="pacman">
+      <div class="pacman-top"></div>
+      <div class="pacman-bottom"></div>
+      <div class="eye"></div>
+    </div>
+
+    <!-- FOOD -->
+    <div class="food food1"></div>
+    <div class="food food2"></div>
+    <div class="food food3"></div>
+    <div class="food food4"></div>
+    <div class="food food5"></div>
+    <div class="food food6"></div>
+
+    <div class="loading-text">LOADING...</div>
+
+  </div>
+</div>
+
+<style>
+:root{
+  --pacman:#19e3cf;
+  --food:#ffd400;
+  --bg:#0d1117;
+}
+
+/* FULLSCREEN */
+#loader{
+  position:fixed;
+  inset:0;
+  background:var(--bg);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  overflow:hidden;
+  z-index:9999;
+
+  animation:loaderOut .8s ease forwards;
+  animation-delay:5s;
+}
+
+/* SCENE */
+.scene{
+  position:relative;
+  width:700px;
+  height:160px;
+}
+
+/* PACMAN */
+.pacman{
+  position:absolute;
+  left:0;
+  top:35px;
+  width:90px;
+  height:90px;
+
+  animation:pacmanMove 5s linear forwards;
+  z-index:5;
+}
+
+/* TOP */
+.pacman-top{
+  position:absolute;
+  width:90px;
+  height:45px;
+  background:var(--pacman);
+  border-radius:90px 90px 0 0;
+
+  transform-origin:bottom center;
+  animation:mouthTop .15s ease-in-out infinite alternate;
+}
+
+/* BOTTOM */
+.pacman-bottom{
+  position:absolute;
+  top:45px;
+  width:90px;
+  height:45px;
+  background:var(--pacman);
+  border-radius:0 0 90px 90px;
+
+  transform-origin:top center;
+  animation:mouthBottom .15s ease-in-out infinite alternate;
+}
+
+/* EYE */
+.eye{
+  position:absolute;
+  width:10px;
+  height:10px;
+  background:#000;
+  border-radius:50%;
+  top:18px;
+  right:20px;
+  z-index:10;
+}
+
+/* FOOD */
+.food{
+  position:absolute;
+  top:70px;
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  background:var(--food);
+
+  animation:foodEat .5s linear forwards;
+}
+
+/* FOOD POSITIONS */
+.food1{ left:170px; animation-delay:.55s; }
+.food2{ left:250px; animation-delay:1.25s; }
+.food3{ left:330px; animation-delay:1.95s; }
+.food4{ left:410px; animation-delay:2.65s; }
+.food5{ left:490px; animation-delay:3.35s; }
+.food6{ left:570px; animation-delay:4.05s; }
+
+/* TEXT */
+.loading-text{
+  position:absolute;
+  width:100%;
+  bottom:0;
+  text-align:center;
+
+  color:#fff;
+  font-size:24px;
+  letter-spacing:8px;
+  font-family:Arial,sans-serif;
+
+  animation:textPulse 1s ease-in-out infinite;
+}
+
+/* ANIMATIONS */
+@keyframes pacmanMove{
+  from{
+    transform:translateX(0);
+  }
+  to{
+    transform:translateX(560px);
+  }
+}
+
+@keyframes mouthTop{
+  from{
+    transform:rotate(0deg);
+  }
+  to{
+    transform:rotate(-32deg);
+  }
+}
+
+@keyframes mouthBottom{
+  from{
+    transform:rotate(0deg);
+  }
+  to{
+    transform:rotate(32deg);
+  }
+}
+
+/* SMOOTH EATING */
+@keyframes foodEat{
+  0%{
+    opacity:1;
+    transform:scale(1);
+    filter:blur(0);
+  }
+
+  70%{
+    opacity:1;
+    transform:scale(1);
+    filter:blur(0);
+  }
+
+  100%{
+    opacity:0;
+    transform:scale(.1);
+    filter:blur(4px);
+  }
+}
+
+@keyframes textPulse{
+  0%,100%{
+    opacity:.5;
+  }
+
+  50%{
+    opacity:1;
+  }
+}
+
+@keyframes loaderOut{
+  to{
+    opacity:0;
+    visibility:hidden;
+  }
+}
+</style>
+
 <!-- CURSOR -->
 <div class="cursor" id="cursor"></div>
 <div class="cursor-ring" id="cursorRing"></div>
