@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Robin — Experience</title>
+<link rel="icon" type="image/x-icon" href="IMG/favicon2.png">
+<link rel="shortcut icon" href="IMG/favicon.png?v=2">
+<link rel="stylesheet" href="style.css">
+<style>
+#experience { background: var(--dark2); }
+
+.exp-grid { display: grid; gap: 1.5rem; }
+
+.exp-card {
+  background: var(--dark);
+  border: 1px solid rgba(255,255,255,0.05);
+  padding: 2rem;
+  display: grid; grid-template-columns: 1fr 3fr;
+  gap: 2rem; align-items: start;
+  position: relative; overflow: hidden;
+  transition: all 0.3s;
+  opacity: 0; transform: translateY(20px);
+}
+.exp-card.visible { opacity: 1; transform: translateY(0); }
+
+.exp-card::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg, rgba(0,245,212,0.03) 0%, transparent 60%);
+  opacity: 0; transition: opacity 0.3s;
+}
+.exp-card:hover { border-color: rgba(0,245,212,0.2); }
+.exp-card:hover::before { opacity: 1; }
+
+.exp-left { border-right: 1px solid rgba(255,255,255,0.05); padding-right: 2rem; }
+
+.exp-period {
+  font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;
+  color: var(--neon); letter-spacing: 2px; margin-bottom: 0.5rem;
+}
+.exp-company {
+  font-family: 'Bebas Neue', cursive; font-size: 1.4rem;
+  letter-spacing: 2px; color: var(--text);
+}
+.exp-type {
+  font-size: 0.7rem; color: var(--muted); text-transform: uppercase;
+  letter-spacing: 2px; margin-top: 0.3rem;
+}
+.exp-role {
+  font-size: 1.1rem; font-weight: 700; color: var(--text);
+  margin-bottom: 0.8rem; letter-spacing: 1px;
+}
+.exp-desc { font-size: 0.9rem; color: #7a8fa3; line-height: 1.8; margin-bottom: 1.2rem; }
+
+.exp-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.exp-tag {
+  padding: 0.25rem 0.8rem;
+  background: rgba(0,245,212,0.05); border: 1px solid rgba(0,245,212,0.15);
+  color: var(--neon); font-size: 0.7rem; letter-spacing: 1px;
+  text-transform: uppercase; font-family: 'Share Tech Mono', monospace;
+}
+
+@media (max-width: 768px) {
+  .exp-card { grid-template-columns: 1fr; gap: 1rem; }
+  .exp-left { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.05); padding-right: 0; padding-bottom: 1rem; }
+}
+</style>
+
+<style>
+/* ── BOTTOM PAGE NAV ─────────────────────────────────── */
+.page-nav {
+  position: relative; z-index: 10;
+  background: var(--dark2);
+  border-top: 1px solid rgba(0,245,212,0.12);
+  padding: 1.2rem 3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+.page-nav-btn {
+  display: flex; align-items: center; gap: 0.7rem;
+  padding: 0.75rem 1.6rem;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.1);
+  color: var(--muted);
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.75rem; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase;
+  text-decoration: none; cursor: pointer;
+  clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+.page-nav-btn:hover {
+  border-color: var(--neon);
+  color: var(--neon);
+  background: rgba(0,245,212,0.05);
+}
+.page-nav-btn.next {
+  background: rgba(0,245,212,0.08);
+  border-color: rgba(0,245,212,0.3);
+  color: var(--neon);
+}
+.page-nav-btn.next:hover {
+  background: var(--neon);
+  color: var(--dark);
+  box-shadow: 0 0 24px rgba(0,245,212,0.3);
+}
+.page-nav-btn.disabled {
+  opacity: 0.2; pointer-events: none;
+}
+.page-nav-center {
+  display: flex; gap: 0.5rem; align-items: center;
+}
+.page-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  transition: all 0.3s;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+.page-dot.active {
+  background: var(--neon);
+  box-shadow: 0 0 8px var(--neon);
+  width: 18px; border-radius: 3px;
+}
+.page-dot:hover:not(.active) { background: rgba(0,245,212,0.4); }
+.page-nav-arrow { font-size: 1rem; line-height: 1; }
+@media (min-width: 769px) { .page-nav { display: none !important; } }
+@media (max-width: 768px) {
+  .page-nav { padding: 1rem 1.2rem; }
+  .page-nav-btn { padding: 0.65rem 1rem; font-size: 0.65rem; letter-spacing: 1px; }
+  .page-nav-label { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="page-transition wipe-in" id="pageTransition"></div>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<nav>
+  <a class="nav-logo" href="index.html" data-nav>KIR<span>I</span>TO</a>
+  <button class="nav-hamburger" id="hamburger" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="index.html"      data-nav>Home</a></li>
+    <li><a href="skills.html"     data-nav>Skills</a></li>
+    <li><a href="works.html"      data-nav>Works</a></li>
+    <li><a href="education.html"  data-nav>Education</a></li>
+    <li><a href="experience.html" data-nav>Experience</a></li>
+    <li><a href="contact.html"    data-nav>Contact</a></li>
+  </ul>
+</nav>
+
+<section id="experience">
+  <div class="section-inner">
+    <div class="section-label">04 // Experience</div>
+    <h2 class="section-title">WORK <span class="accent">HISTORY</span></h2>
+    <div class="section-divider"></div>
+
+    <div class="exp-grid">
+
+      <div class="exp-card reveal">
+        <div class="exp-left">
+          <div class="exp-period">Present</div>
+          <div class="exp-company">Miqa Private Limited</div>
+          <div class="exp-type">Full-time</div>
+        </div>
+        <div class="exp-right">
+          <div class="exp-role">Digital Marketing Manager │ Male, Maldives</div>
+          <p class="exp-desc">Designed and produced high-quality graphics, advertisements, and marketing collaterals to strengthen brand identity across digital platforms.</p>
+          <div class="exp-tags">
+            <span class="exp-tag">Adobe Photoshop</span>
+            <span class="exp-tag">Adobe Indesign</span>
+            <span class="exp-tag">Adobe Illustrator</span>
+            <span class="exp-tag">Canva</span>
+            <span class="exp-tag">Capcut</span>
+            <span class="exp-tag">Adobe Premiere</span>
+            <span class="exp-tag">Adobe After Effects</span>
+            <span class="exp-tag">HTML</span>
+            <span class="exp-tag">CSS</span>
+            <span class="exp-tag">JAVA</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="exp-card reveal">
+        <div class="exp-left">
+          <div class="exp-period">2024 — 2025</div>
+          <div class="exp-company">Tech Factors</div>
+          <div class="exp-type">On-the-job Training (OJT)</div>
+        </div>
+        <div class="exp-right">
+          <div class="exp-role">Graphic Designer │ Quezon City, Philippines</div>
+          <p class="exp-desc">Designed and produced high-quality graphics, advertisements, and marketing collaterals to strengthen brand identity across digital platforms.</p>
+          <div class="exp-tags">
+            <span class="exp-tag">Adobe Photoshop</span>
+            <span class="exp-tag">Adobe Indesign</span>
+            <span class="exp-tag">Adobe Illustrator</span>
+            <span class="exp-tag">Canva</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="exp-card reveal">
+        <div class="exp-left">
+          <div class="exp-period">2021 — 2024</div>
+          <div class="exp-company">Social Space</div>
+          <div class="exp-type">Freelancer</div>
+        </div>
+        <div class="exp-right">
+          <div class="exp-role">Graphic Artist │ Taguig City, Philippines</div>
+          <p class="exp-desc">Provided digital marketing services, including social media management, and content creation.</p>
+          <div class="exp-tags">
+            <span class="exp-tag">Adobe Photoshop</span>
+            <span class="exp-tag">Adobe Indesign</span>
+            <span class="exp-tag">Adobe Illustrator</span>
+            <span class="exp-tag">Canva</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="page-nav">
+  <a class="page-nav-btn back" href="education.html" data-nav><span class="page-nav-arrow">←</span><span class="page-nav-label">Education</span></a>
+  <div class="page-nav-center">
+    <a class="page-dot" href="index.html" data-nav title="Home"></a>
+    <a class="page-dot" href="skills.html" data-nav title="Skills"></a>
+    <a class="page-dot" href="works.html" data-nav title="Works"></a>
+    <a class="page-dot" href="education.html" data-nav title="Education"></a>
+    <a class="page-dot active" href="experience.html" data-nav title="Experience"></a>
+    <a class="page-dot" href="contact.html" data-nav title="Contact"></a>
+  </div>
+  <a class="page-nav-btn next" href="contact.html" data-nav><span class="page-nav-label">Contact</span><span class="page-nav-arrow">→</span></a>
+</div>
+
+<footer>
+  <a class="footer-logo" href="index.html" data-nav>KIRITO</a>
+  <div class="footer-text">© 2026 — All Rights Reserved</div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

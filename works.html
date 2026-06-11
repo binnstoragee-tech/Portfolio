@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Robin — Works</title>
+<link rel="icon" type="image/x-icon" href="IMG/favicon2.png">
+<link rel="shortcut icon" href="IMG/favicon.png?v=2">
+<link rel="stylesheet" href="style.css">
+<style>
+#works { background: var(--dark3); }
+
+.works-filters { display: flex; gap: 1rem; margin-bottom: 2.5rem; flex-wrap: wrap; }
+
+.works-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.work-card {
+  position: relative; overflow: hidden;
+  border: 1px solid rgba(0,245,212,0.08);
+  background: var(--dark2); cursor: pointer;
+  border-radius: 2px;
+  opacity: 0;
+  transform: translateY(40px) scale(0.97);
+  transition:
+    opacity 0.65s cubic-bezier(0.22,1,0.36,1),
+    transform 0.65s cubic-bezier(0.22,1,0.36,1),
+    border-color 0.35s ease,
+    box-shadow 0.35s ease;
+}
+.work-card:nth-child(2) { transition-delay: 0.08s; }
+.work-card:nth-child(3) { transition-delay: 0.16s; }
+.work-card:nth-child(4) { transition-delay: 0.24s; }
+.work-card:nth-child(5) { transition-delay: 0.32s; }
+.work-card:nth-child(6) { transition-delay: 0.40s; }
+
+.work-card.visible { opacity: 1; transform: translateY(0) scale(1); }
+.work-card:hover {
+  border-color: rgba(0,245,212,0.28);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,245,212,0.08);
+  transform: translateY(-5px) scale(1.01);
+}
+
+.work-img {
+  width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block;
+  background: var(--accent);
+  transition: transform 0.7s cubic-bezier(0.22,1,0.36,1), filter 0.5s ease;
+  will-change: transform;
+}
+.work-card:hover .work-img { transform: scale(1.08); filter: brightness(0.75) saturate(1.1); }
+
+.work-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(6,10,15,0.97) 0%, rgba(6,10,15,0.6) 45%, rgba(6,10,15,0.15) 75%, transparent 100%);
+  opacity: 0; transition: opacity 0.4s cubic-bezier(0.22,1,0.36,1);
+  display: flex; flex-direction: column; justify-content: flex-end; padding: 1.5rem;
+}
+.work-card:hover .work-overlay { opacity: 1; }
+
+.work-cat {
+  font-family: 'Share Tech Mono', monospace; font-size: 0.65rem;
+  letter-spacing: 3px; color: var(--neon); text-transform: uppercase; margin-bottom: 0.4rem;
+  transform: translateY(16px); opacity: 0;
+  transition: transform 0.4s 0.05s cubic-bezier(0.22,1,0.36,1), opacity 0.4s 0.05s ease;
+}
+.work-card:hover .work-cat { transform: translateY(0); opacity: 1; }
+
+.work-title {
+  font-family: 'Bebas Neue', cursive; font-size: 1.35rem; letter-spacing: 3px;
+  color: var(--text); margin-bottom: 0.35rem;
+  transform: translateY(16px); opacity: 0;
+  transition: transform 0.4s 0.1s cubic-bezier(0.22,1,0.36,1), opacity 0.4s 0.1s ease;
+}
+.work-card:hover .work-title { transform: translateY(0); opacity: 1; }
+
+.work-desc {
+  font-size: 0.8rem; color: #8fa0b2; line-height: 1.6;
+  transform: translateY(14px); opacity: 0;
+  transition: transform 0.4s 0.15s cubic-bezier(0.22,1,0.36,1), opacity 0.4s 0.15s ease;
+}
+.work-card:hover .work-desc { transform: translateY(0); opacity: 1; }
+
+.work-link-btn {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  margin-top: 0.75rem; padding: 0.4rem 1rem;
+  border: 1px solid rgba(0,245,212,0.45); color: var(--neon);
+  font-family: 'Share Tech Mono', monospace; font-size: 0.65rem;
+  letter-spacing: 2px; text-transform: uppercase; text-decoration: none;
+  background: rgba(0,245,212,0.06); align-self: flex-start;
+  transform: translateY(12px); opacity: 0;
+  transition: transform 0.4s 0.2s cubic-bezier(0.22,1,0.36,1),
+              opacity 0.4s 0.2s ease, background 0.25s ease,
+              color 0.25s ease, box-shadow 0.25s ease;
+}
+.work-card:hover .work-link-btn { transform: translateY(0); opacity: 1; }
+.work-link-btn:hover { background: var(--neon); color: var(--dark); box-shadow: 0 0 18px rgba(0,245,212,0.45); }
+.work-link-btn[href="#"] { display: none; }
+
+.work-buttons { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
+
+.work-card::after {
+  content: ''; position: absolute; top: 0; left: 0;
+  width: 0; height: 2px;
+  background: linear-gradient(to right, var(--neon), var(--neon2));
+  transition: width 0.5s cubic-bezier(0.22,1,0.36,1);
+  box-shadow: 0 0 8px rgba(0,245,212,0.5);
+}
+.work-card:hover::after { width: 100%; }
+
+.work-card::before {
+  content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: linear-gradient(105deg, transparent 40%, rgba(0,245,212,0.06) 50%, transparent 60%);
+  background-size: 200% 100%; opacity: 0; transition: opacity 0.3s ease;
+}
+.work-card:hover::before { opacity: 1; animation: cardShimmer 0.8s ease forwards; }
+@keyframes cardShimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@media (max-width: 768px) {
+  .works-grid { grid-template-columns: 1fr; }
+}
+</style>
+
+<style>
+/* ── BOTTOM PAGE NAV ─────────────────────────────────── */
+.page-nav {
+  position: relative; z-index: 10;
+  background: var(--dark2);
+  border-top: 1px solid rgba(0,245,212,0.12);
+  padding: 1.2rem 3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+.page-nav-btn {
+  display: flex; align-items: center; gap: 0.7rem;
+  padding: 0.75rem 1.6rem;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.1);
+  color: var(--muted);
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.75rem; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase;
+  text-decoration: none; cursor: pointer;
+  clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+.page-nav-btn:hover {
+  border-color: var(--neon);
+  color: var(--neon);
+  background: rgba(0,245,212,0.05);
+}
+.page-nav-btn.next {
+  background: rgba(0,245,212,0.08);
+  border-color: rgba(0,245,212,0.3);
+  color: var(--neon);
+}
+.page-nav-btn.next:hover {
+  background: var(--neon);
+  color: var(--dark);
+  box-shadow: 0 0 24px rgba(0,245,212,0.3);
+}
+.page-nav-btn.disabled {
+  opacity: 0.2; pointer-events: none;
+}
+.page-nav-center {
+  display: flex; gap: 0.5rem; align-items: center;
+}
+.page-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  transition: all 0.3s;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+.page-dot.active {
+  background: var(--neon);
+  box-shadow: 0 0 8px var(--neon);
+  width: 18px; border-radius: 3px;
+}
+.page-dot:hover:not(.active) { background: rgba(0,245,212,0.4); }
+.page-nav-arrow { font-size: 1rem; line-height: 1; }
+@media (min-width: 769px) { .page-nav { display: none !important; } }
+@media (max-width: 768px) {
+  .page-nav { padding: 1rem 1.2rem; }
+  .page-nav-btn { padding: 0.65rem 1rem; font-size: 0.65rem; letter-spacing: 1px; }
+  .page-nav-label { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="page-transition wipe-in" id="pageTransition"></div>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<nav>
+  <a class="nav-logo" href="index.html" data-nav>KIR<span>I</span>TO</a>
+  <button class="nav-hamburger" id="hamburger" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="index.html"      data-nav>Home</a></li>
+    <li><a href="skills.html"     data-nav>Skills</a></li>
+    <li><a href="works.html"      data-nav>Works</a></li>
+    <li><a href="education.html"  data-nav>Education</a></li>
+    <li><a href="experience.html" data-nav>Experience</a></li>
+    <li><a href="contact.html"    data-nav>Contact</a></li>
+  </ul>
+</nav>
+
+<section id="works">
+  <div class="section-inner">
+    <div class="section-label">02.5 // Works</div>
+    <h2 class="section-title">SAMPLE <span class="accent">WORKS</span></h2>
+    <div class="section-divider"></div>
+
+    <div class="works-filters">
+      <button class="cat-btn active" data-filter="all">All</button>
+      <button class="cat-btn" data-filter="branding">Branding</button>
+      <button class="cat-btn" data-filter="social">Social Media</button>
+      <button class="cat-btn" data-filter="print">Mock Up</button>
+      <button class="cat-btn" data-filter="video">Video</button>
+      <button class="cat-btn" data-filter="others">Others</button>
+    </div>
+
+    <div class="scroll-note">
+      <span>C L I C K &nbsp; B E L O W</span>
+      <div class="arrow-down"></div>
+    </div>
+
+    <div class="works-grid" id="worksGrid">
+
+      <!-- BRANDING -->
+      <div class="work-card reveal" data-category="branding">
+        <img class="work-img" src="IMG/Branding.jpg" alt="Branding" data-title="Brand Identity">
+        <div class="work-overlay">
+          <div class="work-cat">Branding</div>
+          <div class="work-title">Brand Identity</div>
+          <p class="work-desc">Logo design and full brand identity system for a local business.</p>
+          <a class="work-link-btn" href="https://www.behance.net/gallery/247974843/BRANDING" target="_blank" rel="noopener" onclick="event.stopPropagation()">View Project ↗</a>
+        </div>
+      </div>
+
+      <!-- SOCIAL MEDIA -->
+      <div class="work-card reveal" data-category="social">
+        <img class="work-img" src="IMG/Social Media Design.jpeg" alt="Social Media Design" data-title="Social Media Campaign">
+        <div class="work-overlay">
+          <div class="work-cat">Social Media</div>
+          <div class="work-title">Campaign Visuals</div>
+          <p class="work-desc">Instagram and Facebook ad creatives for a product launch campaign.</p>
+          <a class="work-link-btn" href="https://www.behance.net/gallery/248316251/Social-Media-Design" target="_blank" rel="noopener" onclick="event.stopPropagation()">View Project ↗</a>
+        </div>
+      </div>
+
+      <!-- MOCK UPS -->
+      <div class="work-card reveal" data-category="print">
+        <img class="work-img" src="IMG/Mock ups.jpeg" alt="Mock Ups" data-title="Mock Ups">
+        <div class="work-overlay">
+          <div class="work-cat">Mock Ups</div>
+          <div class="work-title">Graphic Visuals</div>
+          <p class="work-desc">Flyers, tarpaulins, and brochure layouts for marketing campaigns.</p>
+          <a class="work-link-btn" href="https://www.behance.net/gallery/248317219/MOCK-UPS" target="_blank" rel="noopener" onclick="event.stopPropagation()">View Project ↗</a>
+        </div>
+      </div>
+
+      <!-- VIDEO -->
+      <div class="work-card reveal" data-category="video">
+        <img class="work-img" src="IMG/Video.jpeg" alt="Video Production" data-title="Video Production">
+        <div class="work-overlay">
+          <div class="work-cat">Video</div>
+          <div class="work-title">Video Production</div>
+          <p class="work-desc">Motion graphics, reels, and video edits crafted for social campaigns and brand storytelling.</p>
+         <a class="work-link-btn" href="https://www.behance.net/gallery/247974843/BRANDING" target="_blank" rel="noopener" onclick="event.stopPropagation()">View Project ↗</a>
+        </div>
+      </div>
+
+      <!-- WEBSITE -->
+      <div class="work-card reveal" data-category="website">
+        <img class="work-img" src="IMG/Website.jpg" alt="Website" data-title="Website">
+        <div class="work-overlay">
+          <div class="work-cat">Website Catalog</div>
+          <div class="work-title">Website</div>
+          <p class="work-desc">Click and check my website sample</p>
+          <div class="work-buttons">
+            <a class="work-link-btn" href="https://binnstoragee-tech.github.io/AdFlare/" target="_blank" rel="noopener" onclick="event.stopPropagation()">AdFlare ↗</a>
+            <a class="work-link-btn" href="https://binnstoragee-tech.github.io/Mazi-Hardware-Catalog/#home" target="_blank" rel="noopener" onclick="event.stopPropagation()">Mazi Hardware ↗</a>
+            <a class="work-link-btn" href="https://binnstoragee-tech.github.io/Tracker/" target="_blank" rel="noopener" onclick="event.stopPropagation()">iSauce Tracker ↗</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- OTHERS -->
+      <div class="work-card reveal" data-category="others">
+        <img class="work-img" src="IMG/Others.jpg" alt="Others" data-title="Others">
+        <div class="work-overlay">
+          <div class="work-cat">Others</div>
+          <div class="work-title">Others</div>
+          <p class="work-desc">Other creative works including thumbnails, motion, and miscellaneous design.</p>
+          <a class="work-link-btn" href="https://www.behance.net/gallery/248318321/Othes" target="_blank" rel="noopener" onclick="event.stopPropagation()">View Project ↗</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightboxClose">[ CLOSE ]</button>
+  <img id="lightboxImg" src="" alt="">
+  <div class="lightbox-caption" id="lightboxCaption"></div>
+</div>
+
+<div class="page-nav">
+  <a class="page-nav-btn back" href="skills.html" data-nav><span class="page-nav-arrow">←</span><span class="page-nav-label">Skills</span></a>
+  <div class="page-nav-center">
+    <a class="page-dot" href="index.html" data-nav title="Home"></a>
+    <a class="page-dot" href="skills.html" data-nav title="Skills"></a>
+    <a class="page-dot active" href="works.html" data-nav title="Works"></a>
+    <a class="page-dot" href="education.html" data-nav title="Education"></a>
+    <a class="page-dot" href="experience.html" data-nav title="Experience"></a>
+    <a class="page-dot" href="contact.html" data-nav title="Contact"></a>
+  </div>
+  <a class="page-nav-btn next" href="education.html" data-nav><span class="page-nav-label">Education</span><span class="page-nav-arrow">→</span></a>
+</div>
+
+<footer>
+  <a class="footer-logo" href="index.html" data-nav>KIRITO</a>
+  <div class="footer-text">© 2026 — All Rights Reserved</div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

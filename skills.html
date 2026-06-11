@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Robin — Skills</title>
+<link rel="icon" type="image/x-icon" href="IMG/favicon2.png">
+<link rel="shortcut icon" href="IMG/favicon.png?v=2">
+<link rel="stylesheet" href="style.css">
+<style>
+#skills { background: var(--dark2); padding-top: 0; }
+
+.skills-categories {
+  display: flex; gap: 1rem; margin-bottom: 2.5rem; flex-wrap: wrap;
+}
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1.2rem;
+  margin-top: 1rem;
+}
+
+.skill-card {
+  background: var(--dark3);
+  border: 1px solid rgba(0,245,212,0.08);
+  padding: 1.5rem 1.2rem;
+  position: relative;
+  transition: all 0.3s;
+  overflow: hidden;
+  cursor: default;
+}
+.skill-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(0,245,212,0.05), transparent);
+  opacity: 0; transition: opacity 0.3s;
+}
+.skill-card:hover::before { opacity: 1; }
+.skill-card::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0;
+  width: 0; height: 2px;
+  background: linear-gradient(to right, var(--neon), var(--neon2));
+  transition: width 0.4s;
+}
+.skill-card:hover { border-color: rgba(0,245,212,0.3); transform: translateY(-4px); }
+.skill-card:hover::after { width: 100%; }
+
+.skill-icon { font-size: 1.8rem; margin-bottom: 0.8rem; display: block; }
+.skill-name {
+  font-size: 0.85rem; font-weight: 600; letter-spacing: 1px;
+  margin-bottom: 0.8rem; color: var(--text);
+}
+.skill-bar-bg {
+  height: 3px; background: rgba(255,255,255,0.06);
+  border-radius: 2px; overflow: hidden; margin-bottom: 0.4rem;
+}
+.skill-bar {
+  height: 100%;
+  background: linear-gradient(to right, var(--neon), var(--neon2));
+  border-radius: 2px; width: 0;
+  transition: width 1.2s ease;
+  box-shadow: 0 0 8px rgba(0,245,212,0.5);
+}
+.skill-pct {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.7rem; color: var(--neon);
+}
+
+@media (max-width: 768px) {
+  .skills-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.8rem; }
+}
+</style>
+
+<style>
+/* ── BOTTOM PAGE NAV ─────────────────────────────────── */
+.page-nav {
+  position: relative; z-index: 10;
+  background: var(--dark2);
+  border-top: 1px solid rgba(0,245,212,0.12);
+  padding: 1.2rem 3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+.page-nav-btn {
+  display: flex; align-items: center; gap: 0.7rem;
+  padding: 0.75rem 1.6rem;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.1);
+  color: var(--muted);
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.75rem; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase;
+  text-decoration: none; cursor: pointer;
+  clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+.page-nav-btn:hover {
+  border-color: var(--neon);
+  color: var(--neon);
+  background: rgba(0,245,212,0.05);
+}
+.page-nav-btn.next {
+  background: rgba(0,245,212,0.08);
+  border-color: rgba(0,245,212,0.3);
+  color: var(--neon);
+}
+.page-nav-btn.next:hover {
+  background: var(--neon);
+  color: var(--dark);
+  box-shadow: 0 0 24px rgba(0,245,212,0.3);
+}
+.page-nav-btn.disabled {
+  opacity: 0.2; pointer-events: none;
+}
+.page-nav-center {
+  display: flex; gap: 0.5rem; align-items: center;
+}
+.page-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  transition: all 0.3s;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+.page-dot.active {
+  background: var(--neon);
+  box-shadow: 0 0 8px var(--neon);
+  width: 18px; border-radius: 3px;
+}
+.page-dot:hover:not(.active) { background: rgba(0,245,212,0.4); }
+.page-nav-arrow { font-size: 1rem; line-height: 1; }
+@media (min-width: 769px) { .page-nav { display: none !important; } }
+@media (max-width: 768px) {
+  .page-nav { padding: 1rem 1.2rem; }
+  .page-nav-btn { padding: 0.65rem 1rem; font-size: 0.65rem; letter-spacing: 1px; }
+  .page-nav-label { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="page-transition wipe-in" id="pageTransition"></div>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<nav>
+  <a class="nav-logo" href="index.html" data-nav>KIR<span>I</span>TO</a>
+  <button class="nav-hamburger" id="hamburger" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="index.html"      data-nav>Home</a></li>
+    <li><a href="skills.html"     data-nav>Skills</a></li>
+    <li><a href="works.html"      data-nav>Works</a></li>
+    <li><a href="education.html"  data-nav>Education</a></li>
+    <li><a href="experience.html" data-nav>Experience</a></li>
+    <li><a href="contact.html"    data-nav>Contact</a></li>
+  </ul>
+</nav>
+
+<section id="skills">
+  <div class="section-inner">
+    <div class="section-label">02 // Skills</div>
+    <h2 class="section-title">MY <span class="accent">EXPERTISE</span></h2>
+    <div class="section-divider"></div>
+
+    <div class="skills-categories">
+      <button class="cat-btn active" data-filter="all">All</button>
+      <button class="cat-btn" data-filter="technical">Technical</button>
+      <button class="cat-btn" data-filter="design">Design</button>
+      <button class="cat-btn" data-filter="soft">Soft Skills</button>
+    </div>
+
+    <div class="skills-grid" id="skillsGrid">
+
+      <div class="skill-card reveal" data-category="technical">
+        <span class="skill-icon"></span>
+        <div class="skill-name">Computer Literate</div>
+        <div class="skill-bar-bg"><div class="skill-bar" data-pct="90"></div></div>
+        <div class="skill-pct">90%</div>
+      </div>
+
+      <div class="skill-card reveal" data-category="technical">
+        <span class="skill-icon"></span>
+        <div class="skill-name">HTML</div>
+        <div class="skill-bar-bg"><div class="skill-bar" data-pct="50"></div></div>
+        <div class="skill-pct">50%</div>
+      </div>
+
+      <div class="skill-card reveal" data-category="technical">
+        <span class="skill-icon"></span>
+        <div class="skill-name">CSS</div>
+        <div class="skill-bar-bg"><div class="skill-bar" data-pct="50"></div></div>
+        <div class="skill-pct">50%</div>
+      </div>
+
+      <div class="skill-card reveal" data-category="design">
+        <span class="skill-icon"></span>
+        <div class="skill-name">JAVA</div>
+        <div class="skill-bar-bg"><div class="skill-bar" data-pct="50"></div></div>
+        <div class="skill-pct">50%</div>
+      </div>
+
+      <div class="skill-card reveal" data-category="design">
+        <span class="skill-icon"></span>
+        <div class="skill-name">Photoshop</div>
+        <div class="skill-bar-bg"><div class="skill-bar" data-pct="88"></div></div>
+        <div class="skill-pct">88%</div>
+      </div>
+
+      <div class="skill-card reveal" data-category="design">
+        <span class="skill-icon"></span>
+        <div class="skill-name">Illustrator</div>
+        <div class="skill-bar-bg"><div class="skill-bar" data-pct="75"></div></div>
+        <div class="skill-pct">75%</div>
+      </div>
+
+      <div class="skill-card reveal" data-category="design">
+        <span class="skill-icon"></span>
+        <div class="skill-name">Indesign</div>
+        <div class="skill-bar-bg"><div class="skill-bar" data-pct="75"></div></div>
+        <div class="skill-pct">75%</div>
+      </div>
+
+      <div class="skill-card reveal" data-category="design">
+        <span class="skill-icon"></span>
+        <div class="skill-name">After Effects</div>
+        <div class="skill-bar-bg"><div class="skill-bar" data-pct="50"></div></div>
+        <div class="skill-pct">50%</div>
+      </div>
+
+      <div class="skill-card reveal" data-category="design">
+        <span class="skill-icon"></span>
+        <div class="skill-name">Canva</div>
+        <div class="skill-bar-bg"><div class="skill-bar" data-pct="95"></div></div>
+        <div class="skill-pct">95%</div>
+      </div>
+
+      <div class="skill-card reveal" data-category="design">
+        <span class="skill-icon"></span>
+        <div class="skill-name">Premiere Pro</div>
+        <div class="skill-bar-bg"><div class="skill-bar" data-pct="75"></div></div>
+        <div class="skill-pct">75%</div>
+      </div>
+
+      <div class="skill-card reveal" data-category="design">
+        <span class="skill-icon"></span>
+        <div class="skill-name">Capcut</div>
+        <div class="skill-bar-bg"><div class="skill-bar" data-pct="95"></div></div>
+        <div class="skill-pct">95%</div>
+      </div>
+
+      <div class="skill-card reveal" data-category="soft">
+        <span class="skill-icon"></span>
+        <div class="skill-name">Problem-Solving</div>
+        <div class="skill-bar-bg"><div class="skill-bar" data-pct="100"></div></div>
+        <div class="skill-pct">100%</div>
+      </div>
+
+      <div class="skill-card reveal" data-category="soft">
+        <span class="skill-icon"></span>
+        <div class="skill-name">Team Collaboration</div>
+        <div class="skill-bar-bg"><div class="skill-bar" data-pct="100"></div></div>
+        <div class="skill-pct">100%</div>
+      </div>
+
+      <div class="skill-card reveal" data-category="soft">
+        <span class="skill-icon"></span>
+        <div class="skill-name">Communication Skills</div>
+        <div class="skill-bar-bg"><div class="skill-bar" data-pct="100"></div></div>
+        <div class="skill-pct">100%</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="page-nav">
+  <a class="page-nav-btn back" href="index.html" data-nav><span class="page-nav-arrow">←</span><span class="page-nav-label">Home</span></a>
+  <div class="page-nav-center">
+    <a class="page-dot" href="index.html" data-nav title="Home"></a>
+    <a class="page-dot active" href="skills.html" data-nav title="Skills"></a>
+    <a class="page-dot" href="works.html" data-nav title="Works"></a>
+    <a class="page-dot" href="education.html" data-nav title="Education"></a>
+    <a class="page-dot" href="experience.html" data-nav title="Experience"></a>
+    <a class="page-dot" href="contact.html" data-nav title="Contact"></a>
+  </div>
+  <a class="page-nav-btn next" href="works.html" data-nav><span class="page-nav-label">Works</span><span class="page-nav-arrow">→</span></a>
+</div>
+
+<footer>
+  <a class="footer-logo" href="index.html" data-nav>KIRITO</a>
+  <div class="footer-text">© 2026 — All Rights Reserved</div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
