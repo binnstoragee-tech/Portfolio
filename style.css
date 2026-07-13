@@ -95,8 +95,21 @@ nav {
   color: var(--neon);
   text-shadow: 0 0 20px var(--neon);
   text-decoration: none;
+  display: flex;
+  align-items: center;
 }
 .nav-logo span { color: var(--neon2); }
+.nav-logo img {
+  height: 42px;
+  width: 42px;
+  display: block;
+  filter: drop-shadow(0 0 10px rgba(0,245,212,0.5));
+  transition: filter 0.3s, transform 0.3s;
+}
+.nav-logo:hover img {
+  filter: drop-shadow(0 0 18px rgba(0,245,212,0.8));
+  transform: scale(1.06);
+}
 
 .nav-links {
   display: flex;
@@ -292,6 +305,19 @@ footer {
   letter-spacing: 4px;
   color: var(--neon);
   text-decoration: none;
+  display: flex;
+  align-items: center;
+}
+.footer-logo img {
+  height: 34px;
+  width: 34px;
+  display: block;
+  filter: drop-shadow(0 0 8px rgba(0,245,212,0.5));
+  transition: filter 0.3s, transform 0.3s;
+}
+.footer-logo:hover img {
+  filter: drop-shadow(0 0 14px rgba(0,245,212,0.8));
+  transform: scale(1.06);
 }
 .footer-text {
   font-size: 0.75rem;
@@ -393,6 +419,7 @@ footer {
   .cursor, .cursor-ring { display: none; }
   body { cursor: auto; }
   nav { padding: 1rem 1.5rem; }
+  .nav-logo img { height: 34px; width: 34px; }
   .nav-hamburger { display: flex; }
   .nav-links {
     position: fixed; top: 0; right: -100%;
