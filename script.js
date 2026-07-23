@@ -9,19 +9,37 @@
   const chatHTML = `
     <div class="chat-fab-wrap" id="chatFabWrap">
       <div class="chat-fab-panel" id="chatFabPanel">
+        <div class="chat-fab-panel-head">
+          <span class="chat-fab-panel-title">Let's Connect</span>
+          <span class="chat-fab-panel-sub">Pick a platform to chat</span>
+        </div>
         <a class="chat-fab-item chat-fab-whatsapp" href="https://wa.me/${PHONE_INTL}" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.6 6.32A8.86 8.86 0 0 0 12.02 3a8.94 8.94 0 0 0-7.75 13.4L3 21l4.74-1.24a8.9 8.9 0 0 0 4.27 1.09h.01a8.94 8.94 0 0 0 8.93-8.94 8.87 8.87 0 0 0-2.35-6.09Zm-5.58 13.7h-.01a7.42 7.42 0 0 1-3.78-1.04l-.27-.16-2.81.74.75-2.74-.18-.28a7.44 7.44 0 0 1 11.62-9.2 7.38 7.38 0 0 1 2.19 5.26 7.44 7.44 0 0 1-7.51 7.42Zm4.08-5.56c-.22-.11-1.31-.65-1.52-.72-.2-.08-.35-.11-.5.11-.15.22-.57.72-.7.87-.13.15-.26.16-.48.05a6.1 6.1 0 0 1-1.8-1.11 6.75 6.75 0 0 1-1.24-1.55c-.13-.22-.01-.34.1-.45.1-.1.22-.26.33-.39.11-.13.15-.22.22-.37.07-.15.04-.27-.02-.39-.06-.11-.5-1.2-.68-1.65-.18-.43-.36-.37-.5-.38h-.43a.82.82 0 0 0-.59.28 2.5 2.5 0 0 0-.78 1.86c0 1.1.8 2.16.91 2.31.11.15 1.57 2.4 3.81 3.36.53.23.95.36 1.27.47.53.17 1.02.14 1.4.09.43-.06 1.31-.53 1.49-1.05.19-.51.19-.95.13-1.04-.06-.09-.2-.14-.42-.25Z"/></svg>
-          <span>WhatsApp</span>
+          <span class="chat-fab-item-icon"><img src="IMG/whatsapp.webp" alt=""></span>
+          <span class="chat-fab-item-text">
+            <span class="chat-fab-item-title">WhatsApp</span>
+            <span class="chat-fab-item-desc">Chat instantly</span>
+          </span>
+          <svg class="chat-fab-item-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
         </a>
         <a class="chat-fab-item chat-fab-viber" href="viber://chat?number=%2B${VIBER_INTL}" aria-label="Chat on Viber">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.9 2.4c-3.9-.4-7.8-.1-9.6 1.5C1.6 5.2 1.2 7.5 1.1 10c-.1 2.3.1 5.5 2.2 7.5.4.4.9.7 1.4.9-.1.7-.3 1.9-.3 2.3 0 .3.2.4.4.4.2 0 .3-.1.5-.3.3-.3 1.4-1.6 2-2.3 3.5.6 7.3.2 9.4-1.6 2-1.7 2.5-4.4 2.6-7.1.1-2.7-.3-5.6-2.4-7.5-1-.9-2.6-1.6-4-1.9Zm2.9 12.4c-.3.5-1.1 1-1.7 1.1-.4.1-1 .2-3-.6-2.5-1-4.1-3.4-4.3-3.6-.2-.3-1-1.4-1-2.6s.6-1.8.9-2.1c.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .5.4.2.5.7 1.7.7 1.9.1.1.1.3 0 .4-.1.2-.1.3-.3.4-.1.2-.3.3-.4.5-.2.2-.3.4-.1.7.2.3.8 1.2 1.6 2 1.1 1 2 1.3 2.3 1.4.3.1.4.1.6-.1.2-.2.7-.8.9-1.1.2-.3.4-.2.6-.1.2.1 1.4.7 1.6.8.2.1.4.2.4.3.1.2.1.7-.2 1.2Zm-2.7-9.3a3.9 3.9 0 0 1 3.7 3.9.5.5 0 1 1-1 0 2.9 2.9 0 0 0-2.8-2.9.5.5 0 0 1 .1-1Zm.1 1.9a2 2 0 0 1 1.9 1.9.5.5 0 1 1-1 .1 1 1 0 0 0-.9-1 .5.5 0 0 1 0-1Z"/></svg>
-          <span>Viber</span>
+          <span class="chat-fab-item-icon"><img src="IMG/viber.png" alt=""></span>
+          <span class="chat-fab-item-text">
+            <span class="chat-fab-item-title">Viber</span>
+            <span class="chat-fab-item-desc">Message me</span>
+          </span>
+          <svg class="chat-fab-item-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
         </a>
       </div>
       <button class="chat-fab-btn" id="chatFabBtn" aria-label="Chat with me">
-        <span class="chat-fab-ring"></span>
-        <span class="chat-fab-ring chat-fab-ring2"></span>
-        <svg class="chat-fab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+        <span class="chat-fab-tooltip" aria-hidden="true">
+          <span class="chat-fab-tooltip-text chat-fab-tooltip-whatsapp">Chat on WhatsApp</span>
+          <span class="chat-fab-tooltip-text chat-fab-tooltip-viber">Chat on Viber</span>
+        </span>
+        <span class="chat-fab-icon-wrap">
+          <img class="chat-fab-icon chat-fab-icon-whatsapp" src="IMG/whatsapp.webp" alt="WhatsApp">
+          <img class="chat-fab-icon chat-fab-icon-viber" src="IMG/viber.png" alt="Viber">
+        </span>
+        <svg class="chat-fab-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
       </button>
     </div>`;
   document.body.insertAdjacentHTML('beforeend', chatHTML);
@@ -41,43 +59,47 @@
 
 /* ── PAGE ENTER ANIMATION ────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
-  const overlay = document.getElementById('pageTransition');
-  if (overlay) {
-    /* tiny delay so browser paints the wipe-in state first */
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        overlay.classList.remove('wipe-in');
-        overlay.classList.add('wipe-out');
-      });
-    });
-  }
 
-  /* ── ACTIVE NAV LINK ──────────────────────────────────── */
-  const currentPage = location.pathname.split('/').pop() || 'index.html';
-  document.querySelectorAll('.nav-links a').forEach(link => {
-    const href = link.getAttribute('href');
-    if (href === currentPage || (currentPage === '' && href === 'index.html')) {
-      link.classList.add('active');
-    }
-  });
-
-  /* ── SMOOTH PAGE NAVIGATION ───────────────────────────── */
+  /* ── SMOOTH IN-PAGE NAV + AUTO-CLOSE MOBILE MENU ──────── */
   document.querySelectorAll('a[data-nav]').forEach(link => {
     link.addEventListener('click', e => {
-      e.preventDefault();
       const target = link.getAttribute('href');
-      if (!target || target === '#') return;
+      if (!target || !target.startsWith('#')) return; // let real links behave normally
+      const section = document.querySelector(target);
+      if (!section) return;
+      e.preventDefault();
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      history.replaceState(null, '', target);
 
-      const o = document.getElementById('pageTransition');
-      if (o) {
-        o.classList.remove('wipe-out');
-        o.classList.add('wipe-in');
-        setTimeout(() => { location.href = target; }, 480);
-      } else {
-        location.href = target;
+      const nav = document.getElementById('navLinks');
+      const ham = document.getElementById('hamburger');
+      if (nav && nav.classList.contains('open')) {
+        nav.classList.remove('open');
+        if (ham) ham.classList.remove('open');
       }
     });
   });
+
+  /* ── ACTIVE NAV LINK (SCROLL-SPY) ──────────────────────── */
+  const navAnchors = Array.from(document.querySelectorAll('.nav-links a[href^="#"]'));
+  const sections = navAnchors
+    .map(a => document.querySelector(a.getAttribute('href')))
+    .filter(Boolean);
+
+  function setActiveLink(id) {
+    navAnchors.forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + id);
+    });
+  }
+
+  if (sections.length) {
+    const spyObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) setActiveLink(entry.target.id);
+      });
+    }, { rootMargin: '-45% 0px -50% 0px', threshold: 0 });
+    sections.forEach(sec => spyObserver.observe(sec));
+  }
 
   /* ── CUSTOM CURSOR ────────────────────────────────────── */
   const cursor = document.getElementById('cursor');
@@ -101,12 +123,12 @@ document.addEventListener('DOMContentLoaded', () => {
       el.addEventListener('mouseenter', () => {
         cursor.style.transform = 'translate(-50%,-50%) scale(2)';
         ring.style.width = '50px'; ring.style.height = '50px';
-        ring.style.borderColor = 'rgba(0,245,212,0.8)';
+        ring.style.borderColor = 'rgba(2,245,161,0.8)';
       });
       el.addEventListener('mouseleave', () => {
         cursor.style.transform = 'translate(-50%,-50%) scale(1)';
         ring.style.width = '36px'; ring.style.height = '36px';
-        ring.style.borderColor = 'rgba(0,245,212,0.6)';
+        ring.style.borderColor = 'rgba(2,245,161,0.6)';
       });
     });
   }
@@ -189,6 +211,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  /* Hooks the lightbox (further below) uses to pause/resume the works
+     auto-slideshow while a picture or video is being viewed fullscreen. */
+  let pauseWorksAutoSlide  = () => {};
+  let resumeWorksAutoSlide = () => {};
+
   /* ── WORKS CAROUSEL ───────────────────────────────────── */
   (function() {
     const worksGrid = document.getElementById('worksGrid');
@@ -268,6 +295,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (autoSlideTimer) { clearInterval(autoSlideTimer); autoSlideTimer = null; }
     }
     function restartAutoSlide() { startAutoSlide(); } // resets the 2s timer after manual navigation
+
+    pauseWorksAutoSlide  = stopAutoSlide;
+    resumeWorksAutoSlide = restartAutoSlide;
 
     prevBtn.addEventListener('click', () => { prev(); restartAutoSlide(); });
     nextBtn.addEventListener('click', () => { next(); restartAutoSlide(); });
@@ -377,6 +407,7 @@ document.addEventListener('DOMContentLoaded', () => {
       loadImage(index);
       lightbox.classList.add('open');
       document.body.style.overflow = 'hidden';
+      pauseWorksAutoSlide();
     };
 
     document.querySelectorAll('.work-card').forEach(card => {
@@ -401,6 +432,7 @@ document.addEventListener('DOMContentLoaded', () => {
       lightboxVideo.muted = false;
       lightboxVideo.currentTime = 0;
       lightboxVideo.play().catch(() => {});
+      pauseWorksAutoSlide();
     };
 
     document.querySelectorAll('.work-item--story .work-card').forEach(card => {
@@ -426,6 +458,7 @@ document.addEventListener('DOMContentLoaded', () => {
         openedCardVideo = null;
       }
       setTimeout(() => { lightboxImg.src = ''; }, 300);
+      resumeWorksAutoSlide();
     };
 
     const showNext = () => loadImage(currentIndex + 1);

@@ -8,7 +8,9 @@
 <link rel="shortcut icon" href="IMG/favicon.png?v=2">
 <link rel="stylesheet" href="style.css">
 <style>
-#education { background: var(--dark); }
+#education {
+  background: radial-gradient(ellipse 700px 550px at 90% 75%, rgba(0,255,127,0.02), transparent 55%);
+}
 
 .timeline {
   position: relative;
@@ -32,22 +34,25 @@
   position: absolute; left: -2.9rem; top: 0.4rem;
   width: 14px; height: 14px;
   background: var(--neon); border-radius: 50%;
-  box-shadow: 0 0 0 4px rgba(0,245,212,0.15), 0 0 15px var(--neon);
+  box-shadow: 0 0 0 4px rgba(2,245,161,0.15), 0 0 15px var(--neon);
   animation: dotPulse 2s ease-in-out infinite;
 }
 @keyframes dotPulse {
-  0%,100% { box-shadow: 0 0 0 4px rgba(0,245,212,0.15), 0 0 15px var(--neon); }
-  50%     { box-shadow: 0 0 0 8px rgba(0,245,212,0.05), 0 0 25px var(--neon); }
+  0%,100% { box-shadow: 0 0 0 4px rgba(2,245,161,0.15), 0 0 15px var(--neon); }
+  50%     { box-shadow: 0 0 0 8px rgba(2,245,161,0.05), 0 0 25px var(--neon); }
 }
 
 .edu-card {
-  background: var(--dark2);
-  border: 1px solid rgba(0,245,212,0.08);
+  background: rgba(13,36,43,0.35);
+  border: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.05);
   padding: 1.8rem 2rem;
   position: relative;
   transition: all 0.3s;
 }
-.edu-card:hover { border-color: rgba(0,245,212,0.25); }
+.edu-card:hover { border-color: rgba(2,245,161,0.25); }
 .edu-card::before {
   content: ''; position: absolute; left: -1px; top: 0;
   height: 0; width: 2px;
@@ -72,7 +77,7 @@
 .edu-desc { font-size: 0.9rem; color: #7a8fa3; line-height: 1.7; }
 .edu-badge {
   display: inline-block; margin-top: 1rem; padding: 0.3rem 1rem;
-  background: rgba(0,245,212,0.07); border: 1px solid rgba(0,245,212,0.2);
+  background: rgba(2,245,161,0.07); border: 1px solid rgba(2,245,161,0.2);
   color: var(--neon); font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase;
 }
 
@@ -85,8 +90,10 @@
 /* ── BOTTOM PAGE NAV ─────────────────────────────────── */
 .page-nav {
   position: relative; z-index: 10;
-  background: var(--dark2);
-  border-top: 1px solid rgba(0,245,212,0.12);
+  background: rgba(13,36,43,0.4);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  border-top: 1px solid rgba(255,255,255,0.08);
   padding: 1.2rem 3rem;
   display: flex;
   justify-content: space-between;
@@ -96,7 +103,9 @@
 .page-nav-btn {
   display: flex; align-items: center; gap: 0.7rem;
   padding: 0.75rem 1.6rem;
-  background: transparent;
+  background: rgba(255,255,255,0.03);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255,255,255,0.1);
   color: var(--muted);
   font-family: 'Barlow', sans-serif;
@@ -110,17 +119,17 @@
 .page-nav-btn:hover {
   border-color: var(--neon);
   color: var(--neon);
-  background: rgba(0,245,212,0.05);
+  background: rgba(2,245,161,0.05);
 }
 .page-nav-btn.next {
-  background: rgba(0,245,212,0.08);
-  border-color: rgba(0,245,212,0.3);
+  background: rgba(2,245,161,0.08);
+  border-color: rgba(2,245,161,0.3);
   color: var(--neon);
 }
 .page-nav-btn.next:hover {
   background: var(--neon);
   color: var(--dark);
-  box-shadow: 0 0 24px rgba(0,245,212,0.3);
+  box-shadow: 0 0 24px rgba(2,245,161,0.3);
 }
 .page-nav-btn.disabled {
   opacity: 0.2; pointer-events: none;
@@ -141,7 +150,7 @@
   box-shadow: 0 0 8px var(--neon);
   width: 18px; border-radius: 3px;
 }
-.page-dot:hover:not(.active) { background: rgba(0,245,212,0.4); }
+.page-dot:hover:not(.active) { background: rgba(2,245,161,0.4); }
 .page-nav-arrow { font-size: 1rem; line-height: 1; }
 @media (min-width: 769px) { .page-nav { display: none !important; } }
 @media (max-width: 768px) {
