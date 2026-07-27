@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Robin Francisco — Portfolio</title>
+<title>Robin - Portfolio</title>
 <meta name="description" content="Robin Francisco — Digital Marketing Manager & Graphic Designer. Skills, work, education, experience and contact.">
 <link rel="icon" type="image/x-icon" href="IMG/favicon2.png">
 <link rel="shortcut icon" href="IMG/favicon.png?v=2">
@@ -21,34 +21,13 @@
   overflow: hidden;
 }
 
-.grid-bg {
-  position: absolute; inset: 0;
-  background-image:
-    linear-gradient(rgba(2,245,161,0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(2,245,161,0.04) 1px, transparent 1px);
-  background-size: 60px 60px;
-  animation: gridMove 20s linear infinite;
-}
-@keyframes gridMove {
-  0%   { background-position: 0 0; }
-  100% { background-position: 60px 60px; }
-}
-
-.glow-orb { position: absolute; border-radius: 50%; filter: blur(100px); pointer-events: none; }
-.orb1 { width:500px;height:500px;background:rgba(2,245,161,0.06);top:-100px;right:-100px;animation:orbFloat 8s ease-in-out infinite; }
-.orb2 { width:300px;height:300px;background:rgba(0,214,143,0.05);bottom:50px;left:200px;animation:orbFloat 6s ease-in-out infinite reverse; }
-@keyframes orbFloat {
-  0%,100% { transform: translateY(0) scale(1); }
-  50%     { transform: translateY(-30px) scale(1.05); }
-}
-
 .home-content { position: relative; z-index: 2; }
 
 .home-tag {
   font-family: 'Share Tech Mono', monospace;
   color: var(--neon); font-size: 0.85rem; letter-spacing: 3px;
   margin-bottom: 1.2rem;
-  opacity: 0; animation: fadeUp 0.8s 0.3s forwards;
+  opacity: 0; animation: heroIn 0.8s cubic-bezier(0.16,1,0.3,1) 0.2s forwards;
 }
 .home-tag::before { content: '> '; color: var(--neon2); }
 
@@ -56,7 +35,10 @@
   font-family: 'Bebas Neue', cursive;
   font-size: clamp(4rem, 10vw, 9rem);
   line-height: 0.9; letter-spacing: 6px;
-  opacity: 0; animation: fadeUp 0.8s 0.5s forwards;
+  opacity: 0;
+  clip-path: inset(0 100% -20% 0);
+  transform: translateY(16px);
+  animation: titleReveal 1s cubic-bezier(0.19,1,0.22,1) 0.4s forwards;
 }
 .home-name .line1 { display: block; color: var(--text); }
 .home-name .line2 {
@@ -67,20 +49,24 @@
 .home-title {
   font-size: 1rem; color: var(--muted); letter-spacing: 5px;
   text-transform: uppercase; margin: 1.5rem 0; font-weight: 300;
-  opacity: 0; animation: fadeUp 0.8s 0.7s forwards;
+  opacity: 0; animation: heroIn 0.8s cubic-bezier(0.16,1,0.3,1) 0.75s forwards;
 }
 .home-title span { color: var(--neon2); }
 
 .home-desc {
   max-width: 480px; line-height: 1.8; color: #8fa0b2; font-size: 0.95rem;
   margin-bottom: 2.5rem;
-  opacity: 0; animation: fadeUp 0.8s 0.9s forwards;
+  opacity: 0; animation: heroIn 0.8s cubic-bezier(0.16,1,0.3,1) 0.95s forwards;
 }
 
-.btn-group {
-  display: flex; gap: 1rem;
-  opacity: 0; animation: fadeUp 0.8s 1.1s forwards;
+.btn-group { display: flex; gap: 1rem; }
+.btn-group a {
+  opacity: 0;
+  transform: translateY(16px) scale(0.88);
+  animation: btnPop 0.7s cubic-bezier(0.34,1.56,0.64,1) forwards;
 }
+.btn-group a:nth-child(1) { animation-delay: 1.1s; }
+.btn-group a:nth-child(2) { animation-delay: 1.22s; }
 
 .stats-row {
   display: flex; gap: 3rem; margin: 2.5rem 0;
@@ -88,7 +74,10 @@
   border-top: 1px solid rgba(255,255,255,0.05);
   border-bottom: 1px solid rgba(255,255,255,0.05);
 }
-.stat { text-align: center; }
+.stat { text-align: center; opacity: 0; transform: translateY(18px); animation: heroIn 0.7s cubic-bezier(0.16,1,0.3,1) forwards; }
+.stat:nth-child(1) { animation-delay: 1.3s; }
+.stat:nth-child(2) { animation-delay: 1.42s; }
+.stat:nth-child(3) { animation-delay: 1.54s; }
 .stat-num {
   font-family: 'Bebas Neue', cursive; font-size: 3rem; color: var(--neon);
   letter-spacing: 2px; text-shadow: 0 0 20px rgba(2,245,161,0.4); line-height: 1;
@@ -98,16 +87,25 @@
 .home-visual {
   position: absolute; right: 5rem; top: 50%;
   transform: translateY(-50%);
-  opacity: 0; animation: fadeLeft 1s 0.8s forwards;
+  opacity: 0; animation: heroPhotoIn 1.3s cubic-bezier(0.16,1,0.3,1) 0.5s forwards;
 }
-.hex-frame { width: 320px; height: 370px; position: relative; }
-.hex-frame svg { width: 100%; height: 100%; }
+.hex-frame {
+  width: clamp(190px, 24vw, 340px);
+  aspect-ratio: 340 / 400;
+  position: relative;
+}
+.hero-photo {
+  width: 100%; height: 100%;
+  object-fit: contain; object-position: bottom;
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 82%, rgba(0,0,0,0.5) 92%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 82%, rgba(0,0,0,0.5) 92%, transparent 100%);
+}
 
 .scroll-hint {
   position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%);
   display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
   color: var(--muted); font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase;
-  animation: fadeUp 1s 1.5s both;
+  opacity: 0; animation: heroIn 0.9s cubic-bezier(0.16,1,0.3,1) 1.8s forwards;
 }
 .scroll-line {
   width: 1px; height: 50px;
@@ -117,6 +115,24 @@
 @keyframes scrollPulse {
   0%,100% { opacity: 0.3; transform: scaleY(0.7); }
   50%     { opacity: 1;   transform: scaleY(1); }
+}
+
+/* ── MODERN HERO ENTRANCE ──────────────────────────────── */
+@keyframes heroIn {
+  from { opacity: 0; transform: translateY(28px); filter: blur(6px); }
+  to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
+}
+@keyframes titleReveal {
+  0%   { opacity: 0; clip-path: inset(0 100% -20% 0); transform: translateY(16px); }
+  45%  { opacity: 1; }
+  100% { opacity: 1; clip-path: inset(0 0% -20% 0);   transform: translateY(0); }
+}
+@keyframes btnPop {
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes heroPhotoIn {
+  0%   { opacity: 0; transform: translate(70px,-50%) scale(0.86) rotateY(16deg); filter: blur(10px); }
+  100% { opacity: 1; transform: translate(0,-50%)    scale(1)    rotateY(0deg);  filter: blur(0); }
 }
 
 @keyframes fadeUp {
@@ -146,7 +162,6 @@
     order: -1;
     margin-bottom: 1.5rem;
   }
-  .hex-frame { width: 200px; height: 232px; animation: hexFloat 4s ease-in-out infinite; }
   .hex-shadow { display: none; }
   .home-content { width: 100%; text-align: center; }
   .home-tag { text-align: center; }
@@ -156,36 +171,25 @@
   .btn-group { flex-direction: column; gap: 0.8rem; align-items: center; }
   .btn-primary, .btn-outline { text-align: center; width: 100%; max-width: 280px; }
   .stats-row { gap: 1.5rem; flex-wrap: wrap; justify-content: center; }
-  .section-label { justify-content: center; }
 }
 
-/* ── 3D HEX ── */
+@media (prefers-reduced-motion: reduce) {
+  .home-tag, .home-name, .home-title, .home-desc, .btn-group a,
+  .stat, .home-visual, .scroll-hint {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    clip-path: none !important;
+    filter: none !important;
+  }
+}
+
+/* ── HERO PHOTO (static, no float) ── */
 .home-visual { perspective: 800px; }
 .hex-frame {
-  transform-style: preserve-3d;
-  animation: hexFloat 4s ease-in-out infinite;
   cursor: none;
 }
-@keyframes hexFloat {
-  0%,100% { transform: translateY(0px) rotateX(2deg) rotateY(-4deg); }
-  50%      { transform: translateY(-14px) rotateX(-2deg) rotateY(4deg); }
-}
-.hex-frame svg {
-  width: 100%; height: 100%;
-  filter: drop-shadow(0 20px 40px rgba(2,245,161,0.15)) drop-shadow(0 4px 16px rgba(0,0,0,0.6));
-}
-.hex-shadow {
-  position: absolute; bottom: -30px; left: 50%;
-  transform: translateX(-50%) rotateX(80deg) scaleX(0.85);
-  width: 240px; height: 60px;
-  background: radial-gradient(ellipse, rgba(2,245,161,0.18) 0%, transparent 70%);
-  border-radius: 50%;
-  animation: shadowFloat 4s ease-in-out infinite;
-}
-@keyframes shadowFloat {
-  0%,100% { opacity: 0.6; transform: translateX(-50%) rotateX(80deg) scaleX(0.85); }
-  50%      { opacity: 0.25; transform: translateX(-50%) rotateX(80deg) scaleX(0.65); }
-}
+.hex-shadow { display: none; }
 
 </style>
 
@@ -463,6 +467,7 @@
   .carousel-next { right: -0.2rem; }
   .video-mute-btn { width: 26px; height: 26px; bottom: 0.9rem; right: 0.7rem; }
   .video-mute-btn svg { width: 13px; height: 13px; }
+  .site-visit-btn { padding: 0.4rem 0.9rem; font-size: 0.55rem; letter-spacing: 1px; gap: 0.35rem; bottom: 0.7rem; }
 
 }
 
@@ -530,6 +535,7 @@
   -webkit-backdrop-filter: blur(10px) saturate(160%);
   box-shadow: 0 4px 16px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.08);
   transition: all 0.3s;
+  white-space: nowrap;
 }
 .site-visit-btn .arrow { display: inline-block; transition: transform 0.3s; }
 .site-card-link:hover .site-visit-btn { background: var(--neon); color: var(--dark); box-shadow: 0 0 22px rgba(2,245,161,0.5); }
@@ -557,10 +563,11 @@
 
 .timeline-item {
   position: relative; margin-bottom: 3.5rem;
-  opacity: 0; transform: translateX(-20px);
-  transition: all 0.6s ease;
+  opacity: 0; transform: perspective(1000px) translateX(-50px) rotateY(20deg);
+  transform-origin: left center;
+  transition: all 0.7s cubic-bezier(0.16,1,0.3,1);
 }
-.timeline-item.visible { opacity: 1; transform: translateX(0); }
+.timeline-item.visible { opacity: 1; transform: perspective(1000px) translateX(0) rotateY(0deg); }
 
 .timeline-dot {
   position: absolute; left: -2.9rem; top: 0.4rem;
@@ -638,10 +645,10 @@
   display: grid; grid-template-columns: 1fr 3fr;
   gap: 2rem; align-items: start;
   position: relative; overflow: hidden;
-  transition: all 0.3s;
-  opacity: 0; transform: translateY(20px);
+  transition: border-color 0.3s, box-shadow 0.3s, transform 0.8s cubic-bezier(0.16,1,0.3,1), opacity 0.8s cubic-bezier(0.16,1,0.3,1);
+  opacity: 0; transform: perspective(1100px) translateY(45px) rotateX(12deg) scale(0.96);
 }
-.exp-card.visible { opacity: 1; transform: translateY(0); }
+.exp-card.visible { opacity: 1; transform: perspective(1100px) translateY(0) rotateX(0deg) scale(1); }
 
 .exp-card::before {
   content: ''; position: absolute; inset: 0;
@@ -806,10 +813,6 @@
 
 
 <section id="home">
-  <div class="grid-bg"></div>
-  <div class="glow-orb orb1"></div>
-  <div class="glow-orb orb2"></div>
-
   <div class="home-content">
     <div class="home-tag">Hi I'm Robin Francisco</div>
     <h1 class="home-name">
@@ -817,9 +820,9 @@
         <span class="glitch-wrap" data-text="PORTFOLIO">PORTFOLIO</span>
       </span>
     </h1>
-    <p class="home-title"><span>Social Media Manager</span> &nbsp;/&nbsp; Graphic Designer</p>
+    <p class="home-title"><span>SMM</span> &nbsp;/&nbsp; Graphic Designer</p>
     <p class="home-desc">
-      Bridging creative vision with strategic execution to build brand experiences that convert through data-driven digital marketing and bold, purposeful design.
+      Turning creative ideas into strategic content that grows brands, <br> engages audiences, and drives results.
     </p>
     <div class="btn-group">
       <a href="#works" class="btn-primary" data-nav><span>View My Work</span></a>
@@ -844,30 +847,7 @@
 
   <div class="home-visual">
     <div class="hex-frame">
-      <svg viewBox="0 0 320 370" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="hexGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%"   style="stop-color:#02f5a1;stop-opacity:0.3"/>
-            <stop offset="100%" style="stop-color:#00d68f;stop-opacity:0.1"/>
-          </linearGradient>
-          <clipPath id="hexClip">
-            <polygon points="160,10 305,92 305,278 160,360 15,278 15,92"/>
-          </clipPath>
-        </defs>
-        <g style="transform-origin:160px 185px;animation:rotateSlow 20s linear infinite">
-          <polygon points="160,5 310,88 310,280 160,363 10,280 10,88" fill="none" stroke="rgba(2,245,161,0.12)" stroke-width="1"/>
-        </g>
-        <g style="transform-origin:160px 185px;animation:rotateSlow 15s linear infinite reverse">
-          <polygon points="160,25 295,102 295,268 160,345 25,268 25,102" fill="none" stroke="rgba(0,214,143,0.1)" stroke-width="0.5" stroke-dasharray="8,12"/>
-        </g>
-        <polygon points="160,30 290,105 290,265 160,340 30,265 30,105" fill="url(#hexGrad)" stroke="rgba(2,245,161,0.35)" stroke-width="1.5"/>
-        <image href="./IMG/Binn.jpg" x="30" y="30" width="260" height="310" clip-path="url(#hexClip)" preserveAspectRatio="xMidYMid slice"/>
-        <line x1="30" y1="105" x2="55" y2="90" stroke="var(--neon)" stroke-width="2"/>
-        <line x1="290" y1="265" x2="265" y2="280" stroke="#00d68f" stroke-width="2"/>
-        <rect x="30" y="30" width="260" height="4" fill="rgba(2,245,161,0.04)" clip-path="url(#hexClip)">
-          <animateTransform attributeName="transform" type="translate" from="0,0" to="0,310" dur="3s" repeatCount="indefinite"/>
-        </rect>
-      </svg>
+      <img src="./IMG/Binn-cutout.png" alt="Robin" class="hero-photo">
       <div class="hex-shadow"></div>
     </div>
   </div>

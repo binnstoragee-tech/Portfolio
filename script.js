@@ -2,6 +2,46 @@
    ROBIN PORTFOLIO — SHARED SCRIPT
    ============================================================ */
 
+/* ── GLOBAL ANIMATED BACKGROUND — every page, plain onyx + drifting
+      gradient orbs that shift position as you scroll up/down ── */
+(function() {
+  const wrap = document.createElement('div');
+  wrap.className = 'site-bg-fx';
+  wrap.setAttribute('aria-hidden', 'true');
+  wrap.innerHTML =
+    '<div class="bg-orb bg-orb-1"></div>' +
+    '<div class="bg-orb bg-orb-2"></div>' +
+    '<div class="bg-orb bg-orb-3"></div>' +
+    '<div class="bg-orb bg-orb-4"></div>' +
+    '<div class="bg-orb bg-orb-5"></div>';
+  document.body.prepend(wrap);
+
+  const orbs = wrap.querySelectorAll('.bg-orb');
+  // each orb drifts at its own speed/direction relative to scroll,
+  // so they constantly change position and never move in lockstep
+  const speeds = [0.18, -0.13, 0.24, -0.2, 0.15];
+  const sideways = [12, -18, 22, -14, 18]; // subtle horizontal drift too
+
+  let ticking = false;
+  function updateOrbs() {
+    const y = window.scrollY;
+    orbs.forEach((orb, i) => {
+      const vSpeed = speeds[i % speeds.length];
+      const hAmount = sideways[i % sideways.length];
+      const x = Math.sin(y / 900 + i) * hAmount;
+      orb.style.transform = `translate3d(${x}px, ${y * vSpeed}px, 0)`;
+    });
+    ticking = false;
+  }
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(updateOrbs);
+      ticking = true;
+    }
+  }, { passive: true });
+  updateOrbs();
+})();
+
 /* ── FLOATING CHAT BUBBLE (WhatsApp + Viber) — every page ─── */
 (function() {
   const PHONE_INTL = '639695159058'; // +63 969 515 9058, digits only for wa.me
@@ -133,12 +173,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  /* ── SCROLL REVEAL ────────────────────────────────────── */
+  /* ── SCROLL REVEAL (replays on scroll up AND down) ──────── */
   const revealObserver = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
-        setTimeout(() => entry.target.classList.add('visible'), 100);
-        revealObserver.unobserve(entry.target);
+        entry.target.classList.add('visible');
+      } else {
+        entry.target.classList.remove('visible');
       }
     });
   }, { threshold: 0.15 });
@@ -539,23 +580,5 @@ document.addEventListener('DOMContentLoaded', () => {
   document.head.appendChild(s);
 });
 
-/* ── HEX 3D TILT (desktop only) ──────────────────────── */
-(function() {
-  const hexVisual = document.querySelector('.home-visual');
-  const hexFrame  = document.querySelector('.hex-frame');
-  if (!hexVisual || !hexFrame) return;
-  if (window.innerWidth <= 768) return;
-  hexVisual.addEventListener('mousemove', (e) => {
-    const rect = hexVisual.getBoundingClientRect();
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top + rect.height / 2;
-    const dx = (e.clientX - cx) / (rect.width / 2);
-    const dy = (e.clientY - cy) / (rect.height / 2);
-    hexFrame.style.animation = 'none';
-    hexFrame.style.transform = `rotateX(${-dy * 20}deg) rotateY(${dx * 20}deg) translateY(-8px)`;
-  });
-  hexVisual.addEventListener('mouseleave', () => {
-    hexFrame.style.transform = '';
-    hexFrame.style.animation = 'hexFloat 4s ease-in-out infinite';
-  });
-})();
+
+

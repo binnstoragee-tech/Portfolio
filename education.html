@@ -25,10 +25,11 @@
 
 .timeline-item {
   position: relative; margin-bottom: 3.5rem;
-  opacity: 0; transform: translateX(-20px);
-  transition: all 0.6s ease;
+  opacity: 0; transform: perspective(1000px) translateX(-50px) rotateY(20deg);
+  transform-origin: left center;
+  transition: all 0.7s cubic-bezier(0.16,1,0.3,1);
 }
-.timeline-item.visible { opacity: 1; transform: translateX(0); }
+.timeline-item.visible { opacity: 1; transform: perspective(1000px) translateX(0) rotateY(0deg); }
 
 .timeline-dot {
   position: absolute; left: -2.9rem; top: 0.4rem;
