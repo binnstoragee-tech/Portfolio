@@ -162,7 +162,7 @@
     order: -1;
     margin-bottom: 1.5rem;
   }
-  .hex-shadow { display: none; }
+  .hex-shadow { width: 120%; height: 120%; filter: blur(30px); }
   .home-content { width: 100%; text-align: center; }
   .home-tag { text-align: center; }
   .home-name { font-size: clamp(3rem, 16vw, 5rem); text-align: center; }
@@ -189,7 +189,26 @@
 .hex-frame {
   cursor: none;
 }
-.hex-shadow { display: none; }
+.hex-shadow {
+  display: block;
+  position: absolute;
+  top: 52%; left: 50%;
+  width: 145%; height: 145%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,255,127,0.4), rgba(0,255,127,0.14) 45%, transparent 72%);
+  filter: blur(42px);
+  z-index: -1;
+  pointer-events: none;
+  animation: heroGlowPulse 4s ease-in-out infinite;
+}
+@keyframes heroGlowPulse {
+  0%, 100% { opacity: 0.65; transform: translate(-50%, -50%) scale(1); }
+  50%      { opacity: 1;    transform: translate(-50%, -50%) scale(1.08); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hex-shadow { animation: none; opacity: 0.85; }
+}
 
 </style>
 
@@ -1003,7 +1022,16 @@
 
     <div class="scroll-note">
       <span>C L I C K &nbsp; B E L O W</span>
-      <div class="arrow-down"></div>
+      <div class="scroll-chevrons">
+        <svg class="chevron chevron-1" viewBox="0 0 32 18" xmlns="http://www.w3.org/2000/svg">
+          <path d="M2,2 L16,16 L30,2" fill="none" stroke="var(--spring-green)"
+                stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <svg class="chevron chevron-2" viewBox="0 0 32 18" xmlns="http://www.w3.org/2000/svg">
+          <path d="M2,2 L16,16 L30,2" fill="none" stroke="var(--spring-green)"
+                stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
     </div>
 
     <div class="works-carousel-wrap">

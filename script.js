@@ -270,13 +270,26 @@ document.addEventListener('DOMContentLoaded', () => {
     let visibleItems = allItems.slice();
     let current = 0;
 
-    function layout() {
+    /* Items filtered OUT entirely (not in visibleItems) get display:none —
+       fine, they should pop away instantly on filter change. Items that
+       ARE in visibleItems but currently outside the +/-2 slide window stay
+       in the DOM (display: flex) and just fade to opacity 0 / pointer-
+       events: none instead. That way the CSS transition on transform/
+       opacity/filter always has a real "from" state to animate, instead of
+       snapping instantly the way it did when display was toggled
+       none <-> flex on every layout() call (worse on mobile since the
+       narrower viewport means the newly-entering card sits much closer to
+       the visible center, making the snap far more obvious). */
+    function layout(instant) {
       const total = visibleItems.length;
+
       allItems.forEach(item => {
-        item.classList.remove('cs-active', 'cs-visible');
-        item.style.display = 'none';
-        const vid = item.querySelector('video.work-img');
-        if (vid && !vid.paused) vid.pause();
+        if (visibleItems.indexOf(item) === -1) {
+          item.classList.remove('cs-active', 'cs-visible');
+          item.style.display = 'none';
+          const vid = item.querySelector('video.work-img');
+          if (vid && !vid.paused) vid.pause();
+        }
       });
       if (!total) return;
 
@@ -287,31 +300,50 @@ document.addEventListener('DOMContentLoaded', () => {
         let diff = i - current;
         if (diff > total / 2) diff -= total;
         if (diff < -total / 2) diff += total;
-        if (Math.abs(diff) > 2) return;
+        const farAway = Math.abs(diff) > 2;
 
-        item.style.display = 'flex';
-        item.classList.add('cs-visible');
-        if (diff === 0) {
-          item.classList.add('cs-active');
+        if (instant) item.style.transition = 'none';
+        if (item.style.display !== 'flex') item.style.display = 'flex';
+
+        if (farAway) {
+          item.classList.remove('cs-active');
+          item.classList.remove('cs-visible');
+          item.style.pointerEvents = 'none';
           const vid = item.querySelector('video.work-img');
-          if (vid) {
-            vid.muted = true; // some mobile browsers only honor the JS property, not just the attribute
-            const tryPlay = () => vid.play().catch(() => {});
-            tryPlay();
-            if (vid.readyState < 2) {
-              vid.addEventListener('canplay', tryPlay, { once: true });
+          if (vid && !vid.paused) vid.pause();
+        } else {
+          item.classList.add('cs-visible');
+          item.style.pointerEvents = '';
+          if (diff === 0) {
+            item.classList.add('cs-active');
+            const vid = item.querySelector('video.work-img');
+            if (vid) {
+              vid.muted = true; // some mobile browsers only honor the JS property, not just the attribute
+              const tryPlay = () => vid.play().catch(() => {});
+              tryPlay();
+              if (vid.readyState < 2) {
+                vid.addEventListener('canplay', tryPlay, { once: true });
+              }
             }
+          } else {
+            item.classList.remove('cs-active');
           }
         }
 
+        const clampedDiff = Math.max(-3, Math.min(3, diff)); // keeps far cards just off-screen instead of flying in from far away
         const scale   = diff === 0 ? 1 : (Math.abs(diff) === 1 ? 0.72 : 0.5);
-        const opacity = diff === 0 ? 1 : (Math.abs(diff) === 1 ? 0.55 : 0.22);
+        const opacity = farAway ? 0 : (diff === 0 ? 1 : (Math.abs(diff) === 1 ? 0.55 : 0.22));
         const blur    = diff === 0 ? 0 : Math.min(Math.abs(diff) * 1.5, 3);
 
-        item.style.transform = `translate(-50%, -50%) translateX(${diff * spacing}px) scale(${scale})`;
+        item.style.transform = `translate(-50%, -50%) translateX(${clampedDiff * spacing}px) scale(${scale})`;
         item.style.opacity   = String(opacity);
-        item.style.zIndex    = String(10 - Math.abs(diff));
+        item.style.zIndex    = String(10 - Math.min(Math.abs(diff), 9));
         item.style.filter    = `blur(${blur}px)`;
+
+        if (instant) {
+          void item.offsetWidth; // force reflow so the instant jump commits before transitions are re-enabled
+          requestAnimationFrame(() => { item.style.transition = ''; });
+        }
       });
     }
 
@@ -368,7 +400,7 @@ document.addEventListener('DOMContentLoaded', () => {
       touchStartX = null;
     }, { passive: true });
 
-    window.addEventListener('resize', layout);
+    window.addEventListener('resize', () => layout(true));
 
     /* ── FILTER INTEGRATION ────────────────────────────── */
     document.querySelectorAll('#works .cat-btn').forEach(btn => {
@@ -378,13 +410,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const filter = btn.dataset.filter;
         visibleItems = allItems.filter(item => filter === 'all' || item.dataset.category === filter);
         current = 0;
-        layout();
+        layout(true);
         autoSlideEnabled = (filter === 'all');
         startAutoSlide();
       });
     });
 
-    layout();
+    layout(true);
     startAutoSlide();
 
     /* fallback: some mobile browsers still block autoplay even when muted

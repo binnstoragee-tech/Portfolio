@@ -383,7 +383,7 @@ footer {
   backdrop-filter: blur(20px) saturate(160%);
   -webkit-backdrop-filter: blur(20px) saturate(160%);
   border-top: 1px solid rgba(255,255,255,0.08);
-  padding: 2rem 6rem;
+  padding: 2rem 3rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -435,29 +435,91 @@ footer {
   align-items: center;
   justify-content: center;
   margin-top: 35px;
-  margin-bottom: 50px;
-  animation: fadeMove 2s infinite;
+  margin-bottom: 58px;
+  gap: 14px;
 }
 .scroll-note span {
   color: var(--neon);
   font-size: 11px;
   letter-spacing: 6px;
   text-transform: uppercase;
-  margin-bottom: 14px;
   opacity: 0.9;
   font-weight: 500;
   text-shadow: 0 0 10px rgba(2,245,161,0.5);
+  animation: fadeMove 2s ease-in-out infinite;
 }
-.arrow-down {
-  width: 14px; height: 14px;
-  border-right: 2px solid var(--neon);
-  border-bottom: 2px solid var(--neon);
-  transform: rotate(45deg);
-  filter: drop-shadow(0 0 6px rgba(2,245,161,0.5));
+@keyframes fadeMove { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+/* double-chevron scroll-down indicator — bounces gently in a loop,
+   each chevron staggered slightly for a cascading "keep scrolling" feel. */
+.scroll-chevrons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
 }
-@keyframes fadeMove {
-  0%, 100% { opacity: 0.3; transform: translateY(0); }
-  50%       { opacity: 1;   transform: translateY(10px); }
+.chevron {
+  width: 26px;
+  height: 15px;
+  display: block;
+  filter: drop-shadow(0 0 6px rgba(0,255,127,0.5));
+  animation: chevronBounce 1.6s ease-in-out infinite;
+}
+.chevron-1 { animation-delay: 0s; }
+.chevron-2 { animation-delay: 0.18s; }
+
+@keyframes chevronBounce {
+  0%   { transform: translateY(0);   opacity: 0.35; }
+  30%  { transform: translateY(6px); opacity: 1; }
+  60%  { transform: translateY(11px); opacity: 0.5; }
+  100% { transform: translateY(0);   opacity: 0.35; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chevron { animation: none; opacity: 0.8; }
+}
+/* ── POWER-CHARGE TEXT ───────────────────────────────────────
+   Pairs with the lightning bolt above it. Text "swells" / gets
+   fatter while the bolt charges up, then suddenly "deflates" thin
+   at the exact moment the bolt strikes. Same 4.6s cycle + same
+   keyframe % marks as .bolt-svg / boltCharge so they stay in sync.
+   Apply class="power-text" to the text element sitting near the bolt. ── */
+.power-text {
+  display: inline-block;
+  font-weight: 600;
+  letter-spacing: 3px;
+  -webkit-text-stroke: 0px transparent;
+  text-shadow: 0 0 0px rgba(2,245,161,0);
+  transform: scale(1, 1);
+  animation: textPowerCharge 4.6s cubic-bezier(0.6,0,0.35,1) infinite;
+  will-change: transform, letter-spacing, text-shadow;
+}
+
+@keyframes textPowerCharge {
+  /* resting — same as bolt's dormant state */
+  0%    { transform: scale(1, 1); letter-spacing: 3px; -webkit-text-stroke: 0px var(--neon); text-shadow: 0 0 0px rgba(2,245,161,0); }
+  45%   { transform: scale(1, 1); letter-spacing: 3px; -webkit-text-stroke: 0px var(--neon); text-shadow: 0 0 0px rgba(2,245,161,0); }
+
+  /* charging — text starts "swelling" / getting fatter as power builds */
+  60%   { transform: scale(1.02, 1.03); letter-spacing: 2.6px; -webkit-text-stroke: 0.3px var(--neon); text-shadow: 0 0 4px rgba(2,245,161,0.25); }
+  75%   { transform: scale(1.05, 1.07); letter-spacing: 2.1px; -webkit-text-stroke: 0.7px var(--neon); text-shadow: 0 0 9px rgba(2,245,161,0.5); }
+  85%   { transform: scale(1.08, 1.1);  letter-spacing: 1.6px; -webkit-text-stroke: 1.1px var(--neon); text-shadow: 0 0 16px rgba(2,245,161,0.75); }
+
+  /* peak — fattest point, right as the bolt is about to strike */
+  87%   { transform: scale(1.1, 1.13); letter-spacing: 1.3px; -webkit-text-stroke: 1.3px var(--neon); text-shadow: 0 0 20px rgba(2,245,161,0.9); }
+
+  /* STRIKE — sudden deflate/impis, synced with boltCharge's stretch-down */
+  88.5% { transform: scale(0.9, 0.82); letter-spacing: 5px;   -webkit-text-stroke: 0px transparent; text-shadow: 0 0 28px rgba(255,255,255,0.95); font-weight: 400; }
+  91%   { transform: scale(0.95, 0.9); letter-spacing: 4.2px; -webkit-text-stroke: 0px transparent; text-shadow: 0 0 12px rgba(2,245,161,0.6); }
+
+  /* settle back to resting shape before the next loop */
+  94%   { transform: scale(0.98, 0.96); letter-spacing: 3.6px; -webkit-text-stroke: 0px transparent; text-shadow: 0 0 4px rgba(2,245,161,0.2); }
+  96%   { transform: scale(1, 1); letter-spacing: 3px; -webkit-text-stroke: 0px var(--neon); text-shadow: 0 0 0px rgba(2,245,161,0); }
+  100%  { transform: scale(1, 1); letter-spacing: 3px; -webkit-text-stroke: 0px var(--neon); text-shadow: 0 0 0px rgba(2,245,161,0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .power-text { animation: none; }
 }
 
 /* ── LIGHTBOX ────────────────────────────────────────────── */
@@ -630,7 +692,8 @@ footer {
     transform: translateX(6px);
   }
   .section-inner { padding: 5rem 1.5rem 4rem; }
-  footer { flex-direction: column; gap: 0.5rem; text-align: center; padding: 1.5rem; }
+  footer { flex-direction: row; justify-content: space-between; align-items: center; text-align: left; padding: 1.5rem 1.5rem; }
+  .footer-text { text-align: right; }
 }
 
 /* ============================================================
