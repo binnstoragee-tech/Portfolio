@@ -42,7 +42,8 @@
   updateOrbs();
 })();
 
-/* ── FLOATING CHAT BUBBLE (WhatsApp + Viber) — every page ─── */
+/* ── "LET'S CONNECT" PANEL (WhatsApp + Viber) — opens from the
+      "Get In Touch" button, no more floating bubble ─────────── */
 (function() {
   const PHONE_INTL = '639695159058'; // +63 969 515 9058, digits only for wa.me
   const VIBER_INTL = '9609304700'; // +960 9304700, Maldives number, digits only for Viber
@@ -50,8 +51,13 @@
     <div class="chat-fab-wrap" id="chatFabWrap">
       <div class="chat-fab-panel" id="chatFabPanel">
         <div class="chat-fab-panel-head">
-          <span class="chat-fab-panel-title">Let's Connect</span>
-          <span class="chat-fab-panel-sub">Pick a platform to chat</span>
+          <div class="chat-fab-panel-headtext">
+            <span class="chat-fab-panel-title">Let's Connect</span>
+            <span class="chat-fab-panel-sub">Pick a platform to chat</span>
+          </div>
+          <button class="chat-fab-panel-close" id="chatFabClose" aria-label="Close">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+          </button>
         </div>
         <a class="chat-fab-item chat-fab-whatsapp" href="https://wa.me/${PHONE_INTL}" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
           <span class="chat-fab-item-icon"><img src="IMG/whatsapp.webp" alt=""></span>
@@ -70,35 +76,152 @@
           <svg class="chat-fab-item-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
         </a>
       </div>
-      <button class="chat-fab-btn" id="chatFabBtn" aria-label="Chat with me">
-        <span class="chat-fab-tooltip" aria-hidden="true">
-          <span class="chat-fab-tooltip-text chat-fab-tooltip-whatsapp">Chat on WhatsApp</span>
-          <span class="chat-fab-tooltip-text chat-fab-tooltip-viber">Chat on Viber</span>
-        </span>
-        <span class="chat-fab-icon-wrap">
-          <img class="chat-fab-icon chat-fab-icon-whatsapp" src="IMG/whatsapp.webp" alt="WhatsApp">
-          <img class="chat-fab-icon chat-fab-icon-viber" src="IMG/viber.png" alt="Viber">
-        </span>
-        <svg class="chat-fab-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
-      </button>
     </div>`;
   document.body.insertAdjacentHTML('beforeend', chatHTML);
 
-  const wrap = document.getElementById('chatFabWrap');
-  const btn  = document.getElementById('chatFabBtn');
-  if (wrap && btn) {
-    btn.addEventListener('click', e => {
-      e.stopPropagation();
-      wrap.classList.toggle('open');
-    });
-    document.addEventListener('click', e => {
-      if (!wrap.contains(e.target)) wrap.classList.remove('open');
-    });
+  const wrap     = document.getElementById('chatFabWrap');
+  const panel    = document.getElementById('chatFabPanel');
+  const closeBtn = document.getElementById('chatFabClose');
+  const triggers = document.querySelectorAll('.nav-cta');
+
+  function positionPanel(trigger) {
+    // Anchor to the navbar's right edge (not the raw trigger position) so the
+    // panel always drops cleanly from the "Get In Touch" corner, even when the
+    // trigger came from inside the mobile slide-out menu that's about to close.
+    const nav = document.querySelector('nav') || trigger;
+    const navRect = nav.getBoundingClientRect();
+    const navPadRight = parseFloat(getComputedStyle(nav).paddingRight) || 20;
+    const gap = 14;
+    let right = window.innerWidth - navRect.right + navPadRight;
+    right = Math.max(right, 12);
+    panel.style.top = (navRect.bottom + gap) + 'px';
+    panel.style.right = right + 'px';
+    panel.style.left = 'auto';
   }
+
+  if (wrap && panel && triggers.length) {
+    triggers.forEach(t => {
+      t.addEventListener('click', e => {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        const willOpen = !wrap.classList.contains('open');
+        if (willOpen) positionPanel(t);
+        wrap.classList.toggle('open');
+
+        const mobileNav = document.getElementById('navLinks');
+        const ham = document.getElementById('hamburger');
+        if (mobileNav && mobileNav.classList.contains('open')) {
+          mobileNav.classList.remove('open');
+          if (ham) ham.classList.remove('open');
+        }
+      });
+    });
+
+    if (closeBtn) {
+      closeBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        wrap.classList.remove('open');
+      });
+    }
+
+    document.addEventListener('click', e => {
+      if (!wrap.contains(e.target) && !e.target.closest('.nav-cta')) {
+        wrap.classList.remove('open');
+      }
+    });
+
+    window.addEventListener('resize', () => wrap.classList.remove('open'));
+    window.addEventListener('scroll', () => wrap.classList.remove('open'), { passive: true });
+  }
+})();
+
+/* ── PAGE TRANSITION (wipe curtain between separate pages) ──────
+   Every subpage (skills/works/education/experience/contact) ships a
+   <div class="page-transition wipe-in" id="pageTransition">. It starts
+   covering the screen, we wipe it away to reveal the page, then wipe
+   it back in and *then* navigate whenever a data-nav link points to
+   another real page (not a "#section" anchor on the same page). ── */
+(function() {
+  const overlay = document.getElementById('pageTransition');
+  if (!overlay) return; // index.html is single-page and doesn't use this
+
+  const WIPE_MS = 500; // keep in sync with the CSS .page-transition clip-path duration
+
+  // reveal the page we just landed on
+  requestAnimationFrame(() => {
+    overlay.classList.remove('wipe-in');
+    overlay.classList.add('wipe-out');
+  });
+
+  let navigating = false;
+  document.querySelectorAll('a[data-nav]').forEach(link => {
+    link.addEventListener('click', e => {
+      const href = link.getAttribute('href');
+      if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:')) return;
+      if (link.target === '_blank' || e.metaKey || e.ctrlKey || e.shiftKey) return;
+      e.preventDefault();
+      if (navigating) return;
+      navigating = true;
+      overlay.classList.remove('wipe-out');
+      overlay.classList.add('wipe-in');
+      setTimeout(() => { window.location.href = href; }, WIPE_MS);
+    });
+  });
+
+  // restore a clean "revealed" state if the page is served from bfcache
+  // (e.g. tapping the browser's back button on mobile)
+  window.addEventListener('pageshow', e => {
+    if (e.persisted) {
+      overlay.classList.remove('wipe-in');
+      overlay.classList.add('wipe-out');
+      navigating = false;
+    }
+  });
 })();
 
 /* ── PAGE ENTER ANIMATION ────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
+
+  /* ── HERO ROLE TYPEWRITER (loops between roles) ─────────── */
+  (function typewriterLoop() {
+    const el = document.getElementById('typewriterText');
+    if (!el) return;
+
+    const words = ['Graphic Designer', 'Social Media Manager'];
+    let wordIndex = 0, charIndex = 0, deleting = false;
+
+    const TYPE_SPEED = 85;
+    const DELETE_SPEED = 45;
+    const HOLD_TIME = 1600;
+    const jitter = (base) => base + Math.random() * 30 - 15; // slight natural variance
+
+    function tick() {
+      const current = words[wordIndex];
+
+      if (!deleting) {
+        charIndex++;
+        el.textContent = current.slice(0, charIndex);
+        if (charIndex === current.length) {
+          deleting = true;
+          setTimeout(tick, HOLD_TIME);
+          return;
+        }
+        setTimeout(tick, jitter(TYPE_SPEED));
+      } else {
+        charIndex--;
+        el.textContent = current.slice(0, charIndex);
+        if (charIndex === 0) {
+          deleting = false;
+          wordIndex = (wordIndex + 1) % words.length;
+          setTimeout(tick, 400);
+          return;
+        }
+        setTimeout(tick, jitter(DELETE_SPEED));
+      }
+    }
+
+    tick();
+  })();
 
   /* ── SMOOTH IN-PAGE NAV + AUTO-CLOSE MOBILE MENU ──────── */
   document.querySelectorAll('a[data-nav]').forEach(link => {
@@ -121,7 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* ── ACTIVE NAV LINK (SCROLL-SPY) ──────────────────────── */
-  const navAnchors = Array.from(document.querySelectorAll('.nav-links a[href^="#"]'));
+  const navAnchors = Array.from(document.querySelectorAll('.nav-links a[href^="#"], .mobile-bottom-nav a[href^="#"]'));
   const sections = navAnchors
     .map(a => document.querySelector(a.getAttribute('href')))
     .filter(Boolean);
@@ -163,17 +286,20 @@ document.addEventListener('DOMContentLoaded', () => {
       el.addEventListener('mouseenter', () => {
         cursor.style.transform = 'translate(-50%,-50%) scale(2)';
         ring.style.width = '50px'; ring.style.height = '50px';
-        ring.style.borderColor = 'rgba(2,245,161,0.8)';
+        ring.style.borderColor = 'rgba(255,255,255,0.8)';
       });
       el.addEventListener('mouseleave', () => {
         cursor.style.transform = 'translate(-50%,-50%) scale(1)';
         ring.style.width = '36px'; ring.style.height = '36px';
-        ring.style.borderColor = 'rgba(2,245,161,0.6)';
+        ring.style.borderColor = 'rgba(255,255,255,0.6)';
       });
     });
   }
 
-  /* ── SCROLL REVEAL (replays on scroll up AND down) ──────── */
+  /* ── SCROLL REVEAL (replays on scroll up AND down) ────────
+     threshold 0 = fires the instant any part of the element
+     enters the viewport, so it's purely scroll-driven — no tap
+     or extra interaction needed to "unstick" a card. ──────── */
   const revealObserver = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
@@ -182,36 +308,167 @@ document.addEventListener('DOMContentLoaded', () => {
         entry.target.classList.remove('visible');
       }
     });
-  }, { threshold: 0.15 });
+  }, { threshold: 0 });
 
   document.querySelectorAll('.reveal, .timeline-item, .exp-card, .work-card').forEach(el => {
     revealObserver.observe(el);
   });
 
-  /* ── SKILL BARS ───────────────────────────────────────── */
-  const barObserver = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.querySelectorAll('.skill-bar').forEach(bar => {
-          bar.style.width = bar.dataset.pct + '%';
-        });
-        barObserver.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.3 });
-  document.querySelectorAll('#skillsGrid').forEach(g => barObserver.observe(g));
+  /* ── TOOLS IMAGE: stay hidden on initial landing, only reveal once
+     the user actually scrolls it well into view ─────────────────── */
+  const toolsRevealEl = document.querySelector('.tools-wrap');
+  if (toolsRevealEl) {
+    // Shorter, less aggressive margin on mobile so the reveal reliably
+    // fires on smaller viewports (the old -30% could get skipped on
+    // short phone screens where the section barely clears that mark).
+    const toolsRootMargin = window.matchMedia('(max-width: 768px)').matches
+      ? '0px 0px -10% 0px'
+      : '0px 0px -30% 0px';
+    const toolsObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        } else {
+          entry.target.classList.remove('visible');
+        }
+      });
+    }, { threshold: 0, rootMargin: toolsRootMargin });
+    toolsObserver.observe(toolsRevealEl);
+  }
 
-  /* ── SKILL FILTER ─────────────────────────────────────── */
-  document.querySelectorAll('#skills .cat-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('#skills .cat-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const filter = btn.dataset.filter;
-      document.querySelectorAll('.skill-card').forEach(card => {
-        card.style.display = (filter === 'all' || card.dataset.category === filter) ? 'block' : 'none';
+  /* ── SKILLS MARQUEE (auto-scrolls sideways, tap/click a card to pause) ── */
+  (function() {
+    const marquee    = document.getElementById('skillsMarquee');
+    const track      = document.getElementById('skillsGrid');
+    const folderGate = document.getElementById('folderGate');
+    const skillsHint = document.getElementById('skillsHint');
+    if (!marquee || !track) return;
+
+    // the original, single-copy cards — our source of truth for filtering
+    const masterCards = Array.from(track.children);
+    let folderOpened = false;
+
+    function staggerCards() {
+      // give each visible card its own little burst delay/rotation so they
+      // don't all pop out of the folder at once — reads like a real burst
+      const cards = track.querySelectorAll('.skill-card');
+      cards.forEach((card, i) => {
+        const delay = (i % 12) * 45; // ms, capped so the tail doesn't drag
+        card.style.animationDelay = delay + 'ms';
+      });
+    }
+
+    function buildTrack(filter) {
+      const filtered = masterCards.filter(c => filter === 'all' || c.dataset.category === filter);
+      track.innerHTML = '';
+      // two back-to-back copies so the loop is seamless (-50% = exactly one set)
+      for (let i = 0; i < 2; i++) {
+        filtered.forEach(card => {
+          const clone = card.cloneNode(true);
+          clone.classList.add('visible');
+          if (i === 1) clone.setAttribute('aria-hidden', 'true');
+          track.appendChild(clone);
+        });
+      }
+      // fill bar widths right away (section's already on screen when filtering)
+      track.querySelectorAll('.skill-bar').forEach(bar => {
+        bar.style.width = bar.dataset.pct + '%';
+      });
+      // re-wire the custom-cursor hover effect onto the freshly cloned cards
+      const cursor = document.getElementById('cursor');
+      const ring   = document.getElementById('cursorRing');
+      if (cursor && ring) {
+        track.querySelectorAll('.skill-card').forEach(el => {
+          el.addEventListener('mouseenter', () => {
+            cursor.style.transform = 'translate(-50%,-50%) scale(2)';
+            ring.style.width = '50px'; ring.style.height = '50px';
+            ring.style.borderColor = 'rgba(255,255,255,0.8)';
+          });
+          el.addEventListener('mouseleave', () => {
+            cursor.style.transform = 'translate(-50%,-50%) scale(1)';
+            ring.style.width = '36px'; ring.style.height = '36px';
+            ring.style.borderColor = 'rgba(255,255,255,0.6)';
+          });
+        });
+      }
+      // restart the scroll animation cleanly from the start
+      track.style.animation = 'none';
+      void track.offsetWidth;
+      track.style.animation = '';
+
+      // if the folder's already been opened, any re-filtered cards should
+      // just appear normally (no re-burst, no re-hide)
+      if (folderOpened) {
+        marquee.classList.remove('folder-closed', 'folder-opening');
+      } else {
+        staggerCards();
+      }
+    }
+
+    buildTrack('all');
+
+    // ── FOLDER OPEN: tap the folder and every skill bursts out ──────
+    function openFolder() {
+      if (folderOpened) return;
+      folderOpened = true;
+
+      if (folderGate) folderGate.classList.add('opened');
+      marquee.classList.add('folder-opening');
+      marquee.classList.remove('folder-closed');
+
+      // let the burst play, then start the auto-scroll and swap the hint
+      setTimeout(() => {
+        marquee.classList.remove('paused');
+        marquee.classList.remove('folder-opening');
+        if (skillsHint) skillsHint.textContent = 'Tap a card to pause the scroll';
+      }, 950);
+
+      if (folderGate) {
+        setTimeout(() => folderGate.remove(), 600);
+      }
+    }
+
+    if (folderGate) {
+      folderGate.addEventListener('click', openFolder);
+      folderGate.setAttribute('role', 'button');
+      folderGate.setAttribute('tabindex', '0');
+      folderGate.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openFolder(); }
+      });
+    }
+
+    // animate the bars in once the section first scrolls into view
+    const barObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.querySelectorAll('.skill-bar').forEach(bar => {
+            bar.style.width = bar.dataset.pct + '%';
+          });
+          barObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.3 });
+    barObserver.observe(marquee);
+
+    document.querySelectorAll('#skills .cat-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#skills .cat-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        // filtering before the folder's opened should open it first,
+        // then apply the filter — never leave cards invisible
+        if (!folderOpened) openFolder();
+        buildTrack(btn.dataset.filter);
+        marquee.classList.remove('paused');
       });
     });
-  });
+
+    // click/tap any card = pause; click again = resume (only once opened)
+    track.addEventListener('click', e => {
+      if (folderOpened && e.target.closest('.skill-card')) {
+        marquee.classList.toggle('paused');
+      }
+    });
+  })();
 
   /* ── COUNTER ANIMATION ────────────────────────────────── */
   function animateCounter(el, target, duration = 2000) {
@@ -257,177 +514,153 @@ document.addEventListener('DOMContentLoaded', () => {
   let pauseWorksAutoSlide  = () => {};
   let resumeWorksAutoSlide = () => {};
 
-  /* ── WORKS CAROUSEL ───────────────────────────────────── */
+  /* ── WORKS GRID (index.html "Sample Works" preview) ────────
+     Continuous masonry-style feed, filterable by category —
+     no carousel, just scroll. Reels only autoplay while actually
+     scrolled into view, to keep things light. ────────────────── */
   (function() {
-    const worksGrid = document.getElementById('worksGrid');
-    if (!worksGrid) return;
+    const grid = document.getElementById('worksGrid');
+    if (!grid) return;
 
-    const allItems = Array.from(worksGrid.querySelectorAll('.work-item'));
-    const prevBtn  = document.getElementById('carouselPrev');
-    const nextBtn  = document.getElementById('carouselNext');
-    if (!allItems.length || !prevBtn || !nextBtn) return;
+    const allItems   = Array.from(grid.querySelectorAll('.work-item'));
+    const filterBtns = document.querySelectorAll('.works-filters .cat-btn');
 
-    let visibleItems = allItems.slice();
-    let current = 0;
-
-    /* Items filtered OUT entirely (not in visibleItems) get display:none —
-       fine, they should pop away instantly on filter change. Items that
-       ARE in visibleItems but currently outside the +/-2 slide window stay
-       in the DOM (display: flex) and just fade to opacity 0 / pointer-
-       events: none instead. That way the CSS transition on transform/
-       opacity/filter always has a real "from" state to animate, instead of
-       snapping instantly the way it did when display was toggled
-       none <-> flex on every layout() call (worse on mobile since the
-       narrower viewport means the newly-entering card sits much closer to
-       the visible center, making the snap far more obvious). */
-    function layout(instant) {
-      const total = visibleItems.length;
-
-      allItems.forEach(item => {
-        if (visibleItems.indexOf(item) === -1) {
-          item.classList.remove('cs-active', 'cs-visible');
-          item.style.display = 'none';
-          const vid = item.querySelector('video.work-img');
-          if (vid && !vid.paused) vid.pause();
-        }
-      });
-      if (!total) return;
-
-      const mobile  = window.innerWidth <= 768;
-      const spacing = mobile ? 130 : 340;
-
-      visibleItems.forEach((item, i) => {
-        let diff = i - current;
-        if (diff > total / 2) diff -= total;
-        if (diff < -total / 2) diff += total;
-        const farAway = Math.abs(diff) > 2;
-
-        if (instant) item.style.transition = 'none';
-        if (item.style.display !== 'flex') item.style.display = 'flex';
-
-        if (farAway) {
-          item.classList.remove('cs-active');
-          item.classList.remove('cs-visible');
-          item.style.pointerEvents = 'none';
-          const vid = item.querySelector('video.work-img');
-          if (vid && !vid.paused) vid.pause();
-        } else {
-          item.classList.add('cs-visible');
-          item.style.pointerEvents = '';
-          if (diff === 0) {
-            item.classList.add('cs-active');
-            const vid = item.querySelector('video.work-img');
-            if (vid) {
-              vid.muted = true; // some mobile browsers only honor the JS property, not just the attribute
-              const tryPlay = () => vid.play().catch(() => {});
-              tryPlay();
-              if (vid.readyState < 2) {
-                vid.addEventListener('canplay', tryPlay, { once: true });
-              }
-            }
-          } else {
-            item.classList.remove('cs-active');
-          }
-        }
-
-        const clampedDiff = Math.max(-3, Math.min(3, diff)); // keeps far cards just off-screen instead of flying in from far away
-        const scale   = diff === 0 ? 1 : (Math.abs(diff) === 1 ? 0.72 : 0.5);
-        const opacity = farAway ? 0 : (diff === 0 ? 1 : (Math.abs(diff) === 1 ? 0.55 : 0.22));
-        const blur    = diff === 0 ? 0 : Math.min(Math.abs(diff) * 1.5, 3);
-
-        item.style.transform = `translate(-50%, -50%) translateX(${clampedDiff * spacing}px) scale(${scale})`;
-        item.style.opacity   = String(opacity);
-        item.style.zIndex    = String(10 - Math.min(Math.abs(diff), 9));
-        item.style.filter    = `blur(${blur}px)`;
-
-        if (instant) {
-          void item.offsetWidth; // force reflow so the instant jump commits before transitions are re-enabled
-          requestAnimationFrame(() => { item.style.transition = ''; });
-        }
-      });
-    }
-
-    function goTo(index) {
-      const total = visibleItems.length;
-      if (!total) return;
-      current = ((index % total) + total) % total;
-      layout();
-    }
-    const next = () => goTo(current + 1);
-    const prev = () => goTo(current - 1);
-
-    /* ── AUTO SLIDESHOW (every 2s, only while "All" filter is active) ── */
-    let autoSlideTimer = null;
-    let autoSlideEnabled = true; // tracks whether current filter is "all"
-    function startAutoSlide() {
-      stopAutoSlide();
-      if (!autoSlideEnabled) return;
-      autoSlideTimer = setInterval(next, 2000);
-    }
-    function stopAutoSlide() {
-      if (autoSlideTimer) { clearInterval(autoSlideTimer); autoSlideTimer = null; }
-    }
-    function restartAutoSlide() { startAutoSlide(); } // resets the 2s timer after manual navigation
-
-    pauseWorksAutoSlide  = stopAutoSlide;
-    resumeWorksAutoSlide = restartAutoSlide;
-
-    prevBtn.addEventListener('click', () => { prev(); restartAutoSlide(); });
-    nextBtn.addEventListener('click', () => { next(); restartAutoSlide(); });
-
-    /* clicking a peeking (non-active) slide brings it to center
-       instead of opening the lightbox */
-    allItems.forEach(item => {
-      item.addEventListener('click', e => {
-        if (!item.classList.contains('cs-active')) {
-          e.stopPropagation();
-          e.preventDefault();
-          const idx = visibleItems.indexOf(item);
-          if (idx !== -1) goTo(idx);
-          restartAutoSlide();
-        }
-      }, true);
-    });
-
-    /* swipe support on mobile */
-    let touchStartX = null;
-    worksGrid.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
-    worksGrid.addEventListener('touchend', e => {
-      if (touchStartX === null) return;
-      const dx = e.changedTouches[0].clientX - touchStartX;
-      if (dx > 40) { prev(); restartAutoSlide(); }
-      else if (dx < -40) { next(); restartAutoSlide(); }
-      touchStartX = null;
-    }, { passive: true });
-
-    window.addEventListener('resize', () => layout(true));
-
-    /* ── FILTER INTEGRATION ────────────────────────────── */
-    document.querySelectorAll('#works .cat-btn').forEach(btn => {
+    filterBtns.forEach(btn => {
       btn.addEventListener('click', () => {
-        document.querySelectorAll('#works .cat-btn').forEach(b => b.classList.remove('active'));
+        filterBtns.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         const filter = btn.dataset.filter;
-        visibleItems = allItems.filter(item => filter === 'all' || item.dataset.category === filter);
-        current = 0;
-        layout(true);
-        autoSlideEnabled = (filter === 'all');
-        startAutoSlide();
+        allItems.forEach(item => {
+          item.style.display = (filter === 'all' || item.dataset.category === filter) ? '' : 'none';
+        });
       });
     });
 
-    layout(true);
-    startAutoSlide();
+    /* Reel cards no longer autoplay on scroll — they sit on their poster
+       frame and only play (with sound) when tapped, inside the lightbox. */
+  })();
 
-    /* fallback: some mobile browsers still block autoplay even when muted
-       until the very first tap anywhere on the page — nudge the active
-       reel to play once that happens. */
-    const nudgeActiveReel = () => {
-      const activeVid = worksGrid.querySelector('.work-item.cs-active video.work-img');
-      if (activeVid && activeVid.paused) activeVid.play().catch(() => {});
-    };
-    document.addEventListener('touchstart', nudgeActiveReel, { once: true, passive: true });
-    document.addEventListener('click', nudgeActiveReel, { once: true });
+  /* ── WORKS — PER-CATEGORY ROWS ────────────────────────────
+     Each category is its own horizontal scroller with Back/Next
+     buttons. On mobile the Reels row snaps one clip at a time —
+     same feel as the Websites carousel — with a dot rail and an
+     active-card pop animation; desktop keeps the classic multi-
+     card peek scroller untouched. ─────────────────────────────── */
+  (function() {
+    const rows = document.querySelectorAll('.works-row-wrap');
+    if (!rows.length) return;
+
+    rows.forEach(wrap => {
+      const row  = wrap.querySelector('.works-row');
+      const prev = wrap.querySelector('.row-prev');
+      const next = wrap.querySelector('.row-next');
+      const dotsWrap = wrap.parentElement ? wrap.parentElement.querySelector('.works-row-dots') : null;
+      if (!row || !prev || !next) return;
+
+      const cards = Array.from(row.children);
+
+      if (dotsWrap && !dotsWrap.children.length) {
+        cards.forEach((_, i) => {
+          const dot = document.createElement('button');
+          dot.className = 'works-row-dot';
+          dot.setAttribute('aria-label', `Go to clip ${i + 1}`);
+          dot.addEventListener('click', () => {
+            cards[i].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+          });
+          dotsWrap.appendChild(dot);
+        });
+      }
+      const dots = dotsWrap ? Array.from(dotsWrap.children) : [];
+
+      let activeIndex = 0;
+      const setActive = (index) => {
+        activeIndex = index;
+        cards.forEach((c, i) => c.classList.toggle('is-active', i === index));
+        dots.forEach((d, i) => d.classList.toggle('active', i === index));
+        prev.classList.toggle('disabled', index === 0);
+        next.classList.toggle('disabled', index === cards.length - 1);
+      };
+      setActive(0);
+
+      if (cards.length) {
+        const obs = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting && entry.intersectionRatio > 0.6) {
+              setActive(cards.indexOf(entry.target));
+            }
+          });
+        }, { root: row, threshold: [0.6] });
+        cards.forEach(c => obs.observe(c));
+      }
+
+      const scrollAmount = () => row.clientWidth * 0.85;
+      prev.addEventListener('click', () => {
+        if (cards.length) cards[Math.max(0, activeIndex - 1)].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        else row.scrollBy({ left: -scrollAmount(), behavior: 'smooth' });
+      });
+      next.addEventListener('click', () => {
+        if (cards.length) cards[Math.min(cards.length - 1, activeIndex + 1)].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        else row.scrollBy({ left: scrollAmount(), behavior: 'smooth' });
+      });
+    });
+
+    /* Reel cards no longer autoplay on scroll — they sit on their poster
+       frame and only play (with sound) when tapped, inside the lightbox. */
+  })();
+
+  /* ── WEBSITES CAROUSEL — one site card at a time. Swipe/scroll or
+     tap the arrow buttons; the active card scales up and the dot
+     rail underneath tracks position, with a snap animation. ────── */
+  (function() {
+    document.querySelectorAll('.sites-carousel-block').forEach(block => {
+      const carousel = block.querySelector('.sites-carousel');
+      const prevBtn  = block.querySelector('.sites-prev');
+      const nextBtn  = block.querySelector('.sites-next');
+      const dotsWrap = block.querySelector('.sites-dots');
+      if (!carousel) return;
+
+      const cards = Array.from(carousel.children);
+      if (!cards.length) return;
+
+      if (dotsWrap) {
+        cards.forEach((_, i) => {
+          const dot = document.createElement('button');
+          dot.className = 'sites-dot';
+          dot.setAttribute('aria-label', `Go to website ${i + 1}`);
+          dot.addEventListener('click', () => {
+            cards[i].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+          });
+          dotsWrap.appendChild(dot);
+        });
+      }
+      const dots = dotsWrap ? Array.from(dotsWrap.children) : [];
+
+      let activeIndex = 0;
+      const setActive = (index) => {
+        activeIndex = index;
+        cards.forEach((c, i) => c.classList.toggle('is-active', i === index));
+        dots.forEach((d, i) => d.classList.toggle('active', i === index));
+        if (prevBtn) prevBtn.classList.toggle('disabled', index === 0);
+        if (nextBtn) nextBtn.classList.toggle('disabled', index === cards.length - 1);
+      };
+      setActive(0);
+
+      const obs = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting && entry.intersectionRatio > 0.6) {
+            setActive(cards.indexOf(entry.target));
+          }
+        });
+      }, { root: carousel, threshold: [0.6] });
+      cards.forEach(c => obs.observe(c));
+
+      if (prevBtn) prevBtn.addEventListener('click', () => {
+        cards[Math.max(0, activeIndex - 1)].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      });
+      if (nextBtn) nextBtn.addEventListener('click', () => {
+        cards[Math.min(cards.length - 1, activeIndex + 1)].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      });
+    });
   })();
 
   /* ── LIGHTBOX ─────────────────────────────────────────── */
@@ -473,7 +706,7 @@ document.addEventListener('DOMContentLoaded', () => {
       resetZoom();
       lightboxImg.src = img.src;
       lightboxImg.alt = img.alt || '';
-      lightboxCap.textContent = img.dataset.title || img.alt || '';
+      lightboxCap.textContent = '';
     };
 
     const openLightbox = (index) => {
@@ -500,7 +733,9 @@ document.addEventListener('DOMContentLoaded', () => {
       openedCardVideo = vid;
       lightbox.classList.add('video-mode', 'open');
       document.body.style.overflow = 'hidden';
-      lightboxCap.textContent = vid.closest('.work-item')?.querySelector('.work-label-top')?.textContent || '';
+      lightboxCap.textContent = vid.closest('.works-cat-block')?.querySelector('.works-cat-heading')?.textContent
+        || vid.closest('.work-item')?.querySelector('.work-label-top')?.textContent
+        || '';
       lightboxVideo.src = vid.currentSrc || vid.src;
       lightboxVideo.muted = false;
       lightboxVideo.currentTime = 0;
@@ -508,13 +743,11 @@ document.addEventListener('DOMContentLoaded', () => {
       pauseWorksAutoSlide();
     };
 
-    document.querySelectorAll('.work-item--story .work-card').forEach(card => {
+    document.querySelectorAll('.work-card').forEach(card => {
+      const vid = card.querySelector('video.work-img');
+      if (!vid) return;
       card.addEventListener('click', e => {
         if (e.target.closest('.video-mute-btn')) return;
-        const item = card.closest('.work-item');
-        if (!item || !item.classList.contains('cs-active')) return; // only the centered slide opens
-        const vid = card.querySelector('video.work-img');
-        if (!vid) return;
         openVideoLightbox(vid); // floating modal viewer, not native edge-to-edge fullscreen
       });
     });
@@ -527,7 +760,7 @@ document.addEventListener('DOMContentLoaded', () => {
       lightboxVideo.load();
       if (openedCardVideo) {
         openedCardVideo.muted = true;
-        openedCardVideo.play().catch(() => {});
+        openedCardVideo.currentTime = 0;
         openedCardVideo = null;
       }
       setTimeout(() => { lightboxImg.src = ''; }, 300);
@@ -590,8 +823,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  /* Note: video autoplay for the works carousel is now handled inside the
-     WORKS CAROUSEL block above (plays only the active/center slide). */
+  /* Note: video autoplay for the index.html works grid is handled inside
+     the WORKS GRID block above (plays only reels scrolled into view). */
 
   /* ── VIDEO SOUND TOGGLE ────────────────────────────────── */
   document.querySelectorAll('.video-mute-btn').forEach(btn => {
@@ -604,6 +837,77 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.classList.toggle('is-unmuted', !vid.muted);
       btn.setAttribute('aria-label', vid.muted ? 'Unmute video' : 'Mute video');
     });
+  });
+
+  /* ── ROLE TYPEWRITER LOOP ─────────────────────────────────
+     Any element with class="role-typewriter" and a
+     data-roles="Role One, Role Two, ..." attribute will type each
+     role in, hold, delete, then move to the next — looping forever.
+     The box locks itself to the width of the longest role so the
+     rest of the sentence never reflows/shifts while it types. ── */
+  document.querySelectorAll('.role-typewriter').forEach(el => {
+    const roles = (el.dataset.roles || '')
+      .split(',')
+      .map(s => s.trim())
+      .filter(Boolean);
+    if (!roles.length) return;
+
+    const textSpan = document.createElement('span');
+    textSpan.className = 'role-typewriter-text';
+    const cursorSpan = document.createElement('span');
+    cursorSpan.className = 'cursor';
+    el.textContent = '';
+    el.appendChild(textSpan);
+    el.appendChild(cursorSpan);
+
+    /* Lock the box to the widest role's rendered width so only the
+       typed text inside it changes — nothing around it moves. */
+    const computed = window.getComputedStyle(el);
+    const measurer = document.createElement('span');
+    measurer.style.position = 'absolute';
+    measurer.style.visibility = 'hidden';
+    measurer.style.whiteSpace = 'nowrap';
+    measurer.style.font = computed.font;
+    measurer.style.letterSpacing = computed.letterSpacing;
+    document.body.appendChild(measurer);
+    let maxWidth = 0;
+    roles.forEach(r => {
+      measurer.textContent = r;
+      maxWidth = Math.max(maxWidth, measurer.getBoundingClientRect().width);
+    });
+    measurer.remove();
+    el.style.display = 'inline-block';
+    el.style.minWidth = Math.ceil(maxWidth) + 4 + 'px';
+    el.style.whiteSpace = 'nowrap';
+    el.style.verticalAlign = 'bottom';
+
+    const TYPE_SPEED = 70, DELETE_SPEED = 40, HOLD_TIME = 1700, GAP_TIME = 400;
+    let roleIndex = 0, charIndex = 0, typing = true;
+
+    function tick() {
+      const current = roles[roleIndex];
+      if (typing) {
+        charIndex++;
+        textSpan.textContent = current.slice(0, charIndex);
+        if (charIndex === current.length) {
+          typing = false;
+          setTimeout(tick, HOLD_TIME);
+          return;
+        }
+        setTimeout(tick, TYPE_SPEED);
+      } else {
+        charIndex--;
+        textSpan.textContent = current.slice(0, charIndex);
+        if (charIndex === 0) {
+          typing = true;
+          roleIndex = (roleIndex + 1) % roles.length;
+          setTimeout(tick, GAP_TIME);
+          return;
+        }
+        setTimeout(tick, DELETE_SPEED);
+      }
+    }
+    tick();
   });
 
   /* ── ROTATE ANIM FOR SVG ──────────────────────────────── */

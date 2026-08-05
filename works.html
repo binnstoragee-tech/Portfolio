@@ -2,50 +2,131 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#030002">
 <title>Robin — Works</title>
 <link rel="icon" type="image/x-icon" href="IMG/favicon2.png">
 <link rel="shortcut icon" href="IMG/favicon.png?v=2">
 <link rel="stylesheet" href="style.css">
 <style>
 #works {
-  background: radial-gradient(ellipse 800px 600px at 15% 40%, rgba(0,214,143,0.02), transparent 55%);
+  background: radial-gradient(ellipse 800px 600px at 15% 40%, rgba(220,220,220,0.02), transparent 55%);
 }
 
-.works-carousel-wrap { position: relative; padding: 0.5rem 0 3rem; }
+/* ── PER-CATEGORY GRID — clean 2-column grid of landscape cards,
+   same crop/size as the source artwork. No scrolling, no arrows. ── */
+.works-cat-block { margin-bottom: 3.6rem; }
+.works-cat-block:last-child { margin-bottom: 0; }
+
+.works-cat-heading {
+  display: flex; align-items: center; gap: 1rem;
+  font-family: 'Bebas Neue', cursive; font-size: 1.5rem;
+  letter-spacing: 3px; text-transform: uppercase;
+  color: var(--text); margin-bottom: 1.3rem;
+}
+.works-cat-heading::after {
+  content: ''; flex: 1; height: 1px;
+  background: linear-gradient(to right, rgba(255,255,255,0.18), transparent);
+}
+
+.works-cat-more { display: flex; justify-content: center; margin-top: 1.6rem; }
+.works-cat-more-link {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.65rem 1.6rem;
+  border: 1px solid rgba(255,255,255,0.25); color: var(--neon);
+  font-family: 'Share Tech Mono', monospace; font-size: 0.7rem;
+  letter-spacing: 2px; text-transform: uppercase; text-decoration: none;
+  background: rgba(255,255,255,0.04);
+  transition: all 0.3s;
+}
+.works-cat-more-link:hover { background: var(--neon); color: var(--dark); box-shadow: 0 0 18px rgba(255,255,255,0.35); }
+.works-cat-more-link .arrow { display: inline-block; transition: transform 0.3s; }
+.works-cat-more-link:hover .arrow { transform: translate(2px,-2px); }
 
 .works-grid {
-  position: relative;
-  height: 420px;
-  overflow: hidden;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+.works-card-item .work-img { aspect-ratio: 16/9; }
+.works-card-item--story { max-width: 260px; margin: 0 auto; }
+.works-card-item--story .work-img { aspect-ratio: 9/16; }
+.works-card-item[data-category="websites"] .work-card { aspect-ratio: auto; }
+
+@media (max-width: 900px) {
+  .works-grid { grid-template-columns: repeat(2, 1fr); gap: 1.1rem; }
+}
+@media (max-width: 640px) {
+  .works-grid { grid-template-columns: repeat(2, 1fr); gap: 0.7rem; }
+}
+@media (max-width: 420px) {
+  .works-grid { gap: 0.55rem; }
 }
 
-.carousel-arrow {
-  position: absolute; top: 44%; transform: translateY(-50%);
-  z-index: 30;
-  width: 3.2rem; height: 3.2rem; border-radius: 50%;
+/* ── REELS — kept as a horizontal scroller since the clips are
+   vertical 9:16, not landscape. ─────────────────────────────── */
+.works-row-wrap { position: relative; }
+
+.works-row {
+  display: flex;
+  gap: 1.1rem;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scroll-snap-type: x proximity;
+  padding: 0.3rem 3.2rem 0.6rem;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.works-row::-webkit-scrollbar { display: none; }
+
+.works-row .works-card-item {
+  flex: 0 0 auto;
+  width: 190px;
+  scroll-snap-align: start;
+  max-width: none; margin: 0;
+}
+
+.row-arrow {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  z-index: 5;
+  width: 2.8rem; height: 2.8rem; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  background: rgba(13,36,43,0.4);
+  background: rgba(15,15,15,0.5);
   backdrop-filter: blur(12px) saturate(160%);
   -webkit-backdrop-filter: blur(12px) saturate(160%);
-  border: 1px solid rgba(2,245,161,0.25);
+  border: 1px solid rgba(255,255,255,0.25);
   color: var(--muted);
   cursor: pointer;
   transition: all 0.25s;
 }
-.carousel-arrow svg { width: 22px; height: 22px; }
-.carousel-arrow:hover {
-  color: var(--neon); border-color: rgba(2,245,161,0.6);
-  box-shadow: 0 0 18px rgba(2,245,161,0.3);
+.row-arrow svg { width: 20px; height: 20px; }
+.row-arrow:hover {
+  color: var(--neon); border-color: rgba(255,255,255,0.6);
+  box-shadow: 0 0 18px rgba(255,255,255,0.3);
 }
-.carousel-prev { left: -0.5rem; }
-.carousel-next { right: -0.5rem; }
+.row-prev { left: 0; }
+.row-next { right: 0; }
+.row-arrow.disabled { opacity: 0.3; pointer-events: none; }
+
+.works-row-dots {
+  display: none;
+  gap: 0.5rem; align-items: center; justify-content: center;
+  margin-top: 0.9rem;
+}
+.works-row-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: rgba(255,255,255,0.18);
+  border: none; padding: 0; cursor: pointer;
+  transition: width 0.4s cubic-bezier(0.34,1.56,0.64,1), border-radius 0.4s, background 0.3s, box-shadow 0.3s, transform 0.2s;
+}
+.works-row-dot.active { background: var(--neon); box-shadow: 0 0 8px var(--neon); width: 20px; border-radius: 3px; }
+.works-row-dot:hover:not(.active) { background: rgba(255,255,255,0.4); transform: scale(1.3); }
 
 .work-card {
   position: relative; overflow: hidden;
   width: 100%;
   border: 1px solid rgba(255,255,255,0.1);
-  background: rgba(13,36,43,0.35);
+  background: rgba(15,15,15,0.35);
   backdrop-filter: blur(14px) saturate(160%);
   -webkit-backdrop-filter: blur(14px) saturate(160%);
   cursor: pointer;
@@ -53,10 +134,9 @@
   transition: border-color 0.35s ease, box-shadow 0.35s ease;
 }
 
-.work-card.visible { opacity: 1; }
-.work-item.cs-active .work-card {
-  border-color: rgba(2,245,161,0.32);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.55), 0 0 0 1px rgba(2,245,161,0.1);
+.work-card:hover {
+  border-color: rgba(255,255,255,0.32);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.1);
 }
 
 .work-img {
@@ -65,26 +145,22 @@
   transition: transform 0.7s cubic-bezier(0.22,1,0.36,1), filter 0.5s ease;
   will-change: transform;
 }
-.work-item.cs-active .work-card:hover .work-img { transform: scale(1.06); filter: brightness(0.8) saturate(1.1); }
-
-/* Story-size (9:16) card, e.g. for vertical video */
-.work-item--story .work-img { aspect-ratio: 9/16; }
-.work-item--story { width: 220px !important; }
+.work-card:hover .work-img { transform: scale(1.06); filter: brightness(0.8) saturate(1.1); }
 
 /* ── VIDEO SOUND TOGGLE ───────────────────────────────── */
 .video-mute-btn {
   position: absolute; bottom: 0.7rem; right: 0.7rem; z-index: 5;
   width: 34px; height: 34px; border-radius: 50%;
-  background: rgba(7,25,30,0.75);
-  border: 1px solid rgba(2,245,161,0.35);
+  background: rgba(10,10,10,0.75);
+  border: 1px solid rgba(255,255,255,0.35);
   color: var(--neon);
   display: flex; align-items: center; justify-content: center;
   cursor: pointer;
   transition: all 0.25s;
 }
 .video-mute-btn:hover {
-  background: rgba(2,245,161,0.18);
-  box-shadow: 0 0 14px rgba(2,245,161,0.35);
+  background: rgba(255,255,255,0.18);
+  box-shadow: 0 0 14px rgba(255,255,255,0.35);
 }
 .video-mute-btn svg { width: 16px; height: 16px; }
 .video-mute-btn .icon-unmuted { display: none; }
@@ -95,38 +171,13 @@
 .work-card--portrait .work-img { aspect-ratio: 4/5; }
 .work-card--square .work-img { aspect-ratio: 1/1; }
 
-/* Wide (1920x1080 / 16:9) card, e.g. for landscape mockups/website shots */
-.work-item--wide .work-img { aspect-ratio: 16/9; }
-
 .work-overlay {
   position: absolute; inset: 0;
-  background: linear-gradient(to top, rgba(7,25,30,0.97) 0%, rgba(7,25,30,0.6) 45%, rgba(7,25,30,0.15) 75%, transparent 100%);
+  background: linear-gradient(to top, rgba(10,10,10,0.97) 0%, rgba(10,10,10,0.6) 45%, rgba(10,10,10,0.15) 75%, transparent 100%);
   opacity: 0; transition: opacity 0.4s cubic-bezier(0.22,1,0.36,1);
   display: flex; flex-direction: column; justify-content: flex-end; padding: 1.5rem;
 }
-.work-item.cs-active .work-card:hover .work-overlay { opacity: 1; }
-
-/* ── SUBHEADING LABEL — OUTSIDE THE CARD BOX ──────────── */
-.work-item {
-  position: absolute; top: 46%; left: 50%;
-  display: flex; flex-direction: column; align-items: center;
-  width: 580px; max-width: 76vw;
-  transform: translate(-50%, -50%);
-  transition: transform 0.6s cubic-bezier(0.22,1,0.36,1), opacity 0.6s cubic-bezier(0.22,1,0.36,1), filter 0.6s ease;
-  opacity: 0; pointer-events: none; filter: blur(0px);
-}
-.work-item.cs-visible { pointer-events: all; }
-.work-item:not(.cs-active) .work-label-top { opacity: 0.5; }
-.work-item:not(.cs-active) .work-card { cursor: pointer; }
-
-.work-label-top {
-  margin-bottom: 0.7rem;
-  font-family: 'Bebas Neue', cursive;
-  font-size: 1.2rem;
-  letter-spacing: 3px;
-  color: var(--text);
-  text-transform: uppercase;
-}
+.work-card:hover .work-overlay { opacity: 1; }
 
 .work-cat {
   font-family: 'Share Tech Mono', monospace; font-size: 0.65rem;
@@ -145,7 +196,7 @@
 .work-card:hover .work-title { transform: translateY(0); opacity: 1; }
 
 .work-desc {
-  font-size: 0.8rem; color: #8fa0b2; line-height: 1.6;
+  font-size: 0.8rem; color: #A0A0A0; line-height: 1.6;
   transform: translateY(14px); opacity: 0;
   transition: transform 0.4s 0.15s cubic-bezier(0.22,1,0.36,1), opacity 0.4s 0.15s ease;
 }
@@ -154,17 +205,17 @@
 .work-link-btn {
   display: inline-flex; align-items: center; gap: 0.4rem;
   margin-top: 0.75rem; padding: 0.4rem 1rem;
-  border: 1px solid rgba(2,245,161,0.45); color: var(--neon);
+  border: 1px solid rgba(255,255,255,0.45); color: var(--neon);
   font-family: 'Share Tech Mono', monospace; font-size: 0.65rem;
   letter-spacing: 2px; text-transform: uppercase; text-decoration: none;
-  background: rgba(2,245,161,0.06); align-self: flex-start;
+  background: rgba(255,255,255,0.06); align-self: flex-start;
   transform: translateY(12px); opacity: 0;
   transition: transform 0.4s 0.2s cubic-bezier(0.22,1,0.36,1),
               opacity 0.4s 0.2s ease, background 0.25s ease,
               color 0.25s ease, box-shadow 0.25s ease;
 }
 .work-card:hover .work-link-btn { transform: translateY(0); opacity: 1; }
-.work-link-btn:hover { background: var(--neon); color: var(--dark); box-shadow: 0 0 18px rgba(2,245,161,0.45); }
+.work-link-btn:hover { background: var(--neon); color: var(--dark); box-shadow: 0 0 18px rgba(255,255,255,0.45); }
 .work-link-btn[href="#"] { display: none; }
 
 .work-buttons { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
@@ -174,13 +225,13 @@
   width: 0; height: 2px;
   background: linear-gradient(to right, var(--neon), var(--neon2));
   transition: width 0.5s cubic-bezier(0.22,1,0.36,1);
-  box-shadow: 0 0 8px rgba(2,245,161,0.5);
+  box-shadow: 0 0 8px rgba(255,255,255,0.5);
 }
 .work-card:hover::after { width: 100%; }
 
 .work-card::before {
   content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
-  background: linear-gradient(105deg, transparent 40%, rgba(2,245,161,0.06) 50%, transparent 60%);
+  background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.06) 50%, transparent 60%);
   background-size: 200% 100%; opacity: 0; transition: opacity 0.3s ease;
 }
 .work-card:hover::before { opacity: 1; animation: cardShimmer 0.8s ease forwards; }
@@ -190,42 +241,55 @@
 }
 
 @media (max-width: 768px) {
-  .works-grid { height: 340px; }
-  .work-item { width: 300px; }
-  .work-item--story { width: 150px !important; }
-  .carousel-arrow { width: 2.3rem; height: 2.3rem; }
-  .carousel-arrow svg { width: 16px; height: 16px; }
-  .carousel-prev { left: -0.2rem; }
-  .carousel-next { right: -0.2rem; }
+  .works-cat-heading { font-size: 1.25rem; letter-spacing: 2px; }
   .video-mute-btn { width: 26px; height: 26px; bottom: 0.9rem; right: 0.7rem; }
   .video-mute-btn svg { width: 13px; height: 13px; }
-  .site-visit-btn { padding: 0.4rem 0.9rem; font-size: 0.55rem; letter-spacing: 1px; gap: 0.35rem; bottom: 0.7rem; }
-
+  .site-card-footer { padding: 0.5rem 0.7rem; gap: 0.4rem; }
+  .site-name-badge { font-size: 0.85rem; }
+  .site-visit-btn { padding: 0.32rem 0.6rem; font-size: 0.5rem; letter-spacing: 0.5px; gap: 0.3rem; }
 }
 
-/* ── "WEBSITES" FILTER BUTTON — extra glow when checked ──── */
-.cat-btn--websites { position: relative; }
-.cat-btn--websites.active {
-  color: var(--dark);
-  border-color: transparent;
-  background: linear-gradient(90deg, var(--neon), var(--neon2), var(--neon));
-  background-size: 220% 100%;
-  animation: websitesBtnGlow 2.4s linear infinite;
-  box-shadow: 0 0 18px rgba(2,245,161,0.55), 0 0 44px rgba(2,245,161,0.18);
-  font-weight: 700;
-}
-@keyframes websitesBtnGlow {
-  0%   { background-position: 0% 0; }
-  100% { background-position: 220% 0; }
+/* Reels on mobile: one clip at a time, snap-scroll or tap the
+   arrows — same carousel language as the Websites section. The
+   active clip pops forward (scale + opacity) and a dot rail
+   underneath tracks position. */
+@media (max-width: 640px) {
+  .works-row {
+    scroll-snap-type: x mandatory;
+    gap: 1rem;
+    padding: 0.3rem 0.2rem 0.6rem;
+  }
+  .works-row .works-card-item,
+  .works-card-item--story {
+    flex: 0 0 68%;
+    max-width: 280px;
+    width: auto; margin: 0 auto;
+    scroll-snap-align: center;
+    opacity: 0.4;
+    transform: scale(0.9);
+    transition: opacity 0.5s cubic-bezier(0.22,1,0.36,1), transform 0.5s cubic-bezier(0.22,1,0.36,1);
+  }
+  .works-row .works-card-item.is-active,
+  .works-card-item--story.is-active {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .row-arrow { width: 2.3rem; height: 2.3rem; }
+  .row-arrow svg { width: 15px; height: 15px; }
+  .works-row-dots { display: flex; }
 }
 
-/* ── "LIVE WEBSITE" CARD — real screenshot + View Website button ──── */
-.work-item[data-category="websites"] .work-card { aspect-ratio: 16/9; }
+/* ── "LIVE WEBSITE" CARD — full screenshot, small View Website
+   button sits in its own footer strip below the image, not on top
+   of it. ─────────────────────────────────────────────────────── */
 .site-card { padding: 0; }
 .site-card-link {
-  display: block; position: relative;
-  height: 100%; width: 100%;
+  display: flex; flex-direction: column;
   text-decoration: none; color: inherit;
+}
+.site-shot-wrap {
+  position: relative; width: 100%;
+  aspect-ratio: 16/9; overflow: hidden;
 }
 .site-shot {
   width: 100%; height: 100%;
@@ -233,52 +297,112 @@
   display: block;
   transition: transform 0.7s cubic-bezier(0.22,1,0.36,1), filter 0.4s ease;
 }
-.site-card-link:hover .site-shot { transform: scale(1.06); filter: brightness(0.85); }
+.site-card-link:hover .site-shot { transform: scale(1.06); filter: brightness(0.92); }
 
-.site-name-badge {
-  position: absolute; top: 0.9rem; left: 0.9rem; z-index: 2;
-  padding: 0.35rem 1rem;
-  background: rgba(7,25,30,0.45);
-  border: 1px solid rgba(255,255,255,0.15);
-  color: var(--text);
-  font-family: 'Bebas Neue', cursive; font-size: 1.1rem; letter-spacing: 2px;
-  backdrop-filter: blur(10px) saturate(160%);
-  -webkit-backdrop-filter: blur(10px) saturate(160%);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.08);
+.site-card-footer {
+  display: flex; align-items: center; justify-content: space-between; gap: 0.6rem;
+  padding: 0.65rem 0.9rem;
+  background: rgba(15,15,15,0.55);
+  border-top: 1px solid rgba(255,255,255,0.08);
 }
 
-.site-card-link::after {
-  content: '';
-  position: absolute; inset: 0; z-index: 1;
-  background: linear-gradient(to top, rgba(7,25,30,0.85) 0%, rgba(7,25,30,0.15) 35%, transparent 60%);
-  pointer-events: none;
+.site-name-badge {
+  padding: 0; background: none; border: none; box-shadow: none;
+  color: var(--text);
+  font-family: 'Bebas Neue', cursive; font-size: 1rem; letter-spacing: 1.5px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 
 .site-visit-btn {
-  position: absolute; bottom: 1rem; left: 50%; transform: translate(-50%, 0);
-  z-index: 2;
-  display: inline-flex; align-items: center; gap: 0.5rem;
-  padding: 0.6rem 1.4rem;
-  border: 1px solid rgba(2,245,161,0.5); color: var(--neon);
-  font-family: 'Share Tech Mono', monospace; font-size: 0.7rem;
-  letter-spacing: 2px; text-transform: uppercase;
-  background: rgba(7,25,30,0.45);
-  backdrop-filter: blur(10px) saturate(160%);
-  -webkit-backdrop-filter: blur(10px) saturate(160%);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.08);
+  flex-shrink: 0;
+  display: inline-flex; align-items: center; gap: 0.35rem;
+  padding: 0.35rem 0.8rem;
+  border: 1px solid rgba(255,255,255,0.35); color: var(--neon);
+  font-family: 'Share Tech Mono', monospace; font-size: 0.6rem;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  background: rgba(255,255,255,0.04);
   transition: all 0.3s;
   white-space: nowrap;
 }
 .site-visit-btn .arrow { display: inline-block; transition: transform 0.3s; }
-.site-card-link:hover .site-visit-btn { background: var(--neon); color: var(--dark); box-shadow: 0 0 22px rgba(2,245,161,0.5); }
-.site-card-link:hover .site-visit-btn .arrow { transform: translate(3px,-3px); }
+.site-card-link:hover .site-visit-btn { background: var(--neon); color: var(--dark); box-shadow: 0 0 14px rgba(255,255,255,0.4); }
+.site-card-link:hover .site-visit-btn .arrow { transform: translate(2px,-2px); }
+
+/* ── WEBSITES CAROUSEL — one site card at a time, swipe/scroll
+   or arrow buttons, active card pops forward, dots track position. ── */
+.sites-carousel-row { display: flex; align-items: center; gap: 1rem; }
+
+.sites-carousel {
+  flex: 1; display: flex; gap: 1.4rem;
+  overflow-x: auto; scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  padding: 0.4rem 0.1rem 0.8rem;
+  scrollbar-width: none; -ms-overflow-style: none;
+}
+.sites-carousel::-webkit-scrollbar { display: none; }
+
+.sites-carousel > * {
+  flex: 0 0 100%;
+  max-width: 620px;
+  margin: 0 auto;
+  scroll-snap-align: center;
+  opacity: 0.35;
+  transform: scale(0.92);
+  transition: opacity 0.5s cubic-bezier(0.22,1,0.36,1), transform 0.5s cubic-bezier(0.22,1,0.36,1);
+}
+.sites-carousel > *.is-active { opacity: 1; transform: scale(1); }
+
+.sites-arrow-btn {
+  flex-shrink: 0;
+  width: 2.8rem; height: 2.8rem; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.18);
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.25s;
+}
+.sites-arrow-btn svg { width: 18px; height: 18px; }
+.sites-arrow-btn:hover { color: var(--neon); border-color: rgba(255,255,255,0.5); box-shadow: 0 0 18px rgba(255,255,255,0.3); }
+.sites-arrow-btn:active { transform: scale(0.88); }
+.sites-arrow-btn.disabled { opacity: 0.25; pointer-events: none; }
+
+.sites-dots {
+  display: flex; gap: 0.5rem; align-items: center; justify-content: center;
+  margin-top: 0.6rem;
+}
+.sites-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: rgba(255,255,255,0.18);
+  border: none; padding: 0; cursor: pointer;
+  transition: width 0.4s cubic-bezier(0.34,1.56,0.64,1), border-radius 0.4s, background 0.3s, box-shadow 0.3s, transform 0.2s;
+}
+.sites-dot.active { background: var(--neon); box-shadow: 0 0 8px var(--neon); width: 20px; border-radius: 3px; }
+.sites-dot:hover:not(.active) { background: rgba(255,255,255,0.4); transform: scale(1.3); }
+
+@media (min-width: 640px) {
+  .sites-carousel > * { flex-basis: 72%; }
+}
+@media (min-width: 960px) {
+  .sites-carousel > * { flex-basis: 52%; }
+}
+@media (max-width: 640px) {
+  .sites-arrow-btn { width: 2.3rem; height: 2.3rem; }
+  .sites-arrow-btn svg { width: 15px; height: 15px; }
+}
 </style>
+
+
 
 <style>
 /* ── BOTTOM PAGE NAV ─────────────────────────────────── */
+@keyframes pageNavRise {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 .page-nav {
   position: relative; z-index: 10;
-  background: rgba(13,36,43,0.4);
+  background: rgba(15,15,15,0.4);
   backdrop-filter: blur(18px) saturate(160%);
   -webkit-backdrop-filter: blur(18px) saturate(160%);
   border-top: 1px solid rgba(255,255,255,0.08);
@@ -287,6 +411,7 @@
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
+  animation: pageNavRise 0.6s cubic-bezier(0.16,1,0.3,1) 0.1s both;
 }
 .page-nav-btn {
   display: flex; align-items: center; gap: 0.7rem;
@@ -301,23 +426,24 @@
   letter-spacing: 2px; text-transform: uppercase;
   text-decoration: none; cursor: pointer;
   clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
-  transition: all 0.3s;
+  transition: border-color 0.3s, color 0.3s, background 0.3s, transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
   white-space: nowrap;
 }
 .page-nav-btn:hover {
   border-color: var(--neon);
   color: var(--neon);
-  background: rgba(2,245,161,0.05);
+  background: rgba(255,255,255,0.05);
 }
+.page-nav-btn:active { transform: scale(0.92); }
 .page-nav-btn.next {
-  background: rgba(2,245,161,0.08);
-  border-color: rgba(2,245,161,0.3);
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.3);
   color: var(--neon);
 }
 .page-nav-btn.next:hover {
   background: var(--neon);
   color: var(--dark);
-  box-shadow: 0 0 24px rgba(2,245,161,0.3);
+  box-shadow: 0 0 24px rgba(255,255,255,0.3);
 }
 .page-nav-btn.disabled {
   opacity: 0.2; pointer-events: none;
@@ -328,7 +454,7 @@
 .page-dot {
   width: 6px; height: 6px; border-radius: 50%;
   background: rgba(255,255,255,0.15);
-  transition: all 0.3s;
+  transition: width 0.4s cubic-bezier(0.34,1.56,0.64,1), border-radius 0.4s cubic-bezier(0.34,1.56,0.64,1), background 0.3s, box-shadow 0.3s, transform 0.2s;
   cursor: pointer;
   text-decoration: none;
   display: inline-block;
@@ -338,7 +464,8 @@
   box-shadow: 0 0 8px var(--neon);
   width: 18px; border-radius: 3px;
 }
-.page-dot:hover:not(.active) { background: rgba(2,245,161,0.4); }
+.page-dot:hover:not(.active) { background: rgba(255,255,255,0.4); transform: scale(1.3); }
+.page-dot:active { transform: scale(0.85); }
 .page-nav-arrow { font-size: 1rem; line-height: 1; }
 @media (min-width: 769px) { .page-nav { display: none !important; } }
 @media (max-width: 768px) {
@@ -361,12 +488,14 @@
   </button>
   <ul class="nav-links" id="navLinks">
     <li><a href="index.html"      data-nav>Home</a></li>
-    <li><a href="skills.html"     data-nav>Skills</a></li>
+    <li><a href="about.html"     data-nav>About Me</a></li>
     <li><a href="works.html"      data-nav>Works</a></li>
     <li><a href="education.html"  data-nav>Education</a></li>
     <li><a href="experience.html" data-nav>Experience</a></li>
     <li><a href="contact.html"    data-nav>Contact</a></li>
+    <li class="nav-cta-mobile-item"><a class="nav-cta nav-cta-mobile" href="contact.html" data-nav>Get In Touch</a></li>
   </ul>
+  <a class="nav-cta" href="contact.html" data-nav>Get In Touch</a>
 </nav>
 
 <section id="works">
@@ -375,358 +504,363 @@
     <h2 class="section-title">SAMPLE <span class="accent">WORKS</span></h2>
     <div class="section-divider"></div>
 
-    <div class="works-filters">
-      <button class="cat-btn active" data-filter="all">All</button>
-      <button class="cat-btn" data-filter="logo">Logo</button>
-      <button class="cat-btn" data-filter="branding">Branding</button>
-      <button class="cat-btn" data-filter="social">Social Media</button>
-      <button class="cat-btn" data-filter="print">Mock Ups</button>
-      <button class="cat-btn" data-filter="video">Reels</button>
-      <button class="cat-btn" data-filter="others">Others</button>
-      <button class="cat-btn cat-btn--websites" data-filter="websites">Websites</button>
-    </div>
-
-    <div class="scroll-note">
-      <span>C L I C K &nbsp; B E L O W</span>
-      <div class="bolt-wrap">
-        <div class="charge-glow"></div>
-        <svg class="bolt-svg" viewBox="0 0 28 48">
-          <polygon points="12,0 2,24 10,24 6,48 26,18 15,18 20,0"/>
-        </svg>
-        <div class="strike-flash"></div>
-      </div>
-    </div>
-
-    <div class="works-carousel-wrap">
-      <button class="carousel-arrow carousel-prev" id="carouselPrev" aria-label="Previous work">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-      </button>
-      <button class="carousel-arrow carousel-next" id="carouselNext" aria-label="Next work">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-      </button>
-
-    <div class="works-grid" id="worksGrid">
-
-      <!-- LOGO — logo/1.jpg -->
-      <div class="work-item work-item--wide" data-category="logo">
-        <div class="work-label-top">Logo</div>
+    <div class="works-cat-block" data-cat="Logo">
+      <h3 class="works-cat-heading">Logo</h3>
+      <div class="works-grid">
+      <div class="works-card-item" data-category="logo design">
         <div class="work-card">
           <img class="work-img" src="IMG/logo/1.jpg" alt="Logo Design" data-title="Logo Design">
         </div>
       </div>
-
-      <!-- LOGO — logo/2.jpg -->
-      <div class="work-item work-item--wide" data-category="logo">
-        <div class="work-label-top">Logo</div>
+      <div class="works-card-item" data-category="logo design">
         <div class="work-card">
           <img class="work-img" src="IMG/logo/2.jpg" alt="Logo Design" data-title="Logo Design">
         </div>
       </div>
-
-      <!-- LOGO — logo/3.jpg -->
-      <div class="work-item work-item--wide" data-category="logo">
-        <div class="work-label-top">Logo</div>
+      <div class="works-card-item" data-category="logo design">
         <div class="work-card">
           <img class="work-img" src="IMG/logo/3.jpg" alt="Logo Design" data-title="Logo Design">
         </div>
       </div>
-
-      <!-- LOGO — logo/4.jpg -->
-      <div class="work-item work-item--wide" data-category="logo">
-        <div class="work-label-top">Logo</div>
+      <div class="works-card-item" data-category="logo design">
         <div class="work-card">
           <img class="work-img" src="IMG/logo/4.jpg" alt="Logo Design" data-title="Logo Design">
         </div>
       </div>
-
-      <!-- LOGO — logo/5.jpg -->
-      <div class="work-item work-item--wide" data-category="logo">
-        <div class="work-label-top">Logo</div>
+      <div class="works-card-item" data-category="logo design">
         <div class="work-card">
           <img class="work-img" src="IMG/logo/5.jpg" alt="Logo Design" data-title="Logo Design">
         </div>
       </div>
+      <div class="works-card-item" data-category="logo design">
+        <div class="work-card">
+          <img class="work-img" src="IMG/logo/6.jpg" alt="Logo Design" data-title="Logo Design">
+        </div>
+      </div>
+      <div class="works-card-item" data-category="logo design">
+        <div class="work-card">
+          <img class="work-img" src="IMG/logo/7.jpg" alt="Logo Design" data-title="Logo Design">
+      </div>
+    </div>
+      </div>
+    </div>
 
-      <!-- BRANDING — branding/1.jpg -->
-      <div class="work-item work-item--wide" data-category="branding">
-        <div class="work-label-top">Branding</div>
+    <div class="works-cat-block" data-cat="Branding">
+      <h3 class="works-cat-heading">Branding</h3>
+      <div class="works-grid">
+      <div class="works-card-item" data-category="branding">
         <div class="work-card">
           <img class="work-img" src="IMG/branding/1.jpg" alt="Branding" data-title="Brand Identity">
         </div>
       </div>
-
-      <!-- BRANDING — branding/2.jpg -->
-      <div class="work-item work-item--wide" data-category="branding">
-        <div class="work-label-top">Branding</div>
+      <div class="works-card-item" data-category="branding">
         <div class="work-card">
           <img class="work-img" src="IMG/branding/2.jpg" alt="Branding" data-title="Brand Identity">
         </div>
       </div>
+      <div class="works-card-item" data-category="branding">
+        <div class="work-card">
+          <img class="work-img" src="IMG/branding/3.jpg" alt="Branding" data-title="Brand Identity">
+      </div>
+    </div>
+      </div>
+      <div class="works-cat-more">
+        <a class="works-cat-more-link" href="https://www.behance.net/robinfrancisco" target="_blank" rel="noopener">For More Details <span class="arrow">↗</span></a>
+      </div>
+    </div>
 
-      <!-- SOCIAL MEDIA — socmed/1.jpg -->
-      <div class="work-item work-item--wide" data-category="social">
-        <div class="work-label-top">Social Media</div>
+    <div class="works-cat-block" data-cat="Social Media">
+      <h3 class="works-cat-heading">Social Media</h3>
+      <div class="works-grid">
+      <div class="works-card-item" data-category="social media design">
         <div class="work-card">
           <img class="work-img" src="IMG/socmed/1.jpg" alt="Social Media Design" data-title="Social Media Campaign">
         </div>
       </div>
-
-      <!-- SOCIAL MEDIA — socmed/2.jpg -->
-      <div class="work-item work-item--wide" data-category="social">
-        <div class="work-label-top">Social Media</div>
+      <div class="works-card-item" data-category="social media design">
         <div class="work-card">
           <img class="work-img" src="IMG/socmed/2.jpg" alt="Social Media Design" data-title="Social Media Campaign">
         </div>
       </div>
-
-      <!-- SOCIAL MEDIA — socmed/3.jpg -->
-      <div class="work-item work-item--wide" data-category="social">
-        <div class="work-label-top">Social Media</div>
+      <div class="works-card-item" data-category="social media design">
         <div class="work-card">
           <img class="work-img" src="IMG/socmed/3.jpg" alt="Social Media Design" data-title="Social Media Campaign">
         </div>
       </div>
-
-      <!-- SOCIAL MEDIA — socmed/4.jpg -->
-      <div class="work-item work-item--wide" data-category="social">
-        <div class="work-label-top">Social Media</div>
+      <div class="works-card-item" data-category="social media design">
         <div class="work-card">
           <img class="work-img" src="IMG/socmed/4.jpg" alt="Social Media Design" data-title="Social Media Campaign">
         </div>
       </div>
-
-      <!-- SOCIAL MEDIA — socmed/5.jpg -->
-      <div class="work-item work-item--wide" data-category="social">
-        <div class="work-label-top">Social Media</div>
+      <div class="works-card-item" data-category="social media design">
         <div class="work-card">
           <img class="work-img" src="IMG/socmed/5.jpg" alt="Social Media Design" data-title="Social Media Campaign">
-        </div>
       </div>
+    </div>
+      </div>
+    </div>
 
-      <!-- MOCK UPS — mockups/1.jpg -->
-      <div class="work-item work-item--wide" data-category="print">
-        <div class="work-label-top">Mock Ups</div>
+    <div class="works-cat-block" data-cat="Mock Ups">
+      <h3 class="works-cat-heading">Mock Ups</h3>
+      <div class="works-grid">
+      <div class="works-card-item" data-category="mock ups">
         <div class="work-card">
           <img class="work-img" src="IMG/mockups/1.jpg" alt="Mock Ups" data-title="Mock Ups">
         </div>
       </div>
-
-      <!-- MOCK UPS — mockups/2.jpg -->
-      <div class="work-item work-item--wide" data-category="print">
-        <div class="work-label-top">Mock Ups</div>
+      <div class="works-card-item" data-category="mock ups">
         <div class="work-card">
           <img class="work-img" src="IMG/mockups/2.jpg" alt="Mock Ups" data-title="Mock Ups">
         </div>
       </div>
-
-      <!-- MOCK UPS — mockups/3.jpg -->
-      <div class="work-item work-item--wide" data-category="print">
-        <div class="work-label-top">Mock Ups</div>
+      <div class="works-card-item" data-category="mock ups">
         <div class="work-card">
           <img class="work-img" src="IMG/mockups/3.jpg" alt="Mock Ups" data-title="Mock Ups">
         </div>
       </div>
-
-      <!-- MOCK UPS — mockups/4.jpg -->
-      <div class="work-item work-item--wide" data-category="print">
-        <div class="work-label-top">Mock Ups</div>
+      <div class="works-card-item" data-category="mock ups">
         <div class="work-card">
           <img class="work-img" src="IMG/mockups/4.jpg" alt="Mock Ups" data-title="Mock Ups">
         </div>
       </div>
-
-      <!-- MOCK UPS — mockups/5.jpg -->
-      <div class="work-item work-item--wide" data-category="print">
-        <div class="work-label-top">Mock Ups</div>
+      <div class="works-card-item" data-category="mock ups">
         <div class="work-card">
           <img class="work-img" src="IMG/mockups/5.jpg" alt="Mock Ups" data-title="Mock Ups">
         </div>
       </div>
-
-      <!-- MOCK UPS — mockups/6.jpg -->
-      <div class="work-item work-item--wide" data-category="print">
-        <div class="work-label-top">Mock Ups</div>
+      <div class="works-card-item" data-category="mock ups">
         <div class="work-card">
           <img class="work-img" src="IMG/mockups/6.jpg" alt="Mock Ups" data-title="Mock Ups">
         </div>
       </div>
-
-      <!-- MOCK UPS — mockups/7.jpg -->
-      <div class="work-item work-item--wide" data-category="print">
-        <div class="work-label-top">Mock Ups</div>
+      <div class="works-card-item" data-category="mock ups">
         <div class="work-card">
           <img class="work-img" src="IMG/mockups/7.jpg" alt="Mock Ups" data-title="Mock Ups">
         </div>
       </div>
-
-      <!-- MOCK UPS — mockups/8.jpg -->
-      <div class="work-item work-item--wide" data-category="print">
-        <div class="work-label-top">Mock Ups</div>
+      <div class="works-card-item" data-category="mock ups">
         <div class="work-card">
           <img class="work-img" src="IMG/mockups/8.jpg" alt="Mock Ups" data-title="Mock Ups">
         </div>
       </div>
-
-      <!-- VIDEO — video/1.mp4 -->
-      <div class="work-item work-item--story" data-category="video">
-        <div class="work-label-top">Reels</div>
+      <div class="works-card-item" data-category="mock ups">
         <div class="work-card">
-          <video class="work-img" src="IMG/video/1.mp4" muted loop autoplay playsinline preload="auto"></video>
+          <img class="work-img" src="IMG/mockups/9.jpg" alt="Mock Ups" data-title="Mock Ups">
+        </div>
+      </div>
+      <div class="works-card-item" data-category="mock ups">
+        <div class="work-card">
+          <img class="work-img" src="IMG/mockups/10.png" alt="Mock Ups" data-title="Mock Ups">
+        </div>
+      </div>
+      <div class="works-card-item" data-category="mock ups">
+        <div class="work-card">
+          <img class="work-img" src="IMG/mockups/11.png" alt="Mock Ups" data-title="Mock Ups">
+        </div>
+      </div>
+      <div class="works-card-item" data-category="mock ups">
+        <div class="work-card">
+          <img class="work-img" src="IMG/mockups/12.png" alt="Mock Ups" data-title="Mock Ups">
+        </div>
+      </div>
+      <div class="works-card-item" data-category="mock ups">
+        <div class="work-card">
+          <img class="work-img" src="IMG/mockups/13.png" alt="Mock Ups" data-title="Mock Ups">
+        </div>
+      </div>
+      <div class="works-card-item" data-category="mock ups">
+        <div class="work-card">
+          <img class="work-img" src="IMG/mockups/14.png" alt="Mock Ups" data-title="Mock Ups">
+        </div>
+      </div>
+      <div class="works-card-item" data-category="mock ups">
+        <div class="work-card">
+          <img class="work-img" src="IMG/mockups/15.png" alt="Mock Ups" data-title="Mock Ups">
+        </div>
+      </div>
+      <div class="works-card-item" data-category="mock ups">
+        <div class="work-card">
+          <img class="work-img" src="IMG/mockups/16.png" alt="Mock Ups" data-title="Mock Ups">
+        </div>
+      </div>
+      <div class="works-card-item" data-category="mock ups">
+        <div class="work-card">
+          <img class="work-img" src="IMG/mockups/17.png" alt="Mock Ups" data-title="Mock Ups">
+        </div>
+      </div>
+      <div class="works-card-item" data-category="mock ups">
+        <div class="work-card">
+          <img class="work-img" src="IMG/mockups/18.png" alt="Mock Ups" data-title="Mock Ups">
+        </div>
+      </div>
+      <div class="works-card-item" data-category="mock ups">
+        <div class="work-card">
+          <img class="work-img" src="IMG/mockups/19.png" alt="Mock Ups" data-title="Mock Ups">
+      </div>
+    </div>
+      </div>
+    </div>
+
+    <div class="works-cat-block" data-cat="Reels">
+      <h3 class="works-cat-heading">Reels</h3>
+      <div class="works-row-wrap">
+      <button class="row-arrow row-prev" aria-label="Previous">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      </button>
+      <button class="row-arrow row-next" aria-label="Next">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </button>
+        <div class="works-row">
+      <div class="works-card-item works-card-item--story" data-category="video">
+        <div class="work-card">
+          <video class="work-img" src="IMG/video/1.mp4" muted loop playsinline preload="metadata"></video>
           <button class="video-mute-btn" aria-label="Unmute video">
             <svg class="icon-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
             <svg class="icon-unmuted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
           </button>
         </div>
       </div>
-
-      <!-- VIDEO — video/2.mp4 -->
-      <div class="work-item work-item--story" data-category="video">
-        <div class="work-label-top">Reels</div>
+      <div class="works-card-item works-card-item--story" data-category="video">
         <div class="work-card">
-          <video class="work-img" src="IMG/video/2.mp4" muted loop autoplay playsinline preload="auto"></video>
+          <video class="work-img" src="IMG/video/2.mp4" muted loop playsinline preload="metadata"></video>
           <button class="video-mute-btn" aria-label="Unmute video">
             <svg class="icon-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
             <svg class="icon-unmuted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
           </button>
         </div>
       </div>
-
-      <!-- VIDEO — video/3.mp4 -->
-      <div class="work-item work-item--story" data-category="video">
-        <div class="work-label-top">Reels</div>
+      <div class="works-card-item works-card-item--story" data-category="video">
         <div class="work-card">
-          <video class="work-img" src="IMG/video/3.mp4" muted loop autoplay playsinline preload="auto"></video>
+          <video class="work-img" src="IMG/video/3.mp4" muted loop playsinline preload="metadata"></video>
           <button class="video-mute-btn" aria-label="Unmute video">
             <svg class="icon-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
             <svg class="icon-unmuted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
           </button>
         </div>
       </div>
-
-      <!-- VIDEO — video/4.mov -->
-      <div class="work-item work-item--story" data-category="video">
-        <div class="work-label-top">Reels</div>
+      <div class="works-card-item works-card-item--story" data-category="video">
         <div class="work-card">
-          <video class="work-img" src="IMG/video/4.mov" muted loop autoplay playsinline preload="auto"></video>
+          <video class="work-img" src="IMG/video/4.mov" muted loop playsinline preload="metadata"></video>
           <button class="video-mute-btn" aria-label="Unmute video">
             <svg class="icon-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
             <svg class="icon-unmuted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
           </button>
         </div>
       </div>
-
-      <!-- VIDEO — video/5.mp4 -->
-      <div class="work-item work-item--story" data-category="video">
-        <div class="work-label-top">Reels</div>
+      <div class="works-card-item works-card-item--story" data-category="video">
         <div class="work-card">
-          <video class="work-img" src="IMG/video/5.mp4" muted loop autoplay playsinline preload="auto"></video>
+          <video class="work-img" src="IMG/video/5.mp4" muted loop playsinline preload="metadata"></video>
           <button class="video-mute-btn" aria-label="Unmute video">
             <svg class="icon-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
             <svg class="icon-unmuted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
           </button>
         </div>
       </div>
-
-      <!-- VIDEO — video/6.mp4 -->
-      <div class="work-item work-item--story" data-category="video">
-        <div class="work-label-top">Reels</div>
+      <div class="works-card-item works-card-item--story" data-category="video">
         <div class="work-card">
-          <video class="work-img" src="IMG/video/6.mp4" muted loop autoplay playsinline preload="auto"></video>
+          <video class="work-img" src="IMG/video/6.mp4" muted loop playsinline preload="metadata"></video>
           <button class="video-mute-btn" aria-label="Unmute video">
             <svg class="icon-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
             <svg class="icon-unmuted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
           </button>
         </div>
       </div>
+        </div>
+      </div>
+      <div class="works-row-dots"></div>
+    </div>
 
-      <!-- OTHERS — others/1.jpg -->
-      <div class="work-item work-item--wide" data-category="others">
-        <div class="work-label-top">Others</div>
+    <div class="works-cat-block" data-cat="Others">
+      <h3 class="works-cat-heading">Others</h3>
+      <div class="works-grid">
+      <div class="works-card-item" data-category="others">
         <div class="work-card">
           <img class="work-img" src="IMG/others/1.jpg" alt="Others" data-title="Others">
         </div>
       </div>
-
-      <!-- OTHERS — others/2.jpg -->
-      <div class="work-item work-item--wide" data-category="others">
-        <div class="work-label-top">Others</div>
+      <div class="works-card-item" data-category="others">
         <div class="work-card">
           <img class="work-img" src="IMG/others/2.jpg" alt="Others" data-title="Others">
         </div>
       </div>
-
-      <!-- OTHERS — others/3.jpg -->
-      <div class="work-item work-item--wide" data-category="others">
-        <div class="work-label-top">Others</div>
+      <div class="works-card-item" data-category="others">
         <div class="work-card">
           <img class="work-img" src="IMG/others/3.jpg" alt="Others" data-title="Others">
-        </div>
       </div>
-
-      <!-- WEBSITES — Mazi Hardware -->
-      <div class="work-item work-item--wide" data-category="websites">
-        <div class="work-label-top">Websites</div>
-        <div class="work-card site-card">
-          <a class="site-card-link" href="https://binnstoragee-tech.github.io/Mazi-Hardware-Catalog/" target="_blank" rel="noopener">
-            <img class="site-shot" src="IMG/mazihardware.png" alt="Mazi Hardware screenshot">
-            <div class="site-name-badge">Mazi Hardware</div>
-            <span class="site-visit-btn">View Website <span class="arrow">↗</span></span>
-          </a>
-        </div>
+    </div>
       </div>
+    </div>
 
-      <!-- WEBSITES — AdFlare -->
-      <div class="work-item work-item--wide" data-category="websites">
-        <div class="work-label-top">Websites</div>
-        <div class="work-card site-card">
-          <a class="site-card-link" href="https://binnstoragee-tech.github.io/AdFlare/" target="_blank" rel="noopener">
-            <img class="site-shot" src="IMG/adflare.png" alt="AdFlare screenshot">
-            <div class="site-name-badge">AdFlare</div>
-            <span class="site-visit-btn">View Website <span class="arrow">↗</span></span>
-          </a>
-        </div>
-      </div>
-
-      <!-- WEBSITES — Zami Mart -->
-      <div class="work-item work-item--wide" data-category="websites">
-        <div class="work-label-top">Websites</div>
-        <div class="work-card site-card">
-          <a class="site-card-link" href="https://binnstoragee-tech.github.io/Zami-Mart/" target="_blank" rel="noopener">
-            <img class="site-shot" src="IMG/zamimart.png" alt="Zami Mart screenshot">
-            <div class="site-name-badge">Zami Mart</div>
-            <span class="site-visit-btn">View Website <span class="arrow">↗</span></span>
-          </a>
-        </div>
-      </div>
-
-      <!-- WEBSITES — Outright Trading -->
-      <div class="work-item work-item--wide" data-category="websites">
-        <div class="work-label-top">Websites</div>
-        <div class="work-card site-card">
-          <a class="site-card-link" href="https://binnstoragee-tech.github.io/Test/#" target="_blank" rel="noopener">
-            <img class="site-shot" src="IMG/outright.png" alt="Outright Trading screenshot">
-            <div class="site-name-badge">Outright Trading</div>
-            <span class="site-visit-btn">View Website <span class="arrow">↗</span></span>
-          </a>
-        </div>
-      </div>
-
-      <!-- WEBSITES — Pli Studio (3D landing page concept) -->
-      <div class="work-item work-item--wide" data-category="websites">
-        <div class="work-label-top">Websites</div>
-        <div class="work-card site-card">
-          <a class="site-card-link" href="pli-studio.html">
-            <div class="site-shot" style="background:linear-gradient(135deg,#FBEEE4 0%,#F6E1D2 45%,#EFCBB0 75%,#BE7355 100%); display:flex; align-items:center; justify-content:center;">
-              <span style="font-family:'Bebas Neue',cursive; letter-spacing:3px; font-size:1.1rem; color:#241C18; opacity:0.55;">3D · PEACH · FABRIC</span>
+    <div class="works-cat-block sites-carousel-block" data-cat="Websites">
+      <h3 class="works-cat-heading">Websites</h3>
+      <div class="sites-carousel-row">
+        <button class="sites-arrow-btn sites-prev" aria-label="Previous website">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+        <div class="sites-carousel">
+          <div class="works-card-item" data-category="websites">
+            <div class="work-card site-card">
+              <a class="site-card-link" href="https://binnstoragee-tech.github.io/Mazi-Hardware-Catalog/" target="_blank" rel="noopener">
+                <div class="site-shot-wrap"><img class="site-shot" src="IMG/mazihardware.png" alt="Mazi Hardware screenshot"></div>
+                <div class="site-card-footer">
+                  <span class="site-name-badge">Mazi Hardware</span>
+                  <span class="site-visit-btn">View Website <span class="arrow">↗</span></span>
+                </div>
+              </a>
             </div>
-            <div class="site-name-badge">Pli Studio</div>
-            <span class="site-visit-btn">View Case Study <span class="arrow">↗</span></span>
-          </a>
+          </div>
+          <div class="works-card-item" data-category="websites">
+            <div class="work-card site-card">
+              <a class="site-card-link" href="https://binnstoragee-tech.github.io/AdFlare/" target="_blank" rel="noopener">
+                <div class="site-shot-wrap"><img class="site-shot" src="IMG/adflare.png" alt="AdFlare screenshot"></div>
+                <div class="site-card-footer">
+                  <span class="site-name-badge">AdFlare</span>
+                  <span class="site-visit-btn">View Website <span class="arrow">↗</span></span>
+                </div>
+              </a>
+            </div>
+          </div>
+          <div class="works-card-item" data-category="websites">
+            <div class="work-card site-card">
+              <a class="site-card-link" href="https://binnstoragee-tech.github.io/Zami-Mart/" target="_blank" rel="noopener">
+                <div class="site-shot-wrap"><img class="site-shot" src="IMG/zamimart.png" alt="Zami Mart screenshot"></div>
+                <div class="site-card-footer">
+                  <span class="site-name-badge">Zami Mart</span>
+                  <span class="site-visit-btn">View Website <span class="arrow">↗</span></span>
+                </div>
+              </a>
+            </div>
+          </div>
+          <div class="works-card-item" data-category="websites">
+            <div class="work-card site-card">
+              <a class="site-card-link" href="https://binnstoragee-tech.github.io/Test/#" target="_blank" rel="noopener">
+                <div class="site-shot-wrap"><img class="site-shot" src="IMG/outright.png" alt="Outright Trading screenshot"></div>
+                <div class="site-card-footer">
+                  <span class="site-name-badge">Outright Trading</span>
+                  <span class="site-visit-btn">View Website <span class="arrow">↗</span></span>
+                </div>
+              </a>
+            </div>
+          </div>
+          <div class="works-card-item" data-category="websites">
+            <div class="work-card site-card">
+              <a class="site-card-link" href="pli-studio.html">
+                <div class="site-shot-wrap"><div class="site-shot" style="background:linear-gradient(135deg,#FBEEE4 0%,#F6E1D2 45%,#EFCBB0 75%,#BE7355 100%); display:flex; align-items:center; justify-content:center;"><span style="font-family:'Bebas Neue',cursive; letter-spacing:3px; font-size:1.1rem; color:#241C18; opacity:0.55;">3D · PEACH · FABRIC</span></div></div>
+                <div class="site-card-footer">
+                  <span class="site-name-badge">Pli Studio</span>
+                  <span class="site-visit-btn">View Case Study <span class="arrow">↗</span></span>
+                </div>
+              </a>
+            </div>
+          </div>
         </div>
+        <button class="sites-arrow-btn sites-next" aria-label="Next website">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
       </div>
+      <div class="sites-dots"></div>
+    </div>
 
-    </div>
-    </div>
   </div>
 </section>
 
@@ -759,10 +893,10 @@
 </div>
 
 <div class="page-nav">
-  <a class="page-nav-btn back" href="skills.html" data-nav><span class="page-nav-arrow">←</span><span class="page-nav-label">Skills</span></a>
+  <a class="page-nav-btn back" href="about.html" data-nav><span class="page-nav-arrow">←</span><span class="page-nav-label">About Me</span></a>
   <div class="page-nav-center">
     <a class="page-dot" href="index.html" data-nav title="Home"></a>
-    <a class="page-dot" href="skills.html" data-nav title="Skills"></a>
+    <a class="page-dot" href="about.html" data-nav title="About Me"></a>
     <a class="page-dot active" href="works.html" data-nav title="Works"></a>
     <a class="page-dot" href="education.html" data-nav title="Education"></a>
     <a class="page-dot" href="experience.html" data-nav title="Experience"></a>
