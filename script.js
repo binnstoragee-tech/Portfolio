@@ -602,6 +602,17 @@ document.addEventListener('DOMContentLoaded', () => {
         if (cards.length) cards[Math.min(cards.length - 1, activeIndex + 1)].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
         else row.scrollBy({ left: scrollAmount(), behavior: 'smooth' });
       });
+
+      // Rows whose cards already fit the available width (no overflow)
+      // don't need Back/Next controls — hide them instead of showing
+      // buttons that have nothing to do.
+      const checkOverflow = () => {
+        const hasOverflow = row.scrollWidth > row.clientWidth + 2;
+        wrap.classList.toggle('no-overflow', !hasOverflow);
+      };
+      checkOverflow();
+      window.addEventListener('resize', checkOverflow);
+      if (window.ResizeObserver) new ResizeObserver(checkOverflow).observe(row);
     });
 
     /* Reel cards no longer autoplay on scroll — they sit on their poster
@@ -627,6 +638,63 @@ document.addEventListener('DOMContentLoaded', () => {
           const dot = document.createElement('button');
           dot.className = 'sites-dot';
           dot.setAttribute('aria-label', `Go to website ${i + 1}`);
+          dot.addEventListener('click', () => {
+            cards[i].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+          });
+          dotsWrap.appendChild(dot);
+        });
+      }
+      const dots = dotsWrap ? Array.from(dotsWrap.children) : [];
+
+      let activeIndex = 0;
+      const setActive = (index) => {
+        activeIndex = index;
+        cards.forEach((c, i) => c.classList.toggle('is-active', i === index));
+        dots.forEach((d, i) => d.classList.toggle('active', i === index));
+        if (prevBtn) prevBtn.classList.toggle('disabled', index === 0);
+        if (nextBtn) nextBtn.classList.toggle('disabled', index === cards.length - 1);
+      };
+      setActive(0);
+
+      const obs = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting && entry.intersectionRatio > 0.6) {
+            setActive(cards.indexOf(entry.target));
+          }
+        });
+      }, { root: carousel, threshold: [0.6] });
+      cards.forEach(c => obs.observe(c));
+
+      if (prevBtn) prevBtn.addEventListener('click', () => {
+        cards[Math.max(0, activeIndex - 1)].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      });
+      if (nextBtn) nextBtn.addEventListener('click', () => {
+        cards[Math.min(cards.length - 1, activeIndex + 1)].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      });
+    });
+  })();
+
+  /* ── FEATURED REELS CAROUSEL — one big reel card at a time,
+     same swipe/arrow/dot behavior as the Websites carousel above.
+     Tapping the card (play button included) opens the video in the
+     lightbox — that's handled by the existing video-lightbox logic
+     further below, which matches on any `.work-card` with a video. ── */
+  (function() {
+    document.querySelectorAll('.reels-carousel-block').forEach(block => {
+      const carousel = block.querySelector('.reels-carousel');
+      const prevBtn  = block.querySelector('.reels-prev');
+      const nextBtn  = block.querySelector('.reels-next');
+      const dotsWrap = block.querySelector('.reels-dots');
+      if (!carousel) return;
+
+      const cards = Array.from(carousel.children);
+      if (!cards.length) return;
+
+      if (dotsWrap) {
+        cards.forEach((_, i) => {
+          const dot = document.createElement('button');
+          dot.className = 'reels-dot';
+          dot.setAttribute('aria-label', `Go to reel ${i + 1}`);
           dot.addEventListener('click', () => {
             cards[i].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
           });
@@ -852,6 +920,17 @@ document.addEventListener('DOMContentLoaded', () => {
       .filter(Boolean);
     if (!roles.length) return;
 
+    /* Optional: data-role-links="url1, url2, ..." — same length/order
+       as data-roles. When present on an <a>, the href swaps to match
+       whichever role is currently showing (e.g. Viber link while
+       "Chat on Viber" is typed, WhatsApp link while "Chat on WhatsApp"
+       is typed). Safe no-op if the attribute isn't set. */
+    const roleLinks = (el.dataset.roleLinks || '')
+      .split(',')
+      .map(s => s.trim())
+      .filter(Boolean);
+    if (roleLinks.length && 'href' in el) el.href = roleLinks[0];
+
     const textSpan = document.createElement('span');
     textSpan.className = 'role-typewriter-text';
     const cursorSpan = document.createElement('span');
@@ -881,10 +960,20 @@ document.addEventListener('DOMContentLoaded', () => {
     el.style.whiteSpace = 'nowrap';
     el.style.verticalAlign = 'bottom';
 
-    const TYPE_SPEED = 70, DELETE_SPEED = 40, HOLD_TIME = 1700, GAP_TIME = 400;
-    let roleIndex = 0, charIndex = 0, typing = true;
+    const TYPE_SPEED = 70, DELETE_SPEED = 40, GAP_TIME = 400;
+    /* Optional: data-hold="10000" overrides how long (ms) each role
+       stays fully typed before deleting to the next one. Defaults to
+       the original quick 1700ms pace when not set. */
+    const HOLD_TIME = parseInt(el.dataset.hold, 10) || 1700;
+    let roleIndex = 0, charIndex = 0, typing = true, stopped = false;
+
+    /* Once clicked, freeze the loop on whatever text/link is showing —
+       stops it from switching underneath the user after they've
+       already acted on it (e.g. opened Viber/WhatsApp in a new tab). */
+    el.addEventListener('click', () => { stopped = true; });
 
     function tick() {
+      if (stopped) return;
       const current = roles[roleIndex];
       if (typing) {
         charIndex++;
@@ -901,6 +990,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (charIndex === 0) {
           typing = true;
           roleIndex = (roleIndex + 1) % roles.length;
+          if (roleLinks.length && 'href' in el) el.href = roleLinks[roleIndex] || el.href;
           setTimeout(tick, GAP_TIME);
           return;
         }
