@@ -321,20 +321,145 @@ document.addEventListener('DOMContentLoaded', () => {
     // Shorter, less aggressive margin on mobile so the reveal reliably
     // fires on smaller viewports (the old -30% could get skipped on
     // short phone screens where the section barely clears that mark).
-    const toolsRootMargin = window.matchMedia('(max-width: 768px)').matches
+    const isMobileTools = window.matchMedia('(max-width: 768px)').matches;
+    const toolsRootMargin = isMobileTools
       ? '0px 0px -10% 0px'
       : '0px 0px -30% 0px';
+
+    // On mobile the hero is compact enough that Tools can already sit
+    // inside the viewport on first paint — require a real scroll/touch
+    // gesture before it's allowed to reveal, so it never just appears
+    // on load. Desktop keeps the original behavior.
+    let toolsUserMoved = !isMobileTools;
+    function refreshToolsVisibility() {
+      const rect = toolsRevealEl.getBoundingClientRect();
+      const inView = rect.top < window.innerHeight * 0.9 && rect.bottom > 0;
+      if (toolsUserMoved && inView) {
+        toolsRevealEl.classList.add('visible');
+      } else if (!inView) {
+        toolsRevealEl.classList.remove('visible');
+      }
+    }
+    if (isMobileTools) {
+      const markToolsMoved = () => {
+        if (toolsUserMoved) return;
+        toolsUserMoved = true;
+        refreshToolsVisibility();
+        window.removeEventListener('scroll', markToolsMoved);
+        window.removeEventListener('touchmove', markToolsMoved);
+      };
+      window.addEventListener('scroll', markToolsMoved, { passive: true });
+      window.addEventListener('touchmove', markToolsMoved, { passive: true });
+    }
+
     const toolsObserver = new IntersectionObserver(entries => {
       entries.forEach(entry => {
-        if (entry.isIntersecting) {
+        if (entry.isIntersecting && toolsUserMoved) {
           entry.target.classList.add('visible');
-        } else {
+        } else if (!entry.isIntersecting) {
           entry.target.classList.remove('visible');
         }
       });
     }, { threshold: 0, rootMargin: toolsRootMargin });
     toolsObserver.observe(toolsRevealEl);
   }
+
+  /* ── BRANDING COVERFLOW: same "flowing center card" idea as the logo
+     fan below, but landscape framing with object-fit: contain so the
+     full picture always shows (no cropping) — center card comes
+     forward, the rest recede and fade as you swipe. ── */
+  document.querySelectorAll('.branding-carousel').forEach(wrap => {
+    const cards = Array.from(wrap.querySelectorAll('.branding-card'));
+    if (!cards.length) return;
+    let ticking = false;
+
+    function applyCoverflow() {
+      ticking = false;
+      const wrapRect = wrap.getBoundingClientRect();
+      const center = wrapRect.left + wrapRect.width / 2;
+      let closest = null, closestDist = Infinity;
+
+      cards.forEach(card => {
+        const r = card.getBoundingClientRect();
+        const cardCenter = r.left + r.width / 2;
+        const offset = r.width ? (cardCenter - center) / r.width : 0;
+        const dist = Math.abs(offset);
+        if (dist < closestDist) { closestDist = dist; closest = card; }
+
+        // Bigger gap between center and the rest so the center card
+        // really pops, matching the "featured" collectible-card look.
+        const scale      = Math.max(0.6, 1.24 - dist * 0.32);
+        const opacity     = Math.max(0.35, 1 - dist * 0.45);
+        const rotateY     = Math.max(-32, Math.min(32, -offset * 20));
+        const translateY  = Math.min(34, dist * 16);
+
+        card.style.transform = `translateY(${translateY}px) rotateY(${rotateY}deg) scale(${scale})`;
+        card.style.opacity = String(opacity);
+        card.style.zIndex = String(20 - Math.round(dist * 3));
+      });
+
+      cards.forEach(c => c.classList.toggle('is-center', c === closest));
+    }
+
+    // start centered on the middle card, like the reference layout
+    const mid = cards[Math.floor((cards.length - 1) / 2)];
+    if (mid) mid.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'auto' });
+
+    wrap.addEventListener('scroll', () => {
+      if (!ticking) { ticking = true; requestAnimationFrame(applyCoverflow); }
+    }, { passive: true });
+    window.addEventListener('resize', () => {
+      if (!ticking) { ticking = true; requestAnimationFrame(applyCoverflow); }
+    });
+    requestAnimationFrame(applyCoverflow);
+
+    // ── Tap/click a side card to pick it — centers it instead of
+    // opening the lightbox straight away. Only the already-centered
+    // card opens the lightbox on click. ──
+    cards.forEach(card => {
+      card.addEventListener('click', (e) => {
+        if (!card.classList.contains('is-center')) {
+          e.stopPropagation();
+          e.preventDefault();
+          card.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
+        }
+      }, true); // capture — runs before the lightbox-open click handler
+    });
+
+    // ── Mouse drag-to-scroll on desktop (touch already scrolls
+    // natively) — same "inch it left/right by hand" feel as the
+    // logo fan above. ──
+    let isDown = false, startX = 0, startScroll = 0, dragMoved = false, suppressClick = false;
+
+    wrap.addEventListener('mousedown', (e) => {
+      isDown = true;
+      dragMoved = false;
+      wrap.classList.add('dragging');
+      startX = e.clientX;
+      startScroll = wrap.scrollLeft;
+    });
+    window.addEventListener('mousemove', (e) => {
+      if (!isDown) return;
+      const dx = e.clientX - startX;
+      if (Math.abs(dx) > 4) dragMoved = true;
+      wrap.scrollLeft = startScroll - dx;
+    });
+    window.addEventListener('mouseup', () => {
+      if (!isDown) return;
+      isDown = false;
+      wrap.classList.remove('dragging');
+      if (dragMoved) suppressClick = true;
+    });
+    // Swallow the click that follows a real drag, on the whole
+    // carousel, so it fires before any per-card click handler.
+    wrap.addEventListener('click', (e) => {
+      if (suppressClick) {
+        e.stopPropagation();
+        e.preventDefault();
+        suppressClick = false;
+      }
+    }, true);
+  });
 
   /* ── SKILLS MARQUEE (auto-scrolls sideways, tap/click a card to pause) ── */
   (function() {
@@ -513,6 +638,150 @@ document.addEventListener('DOMContentLoaded', () => {
      auto-slideshow while a picture or video is being viewed fullscreen. */
   let pauseWorksAutoSlide  = () => {};
   let resumeWorksAutoSlide = () => {};
+
+  /* ── LOGO FAN: auto-looping cascade, same on mobile and desktop —
+     cards drift through the center continuously on their own.
+     Can also be dragged/swiped left-right to spin it manually —
+     auto-loop pauses while dragging and picks back up right after
+     release. Also pauses while a card is opened in the lightbox
+     (or while hovered on desktop) and resumes once it's closed. ── */
+  (function() {
+    const wraps = Array.from(document.querySelectorAll('.logo-fan-wrap'));
+    if (!wraps.length) return;
+
+    const pausers  = [];
+    const resumers = [];
+
+    wraps.forEach(wrap => {
+      const cards = Array.from(wrap.querySelectorAll('.logo-fan-card'));
+      const n = cards.length;
+      if (!n) return;
+
+      let phase = 0;          // continuously advancing position in the loop (in "slots")
+      let lastTime = null;
+      let hardPaused = false; // paused by the lightbox
+      let hoverPaused = false; // paused by mouse hover (desktop only)
+      let isDragging = false; // paused while the user is actively dragging
+      const speed = 0.24;     // slots per second — a touch snappier so the left/right glide is noticeable
+
+      // Wider spread than before so the side-to-side drift actually
+      // reads as movement instead of a subtle wobble near the center.
+      const radiusForWidth = () =>
+        window.innerWidth <= 480 ? 140 : window.innerWidth <= 900 ? 190 : 260;
+
+      function render() {
+        const radius = radiusForWidth();
+        cards.forEach((card, i) => {
+          // true circular rotation — each card sweeps around a wheel,
+          // so it naturally swings out to the side, dips behind the
+          // center card, and comes back around. No modulo/jump, no
+          // fade hack: sin/cos are continuous by nature.
+          const angle = ((i - phase) / n) * Math.PI * 2;
+          const cosA = Math.cos(angle);
+          const sinA = Math.sin(angle);
+          const depth = (cosA + 1) / 2; // 0 = farthest back, 1 = frontmost
+
+          const translateX = sinA * radius;
+          const translateY = (1 - depth) * 80 - 8;
+          const rotateDeg   = sinA * 28;
+          const scale       = 0.6 + depth * 0.48;
+          const opacity     = 0.15 + depth * 0.85;
+
+          // Cards dim and desaturate as they swing toward the edges,
+          // so they visually bleed into the black background — the
+          // center card stays fully bright/saturated, spotlight-style.
+          const brightness = 0.5 + depth * 0.6;
+          const saturation  = 0.7 + depth * 0.5;
+
+          card.style.transform = `translateX(${translateX}px) translateY(${translateY}px) rotate(${rotateDeg}deg) scale(${scale})`;
+          card.style.opacity = String(opacity);
+          card.style.filter = `brightness(${brightness}) saturate(${saturation})`;
+          card.style.zIndex = String(Math.round(depth * 20));
+          card.style.pointerEvents = depth < 0.3 ? 'none' : '';
+          card.classList.toggle('is-center', depth > 0.97);
+        });
+      }
+
+      function tick(t) {
+        if (lastTime === null) lastTime = t;
+        const dt = (t - lastTime) / 1000;
+        lastTime = t;
+        if (!hardPaused && !hoverPaused && !isDragging) {
+          phase += speed * dt; // keeps growing — sin/cos wrap it for free
+        }
+        render();
+        requestAnimationFrame(tick);
+      }
+
+      wrap.addEventListener('mouseenter', () => { hoverPaused = true; });
+      wrap.addEventListener('mouseleave', () => { hoverPaused = false; });
+      window.addEventListener('resize', render);
+
+      pausers.push(() => { hardPaused = true; });
+      resumers.push(() => { hardPaused = false; lastTime = null; });
+
+      requestAnimationFrame(tick);
+
+      // ── Manual drag/swipe control — mouse on desktop, touch on
+      // mobile. Dragging spins the fan directly; letting go hands
+      // it right back to the auto-loop from wherever it landed. ──
+      let dragStartX = 0;
+      let phaseAtDragStart = 0;
+      let dragMoved = false;
+      let suppressClick = false;
+
+      const getX = e => (e.touches && e.touches.length ? e.touches[0].clientX : e.clientX);
+
+      function dragStart(e) {
+        isDragging = true;
+        dragMoved = false;
+        dragStartX = getX(e);
+        phaseAtDragStart = phase;
+        wrap.classList.add('dragging');
+      }
+      function dragMove(e) {
+        if (!isDragging) return;
+        const dx = getX(e) - dragStartX;
+        if (Math.abs(dx) > 4) dragMoved = true;
+        const pxPerSlot = radiusForWidth() * 1.6; // drag distance needed to advance one card
+        phase = phaseAtDragStart - dx / pxPerSlot;
+        render();
+        if (e.cancelable) e.preventDefault();
+      }
+      function dragEnd() {
+        if (!isDragging) return;
+        isDragging = false;
+        wrap.classList.remove('dragging');
+        if (dragMoved) suppressClick = true;
+        lastTime = null; // avoids a big dt jump when the loop resumes
+      }
+
+      wrap.addEventListener('mousedown', dragStart);
+      window.addEventListener('mousemove', dragMove);
+      window.addEventListener('mouseup', dragEnd);
+      wrap.addEventListener('touchstart', dragStart, { passive: true });
+      wrap.addEventListener('touchmove', dragMove, { passive: false });
+      wrap.addEventListener('touchend', dragEnd);
+      wrap.addEventListener('touchcancel', dragEnd);
+
+      // If the drag actually moved the fan, swallow the click so it
+      // doesn't also pop the card open in the lightbox.
+      wrap.addEventListener('click', (e) => {
+        if (suppressClick) {
+          e.stopPropagation();
+          e.preventDefault();
+          suppressClick = false;
+        }
+      }, true);
+    });
+
+    // Chain into the shared pause/resume hooks the lightbox calls,
+    // without clobbering anything else that also hooks into them.
+    const prevPause  = pauseWorksAutoSlide;
+    const prevResume = resumeWorksAutoSlide;
+    pauseWorksAutoSlide = () => { prevPause(); pausers.forEach(fn => fn()); };
+    resumeWorksAutoSlide = () => { prevResume(); resumers.forEach(fn => fn()); };
+  })();
 
   /* ── WORKS GRID (index.html "Sample Works" preview) ────────
      Continuous masonry-style feed, filterable by category —

@@ -118,6 +118,81 @@
 .works-card-item--story .work-img { aspect-ratio: 9/16; }
 .works-card-item[data-category="websites"] .work-card { aspect-ratio: auto; }
 
+/* ── BRANDING COVERFLOW: portrait "collectible card" cards, full-bleed
+   art (object-fit: cover) with a title caption at the bottom — center
+   card sits noticeably larger/brighter, the rest recede and dim ── */
+.branding-carousel-wrap { position: relative; padding: 0.5rem 0 1.5rem; }
+.branding-carousel {
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  perspective: 1400px;
+  padding: 2.4rem calc(50% - 130px) 2.4rem;
+  cursor: grab;
+  touch-action: pan-y;
+}
+.branding-carousel.dragging { cursor: grabbing; scroll-snap-type: none; }
+.branding-carousel::-webkit-scrollbar { display: none; }
+
+.branding-card {
+  flex: 0 0 auto;
+  width: 260px;
+  max-width: 58vw;
+  aspect-ratio: 3/4;
+  margin: 0 -26px;
+  scroll-snap-align: center;
+  transform-style: preserve-3d;
+  transition: transform 0.28s cubic-bezier(0.16,1,0.3,1), opacity 0.28s ease;
+  will-change: transform;
+  cursor: pointer;
+}
+.branding-frame {
+  position: relative;
+  width: 100%; height: 100%;
+  border-radius: 20px;
+  background: rgba(15,15,15,0.5);
+  border: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  box-shadow: 0 14px 44px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.05);
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  transition: border-color 0.28s, box-shadow 0.28s;
+}
+.branding-img {
+  width: 100%; height: 100%;
+  object-fit: cover; /* full-bleed art, matches the collectible-card reference */
+  display: block;
+}
+.branding-caption {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  padding: 1.4rem 1.1rem 1rem;
+  background: linear-gradient(to top, rgba(0,0,0,0.8) 10%, transparent 100%);
+  color: #fff;
+  font-family: 'Bebas Neue', cursive;
+  font-size: 1.15rem; letter-spacing: 1px;
+  opacity: 0; transform: translateY(6px);
+  transition: opacity 0.3s, transform 0.3s;
+  pointer-events: none;
+}
+.branding-card.is-center .branding-frame {
+  border-color: rgba(255,255,255,0.3);
+  box-shadow: 0 20px 56px rgba(0,0,0,0.45), 0 0 34px rgba(255,255,255,0.1), inset 0 1px 0 rgba(255,255,255,0.08);
+}
+.branding-card.is-center .branding-caption { opacity: 1; transform: translateY(0); }
+
+@media (max-width: 640px) {
+  .branding-card { width: 210px; }
+  .branding-carousel { padding: 2rem calc(50% - 105px) 2rem; }
+}
+@media (max-width: 420px) {
+  .branding-card { width: 172px; }
+  .branding-carousel { padding: 1.6rem calc(50% - 86px) 1.6rem; }
+}
+
 /* ── "STREAMING APP" CARD STYLE — rounded poster, small circular
    icon overlapping the bottom-right corner of the image, and an
    always-visible caption (eyebrow + title) underneath, instead of
@@ -159,6 +234,179 @@
 }
 @media (max-width: 420px) {
   .works-grid { gap: 0.55rem; }
+}
+
+/* ── MOCK UPS — COLLECTIBLE PILL GRID ─────────────────────────
+   Small rounded "collectible card" pills: title + tag on the left,
+   a compact rounded thumbnail on the right, wrapping into a clean
+   grid instead of a horizontal scroller. A soft glow/shimmer loops
+   continuously so the row feels alive even before you touch it —
+   tap any pill to pop the full mockup open in the lightbox. ────── */
+.mockup-pill-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem 1.1rem;
+}
+.mockup-pill-item { margin: 0; animation: pillFloat 5.5s ease-in-out infinite; }
+.mockup-pill-item:nth-child(2n)  { animation-delay: -1.3s; }
+.mockup-pill-item:nth-child(3n)  { animation-delay: -2.7s; }
+.mockup-pill-item:nth-child(5n)  { animation-delay: -3.9s; }
+.mockup-pill-item:nth-child(7n)  { animation-delay: -0.8s; }
+
+.mockup-pill {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 0.9rem;
+  padding: 0.6rem 0.6rem 0.6rem 1.3rem;
+  border-radius: 60px;
+  background: linear-gradient(135deg, rgba(255,138,61,0.07), rgba(15,15,15,0.62) 60%);
+  border: 1px solid rgba(255,255,255,0.09);
+  position: relative; overflow: hidden;
+  animation: pillGlow 4.2s ease-in-out infinite;
+  transition: border-color 0.3s ease, transform 0.3s cubic-bezier(0.22,1,0.36,1), box-shadow 0.3s ease;
+}
+.mockup-pill-item:nth-child(2n) .mockup-pill { animation-delay: -1.6s; }
+.mockup-pill-item:nth-child(3n) .mockup-pill { animation-delay: -2.4s; }
+.mockup-pill-item:nth-child(4n) .mockup-pill { animation-delay: -3.1s; }
+
+.mockup-pill::before {
+  content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background: linear-gradient(100deg, transparent 35%, rgba(255,255,255,0.09) 50%, transparent 65%);
+  background-size: 220% 100%;
+  animation: pillShimmer 3.6s linear infinite;
+}
+.mockup-pill-item:nth-child(2n) .mockup-pill::before { animation-delay: -1.8s; }
+.mockup-pill-item:nth-child(3n) .mockup-pill::before { animation-delay: -2.6s; }
+.mockup-pill-item:nth-child(4n) .mockup-pill::before { animation-delay: -0.9s; }
+.mockup-pill::after { content: none; }
+
+.mockup-pill:hover {
+  border-color: rgba(255,138,61,0.5);
+  animation-play-state: paused;
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,138,61,0.35);
+}
+
+.mockup-pill-info {
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column; gap: 0.35rem;
+  min-width: 0;
+}
+.mockup-pill-title {
+  font-family: 'Bebas Neue', cursive; font-size: 1rem;
+  letter-spacing: 1.5px; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.mockup-pill-sub {
+  display: flex; align-items: center; gap: 0.4rem;
+  font-family: 'Share Tech Mono', monospace; font-size: 0.62rem;
+  letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.mockup-pill-dot {
+  width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0;
+  background: var(--neon);
+  animation: dotPulse2 2s ease-in-out infinite;
+}
+
+.mockup-pill-media {
+  position: relative; z-index: 1; flex-shrink: 0;
+  width: 58px; height: 58px; border-radius: 16px !important;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.14);
+  box-shadow: 0 0 0 3px rgba(10,10,10,0.4);
+}
+.mockup-pill-media .work-img {
+  width: 100%; height: 100%; aspect-ratio: 1/1;
+  object-fit: cover; border-radius: 0;
+}
+.mockup-pill-media .work-action-btn {
+  width: 20px; height: 20px; right: -5px; bottom: -5px;
+  border-width: 1px;
+}
+.mockup-pill-media .work-action-btn svg { width: 9px; height: 9px; }
+
+@keyframes pillFloat {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-5px); }
+}
+@keyframes pillGlow {
+  0%, 100% { box-shadow: 0 4px 16px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.05); }
+  50%      { box-shadow: 0 6px 26px rgba(255,138,61,0.22), 0 0 0 1px rgba(255,138,61,0.3); }
+}
+@keyframes pillShimmer {
+  0%   { background-position: 220% 0; }
+  100% { background-position: -220% 0; }
+}
+@keyframes dotPulse2 {
+  0%, 100% { box-shadow: 0 0 4px var(--neon); opacity: 1; }
+  50%      { box-shadow: 0 0 10px var(--neon); opacity: 0.55; }
+}
+
+@media (max-width: 640px) {
+  .mockup-pill-grid { grid-template-columns: 1fr; gap: 0.75rem; }
+  .mockup-pill { padding: 0.55rem 0.55rem 0.55rem 1.1rem; }
+  .mockup-pill-media { width: 50px; height: 50px; border-radius: 14px !important; }
+  .mockup-pill-title { font-size: 0.92rem; }
+}
+
+/* ── LOGO SHOWCASE: fanned cascade that auto-loops continuously —
+   same animation drives it on both mobile and desktop, see script.js.
+   Styled like a spotlight fan of cards bleeding into black at the
+   edges — outer cards dim/desaturate into the background, center
+   card sits bright and glowing (see script.js for the per-card
+   brightness/saturation, driven by rotation depth). ── */
+.logo-fan-wrap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding: 3.2rem 0.5rem 1.5rem;
+  min-height: 300px;
+  cursor: grab;
+  touch-action: pan-y;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.55) 10%, #000 26%, #000 74%, rgba(0,0,0,0.55) 90%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.55) 10%, #000 26%, #000 74%, rgba(0,0,0,0.55) 90%, transparent 100%);
+}
+.logo-fan-wrap.dragging { cursor: grabbing; }
+.logo-fan-wrap::before {
+  content: '';
+  position: absolute;
+  inset: -15% -5% 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse 45% 60% at 50% 35%, rgba(255,255,255,0.07), transparent 70%);
+}
+.logo-fan-card {
+  position: absolute;
+  top: 3.6rem; left: 50%;
+  width: 160px;
+  margin-left: -80px;
+  transition: transform 0.12s linear, opacity 0.15s ease, filter 0.15s ease;
+  cursor: pointer;
+  will-change: transform, filter;
+}
+.logo-fan-card .work-card { width: 100%; border-radius: 16px; overflow: hidden; }
+.logo-fan-card .work-img { aspect-ratio: 3/4; border-radius: 16px; }
+.logo-fan-card.is-center .work-img {
+  box-shadow: 0 0 45px rgba(255,255,255,0.35), 0 12px 30px rgba(0,0,0,0.5);
+}
+
+.logo-fan-caption {
+  text-align: center;
+  font-family: 'Bebas Neue', cursive;
+  font-size: clamp(1.4rem, 3vw, 2.2rem);
+  letter-spacing: 2px;
+  color: var(--text);
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 900px) {
+  .logo-fan-wrap { padding: 2.6rem 0.5rem 1.2rem; min-height: 250px; }
+  .logo-fan-card { width: 118px; margin-left: -59px; top: 3rem; }
+}
+@media (max-width: 480px) {
+  .logo-fan-wrap { padding: 2.2rem 0.5rem 1rem; min-height: 210px; }
+  .logo-fan-card { width: 96px; margin-left: -48px; top: 2.5rem; }
 }
 
 /* ── REELS — kept as a horizontal scroller since the clips are
@@ -743,7 +991,7 @@
     <h2 class="section-title">SAMPLE <span class="accent">WORKS</span></h2>
     <div class="section-divider"></div>
 
-    <div class="works-cat-block" data-cat="Logo">
+    <div class="works-cat-block logo-fan-block" data-cat="Logo">
       <div class="works-cat-headrow">
         <div class="works-cat-headtext">
           <h3 class="works-cat-heading">Logo</h3>
@@ -751,108 +999,15 @@
         </div>
         <a class="works-cat-seeall" href="https://www.behance.net/robinfrancisco" target="_blank" rel="noopener">See all <span class="arrow">›</span></a>
       </div>
-      <div class="works-row-wrap">
-      <button class="row-arrow row-prev" aria-label="Previous">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-      </button>
-      <div class="works-row">
-      <div class="works-card-item" data-category="logo design">
-        <div class="work-card">
-          <div class="work-media">
-            <span class="work-badge"><span class="dot"></span>Logo</span>
-            <img class="work-img" src="IMG/logo/1.jpg" alt="Logo Design" data-title="Logo Design">
-            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
-          </div>
-          <div class="work-caption">
-            <span class="work-caption-eyebrow">LOGO DESIGN</span>
-            <span class="work-caption-title">Logo Design 01</span>
-          </div>
-        </div>
+      <div class="logo-fan-wrap">
+        <div class="logo-fan-card"><div class="work-card"><img class="work-img" src="IMG/logo/1.jpg" alt="Logo Design" data-title="Logo Design 01"></div></div>
+        <div class="logo-fan-card"><div class="work-card"><img class="work-img" src="IMG/logo/2.jpg" alt="Logo Design" data-title="Logo Design 02"></div></div>
+        <div class="logo-fan-card"><div class="work-card"><img class="work-img" src="IMG/logo/3.jpg" alt="Logo Design" data-title="Logo Design 03"></div></div>
+        <div class="logo-fan-card"><div class="work-card"><img class="work-img" src="IMG/logo/4.jpg" alt="Logo Design" data-title="Logo Design 04"></div></div>
+        <div class="logo-fan-card"><div class="work-card"><img class="work-img" src="IMG/logo/5.jpg" alt="Logo Design" data-title="Logo Design 05"></div></div>
+        <div class="logo-fan-card"><div class="work-card"><img class="work-img" src="IMG/logo/6.jpg" alt="Logo Design" data-title="Logo Design 06"></div></div>
+        <div class="logo-fan-card"><div class="work-card"><img class="work-img" src="IMG/logo/7.jpg" alt="Logo Design" data-title="Logo Design 07"></div></div>
       </div>
-      <div class="works-card-item" data-category="logo design">
-        <div class="work-card">
-          <div class="work-media">
-            <span class="work-badge"><span class="dot"></span>Logo</span>
-            <img class="work-img" src="IMG/logo/2.jpg" alt="Logo Design" data-title="Logo Design">
-            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
-          </div>
-          <div class="work-caption">
-            <span class="work-caption-eyebrow">LOGO DESIGN</span>
-            <span class="work-caption-title">Logo Design 02</span>
-          </div>
-        </div>
-      </div>
-      <div class="works-card-item" data-category="logo design">
-        <div class="work-card">
-          <div class="work-media">
-            <span class="work-badge"><span class="dot"></span>Logo</span>
-            <img class="work-img" src="IMG/logo/3.jpg" alt="Logo Design" data-title="Logo Design">
-            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
-          </div>
-          <div class="work-caption">
-            <span class="work-caption-eyebrow">LOGO DESIGN</span>
-            <span class="work-caption-title">Logo Design 03</span>
-          </div>
-        </div>
-      </div>
-      <div class="works-card-item" data-category="logo design">
-        <div class="work-card">
-          <div class="work-media">
-            <span class="work-badge"><span class="dot"></span>Logo</span>
-            <img class="work-img" src="IMG/logo/4.jpg" alt="Logo Design" data-title="Logo Design">
-            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
-          </div>
-          <div class="work-caption">
-            <span class="work-caption-eyebrow">LOGO DESIGN</span>
-            <span class="work-caption-title">Logo Design 04</span>
-          </div>
-        </div>
-      </div>
-      <div class="works-card-item" data-category="logo design">
-        <div class="work-card">
-          <div class="work-media">
-            <span class="work-badge"><span class="dot"></span>Logo</span>
-            <img class="work-img" src="IMG/logo/5.jpg" alt="Logo Design" data-title="Logo Design">
-            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
-          </div>
-          <div class="work-caption">
-            <span class="work-caption-eyebrow">LOGO DESIGN</span>
-            <span class="work-caption-title">Logo Design 05</span>
-          </div>
-        </div>
-      </div>
-      <div class="works-card-item" data-category="logo design">
-        <div class="work-card">
-          <div class="work-media">
-            <span class="work-badge"><span class="dot"></span>Logo</span>
-            <img class="work-img" src="IMG/logo/6.jpg" alt="Logo Design" data-title="Logo Design">
-            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
-          </div>
-          <div class="work-caption">
-            <span class="work-caption-eyebrow">LOGO DESIGN</span>
-            <span class="work-caption-title">Logo Design 06</span>
-          </div>
-        </div>
-      </div>
-      <div class="works-card-item" data-category="logo design">
-        <div class="work-card">
-          <div class="work-media">
-            <span class="work-badge"><span class="dot"></span>Logo</span>
-            <img class="work-img" src="IMG/logo/7.jpg" alt="Logo Design" data-title="Logo Design">
-            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
-          </div>
-          <div class="work-caption">
-            <span class="work-caption-eyebrow">LOGO DESIGN</span>
-            <span class="work-caption-title">Logo Design 07</span>
-          </div>
-        </div>
-      </div>
-      </div>
-      <button class="row-arrow row-next" aria-label="Next">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-      </button>
-      </div>
-      <div class="works-row-dots"></div>
     </div>
 
     <div class="works-cat-block" data-cat="Branding">
@@ -863,56 +1018,28 @@
         </div>
         <a class="works-cat-seeall" href="https://www.behance.net/robinfrancisco" target="_blank" rel="noopener">See all <span class="arrow">›</span></a>
       </div>
-      <div class="works-row-wrap">
-      <button class="row-arrow row-prev" aria-label="Previous">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-      </button>
-      <div class="works-row">
-      <div class="works-card-item" data-category="branding">
-        <div class="work-card">
-          <div class="work-media">
-            <span class="work-badge"><span class="dot"></span>Branding</span>
-            <img class="work-img" src="IMG/branding/1.jpg" alt="Branding" data-title="Brand Identity">
-            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
+      <div class="branding-carousel-wrap">
+        <div class="branding-carousel" id="brandingCarousel">
+          <div class="branding-card">
+            <div class="work-card branding-frame">
+              <img class="work-img branding-img" src="IMG/branding/1.jpg" alt="Branding" data-title="Brand Identity">
+              <div class="branding-caption">Brand Identity</div>
+            </div>
           </div>
-          <div class="work-caption">
-            <span class="work-caption-eyebrow">BRANDING</span>
-            <span class="work-caption-title">Brand Identity 01</span>
+          <div class="branding-card">
+            <div class="work-card branding-frame">
+              <img class="work-img branding-img" src="IMG/branding/2.jpg" alt="Branding" data-title="Brand Identity">
+              <div class="branding-caption">Brand Identity</div>
+            </div>
           </div>
-        </div>
-      </div>
-      <div class="works-card-item" data-category="branding">
-        <div class="work-card">
-          <div class="work-media">
-            <span class="work-badge"><span class="dot"></span>Branding</span>
-            <img class="work-img" src="IMG/branding/2.jpg" alt="Branding" data-title="Brand Identity">
-            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
-          </div>
-          <div class="work-caption">
-            <span class="work-caption-eyebrow">BRANDING</span>
-            <span class="work-caption-title">Brand Identity 02</span>
+          <div class="branding-card">
+            <div class="work-card branding-frame">
+              <img class="work-img branding-img" src="IMG/branding/3.jpg" alt="Branding" data-title="Brand Identity">
+              <div class="branding-caption">Brand Identity</div>
+            </div>
           </div>
         </div>
       </div>
-      <div class="works-card-item" data-category="branding">
-        <div class="work-card">
-          <div class="work-media">
-            <span class="work-badge"><span class="dot"></span>Branding</span>
-            <img class="work-img" src="IMG/branding/3.jpg" alt="Branding" data-title="Brand Identity">
-            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
-          </div>
-          <div class="work-caption">
-            <span class="work-caption-eyebrow">BRANDING</span>
-            <span class="work-caption-title">Brand Identity 03</span>
-          </div>
-        </div>
-      </div>
-      </div>
-      <button class="row-arrow row-next" aria-label="Next">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-      </button>
-      </div>
-      <div class="works-row-dots"></div>
     </div>
 
     <div class="works-cat-block" data-cat="Social Media">
@@ -1009,264 +1136,236 @@
         </div>
         <a class="works-cat-seeall" href="https://www.behance.net/robinfrancisco" target="_blank" rel="noopener">See all <span class="arrow">›</span></a>
       </div>
-      <div class="works-row-wrap">
-      <button class="row-arrow row-prev" aria-label="Previous">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-      </button>
-      <div class="works-row">
-      <div class="works-card-item" data-category="mock ups">
-        <div class="work-card">
-          <div class="work-media">
-            <span class="work-badge"><span class="dot"></span>Mockup</span>
-            <img class="work-img" src="IMG/mockups/1.jpg" alt="Mock Ups" data-title="Mock Ups">
-            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
+      <div class="mockup-pill-grid">
+      <div class="works-card-item mockup-pill-item" data-category="mock ups">
+        <div class="work-card mockup-pill">
+          <div class="mockup-pill-info">
+            <span class="mockup-pill-title">Mock Ups 01</span>
+            <span class="mockup-pill-sub"><span class="mockup-pill-dot"></span>Product Mockup</span>
           </div>
-          <div class="work-caption">
-            <span class="work-caption-eyebrow">MOCK UPS</span>
-            <span class="work-caption-title">Mock Ups 01</span>
+          <div class="work-media mockup-pill-media">
+            <img class="work-img" src="IMG/mockups/1.jpg" alt="Mock Ups 01" data-title="Mock Ups 01">
+            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
           </div>
         </div>
       </div>
-      <div class="works-card-item" data-category="mock ups">
-        <div class="work-card">
-          <div class="work-media">
-            <span class="work-badge"><span class="dot"></span>Mockup</span>
-            <img class="work-img" src="IMG/mockups/2.jpg" alt="Mock Ups" data-title="Mock Ups">
-            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
+      <div class="works-card-item mockup-pill-item" data-category="mock ups">
+        <div class="work-card mockup-pill">
+          <div class="mockup-pill-info">
+            <span class="mockup-pill-title">Mock Ups 02</span>
+            <span class="mockup-pill-sub"><span class="mockup-pill-dot"></span>Presentation</span>
           </div>
-          <div class="work-caption">
-            <span class="work-caption-eyebrow">MOCK UPS</span>
-            <span class="work-caption-title">Mock Ups 02</span>
+          <div class="work-media mockup-pill-media">
+            <img class="work-img" src="IMG/mockups/2.jpg" alt="Mock Ups 02" data-title="Mock Ups 02">
+            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
           </div>
         </div>
       </div>
-      <div class="works-card-item" data-category="mock ups">
-        <div class="work-card">
-          <div class="work-media">
-            <span class="work-badge"><span class="dot"></span>Mockup</span>
-            <img class="work-img" src="IMG/mockups/3.jpg" alt="Mock Ups" data-title="Mock Ups">
-            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
+      <div class="works-card-item mockup-pill-item" data-category="mock ups">
+        <div class="work-card mockup-pill">
+          <div class="mockup-pill-info">
+            <span class="mockup-pill-title">Mock Ups 03</span>
+            <span class="mockup-pill-sub"><span class="mockup-pill-dot"></span>Packaging</span>
           </div>
-          <div class="work-caption">
-            <span class="work-caption-eyebrow">MOCK UPS</span>
-            <span class="work-caption-title">Mock Ups 03</span>
+          <div class="work-media mockup-pill-media">
+            <img class="work-img" src="IMG/mockups/3.jpg" alt="Mock Ups 03" data-title="Mock Ups 03">
+            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
           </div>
         </div>
       </div>
-      <div class="works-card-item" data-category="mock ups">
-        <div class="work-card">
-          <div class="work-media">
-            <span class="work-badge"><span class="dot"></span>Mockup</span>
-            <img class="work-img" src="IMG/mockups/4.jpg" alt="Mock Ups" data-title="Mock Ups">
-            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
+      <div class="works-card-item mockup-pill-item" data-category="mock ups">
+        <div class="work-card mockup-pill">
+          <div class="mockup-pill-info">
+            <span class="mockup-pill-title">Mock Ups 04</span>
+            <span class="mockup-pill-sub"><span class="mockup-pill-dot"></span>Brand Mockup</span>
           </div>
-          <div class="work-caption">
-            <span class="work-caption-eyebrow">MOCK UPS</span>
-            <span class="work-caption-title">Mock Ups 04</span>
+          <div class="work-media mockup-pill-media">
+            <img class="work-img" src="IMG/mockups/4.jpg" alt="Mock Ups 04" data-title="Mock Ups 04">
+            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
           </div>
         </div>
       </div>
-      <div class="works-card-item" data-category="mock ups">
-        <div class="work-card">
-          <div class="work-media">
-            <span class="work-badge"><span class="dot"></span>Mockup</span>
-            <img class="work-img" src="IMG/mockups/5.jpg" alt="Mock Ups" data-title="Mock Ups">
-            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
+      <div class="works-card-item mockup-pill-item" data-category="mock ups">
+        <div class="work-card mockup-pill">
+          <div class="mockup-pill-info">
+            <span class="mockup-pill-title">Mock Ups 05</span>
+            <span class="mockup-pill-sub"><span class="mockup-pill-dot"></span>Device Mockup</span>
           </div>
-          <div class="work-caption">
-            <span class="work-caption-eyebrow">MOCK UPS</span>
-            <span class="work-caption-title">Mock Ups 05</span>
+          <div class="work-media mockup-pill-media">
+            <img class="work-img" src="IMG/mockups/5.jpg" alt="Mock Ups 05" data-title="Mock Ups 05">
+            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
           </div>
         </div>
       </div>
-      <div class="works-card-item" data-category="mock ups">
-        <div class="work-card">
-          <div class="work-media">
-            <span class="work-badge"><span class="dot"></span>Mockup</span>
-            <img class="work-img" src="IMG/mockups/6.jpg" alt="Mock Ups" data-title="Mock Ups">
-            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
+      <div class="works-card-item mockup-pill-item" data-category="mock ups">
+        <div class="work-card mockup-pill">
+          <div class="mockup-pill-info">
+            <span class="mockup-pill-title">Mock Ups 06</span>
+            <span class="mockup-pill-sub"><span class="mockup-pill-dot"></span>Print Mockup</span>
           </div>
-          <div class="work-caption">
-            <span class="work-caption-eyebrow">MOCK UPS</span>
-            <span class="work-caption-title">Mock Ups 06</span>
+          <div class="work-media mockup-pill-media">
+            <img class="work-img" src="IMG/mockups/6.jpg" alt="Mock Ups 06" data-title="Mock Ups 06">
+            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
           </div>
         </div>
       </div>
-      <div class="works-card-item" data-category="mock ups">
-        <div class="work-card">
-          <div class="work-media">
-            <span class="work-badge"><span class="dot"></span>Mockup</span>
-            <img class="work-img" src="IMG/mockups/7.jpg" alt="Mock Ups" data-title="Mock Ups">
-            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
+      <div class="works-card-item mockup-pill-item" data-category="mock ups">
+        <div class="work-card mockup-pill">
+          <div class="mockup-pill-info">
+            <span class="mockup-pill-title">Mock Ups 07</span>
+            <span class="mockup-pill-sub"><span class="mockup-pill-dot"></span>Social Mockup</span>
           </div>
-          <div class="work-caption">
-            <span class="work-caption-eyebrow">MOCK UPS</span>
-            <span class="work-caption-title">Mock Ups 07</span>
+          <div class="work-media mockup-pill-media">
+            <img class="work-img" src="IMG/mockups/7.jpg" alt="Mock Ups 07" data-title="Mock Ups 07">
+            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
           </div>
         </div>
       </div>
-      <div class="works-card-item" data-category="mock ups">
-        <div class="work-card">
-          <div class="work-media">
-            <span class="work-badge"><span class="dot"></span>Mockup</span>
-            <img class="work-img" src="IMG/mockups/8.jpg" alt="Mock Ups" data-title="Mock Ups">
-            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
+      <div class="works-card-item mockup-pill-item" data-category="mock ups">
+        <div class="work-card mockup-pill">
+          <div class="mockup-pill-info">
+            <span class="mockup-pill-title">Mock Ups 08</span>
+            <span class="mockup-pill-sub"><span class="mockup-pill-dot"></span>Poster Mockup</span>
           </div>
-          <div class="work-caption">
-            <span class="work-caption-eyebrow">MOCK UPS</span>
-            <span class="work-caption-title">Mock Ups 08</span>
+          <div class="work-media mockup-pill-media">
+            <img class="work-img" src="IMG/mockups/8.jpg" alt="Mock Ups 08" data-title="Mock Ups 08">
+            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
           </div>
         </div>
       </div>
-      <div class="works-card-item" data-category="mock ups">
-        <div class="work-card">
-          <div class="work-media">
-            <span class="work-badge"><span class="dot"></span>Mockup</span>
-            <img class="work-img" src="IMG/mockups/9.jpg" alt="Mock Ups" data-title="Mock Ups">
-            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
+      <div class="works-card-item mockup-pill-item" data-category="mock ups">
+        <div class="work-card mockup-pill">
+          <div class="mockup-pill-info">
+            <span class="mockup-pill-title">Mock Ups 09</span>
+            <span class="mockup-pill-sub"><span class="mockup-pill-dot"></span>Booklet Mockup</span>
           </div>
-          <div class="work-caption">
-            <span class="work-caption-eyebrow">MOCK UPS</span>
-            <span class="work-caption-title">Mock Ups 09</span>
+          <div class="work-media mockup-pill-media">
+            <img class="work-img" src="IMG/mockups/9.jpg" alt="Mock Ups 09" data-title="Mock Ups 09">
+            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
           </div>
         </div>
       </div>
-      <div class="works-card-item" data-category="mock ups">
-        <div class="work-card">
-          <div class="work-media">
-            <span class="work-badge"><span class="dot"></span>Mockup</span>
-            <img class="work-img" src="IMG/mockups/10.png" alt="Mock Ups" data-title="Mock Ups">
-            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
+      <div class="works-card-item mockup-pill-item" data-category="mock ups">
+        <div class="work-card mockup-pill">
+          <div class="mockup-pill-info">
+            <span class="mockup-pill-title">Mock Ups 10</span>
+            <span class="mockup-pill-sub"><span class="mockup-pill-dot"></span>Sticker Mockup</span>
           </div>
-          <div class="work-caption">
-            <span class="work-caption-eyebrow">MOCK UPS</span>
-            <span class="work-caption-title">Mock Ups 10</span>
+          <div class="work-media mockup-pill-media">
+            <img class="work-img" src="IMG/mockups/10.png" alt="Mock Ups 10" data-title="Mock Ups 10">
+            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
           </div>
         </div>
       </div>
-      <div class="works-card-item" data-category="mock ups">
-        <div class="work-card">
-          <div class="work-media">
-            <span class="work-badge"><span class="dot"></span>Mockup</span>
-            <img class="work-img" src="IMG/mockups/11.png" alt="Mock Ups" data-title="Mock Ups">
-            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
+      <div class="works-card-item mockup-pill-item" data-category="mock ups">
+        <div class="work-card mockup-pill">
+          <div class="mockup-pill-info">
+            <span class="mockup-pill-title">Mock Ups 11</span>
+            <span class="mockup-pill-sub"><span class="mockup-pill-dot"></span>Merch Mockup</span>
           </div>
-          <div class="work-caption">
-            <span class="work-caption-eyebrow">MOCK UPS</span>
-            <span class="work-caption-title">Mock Ups 11</span>
+          <div class="work-media mockup-pill-media">
+            <img class="work-img" src="IMG/mockups/11.png" alt="Mock Ups 11" data-title="Mock Ups 11">
+            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
           </div>
         </div>
       </div>
-      <div class="works-card-item" data-category="mock ups">
-        <div class="work-card">
-          <div class="work-media">
-            <span class="work-badge"><span class="dot"></span>Mockup</span>
-            <img class="work-img" src="IMG/mockups/12.png" alt="Mock Ups" data-title="Mock Ups">
-            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
+      <div class="works-card-item mockup-pill-item" data-category="mock ups">
+        <div class="work-card mockup-pill">
+          <div class="mockup-pill-info">
+            <span class="mockup-pill-title">Mock Ups 12</span>
+            <span class="mockup-pill-sub"><span class="mockup-pill-dot"></span>Card Mockup</span>
           </div>
-          <div class="work-caption">
-            <span class="work-caption-eyebrow">MOCK UPS</span>
-            <span class="work-caption-title">Mock Ups 12</span>
+          <div class="work-media mockup-pill-media">
+            <img class="work-img" src="IMG/mockups/12.png" alt="Mock Ups 12" data-title="Mock Ups 12">
+            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
           </div>
         </div>
       </div>
-      <div class="works-card-item" data-category="mock ups">
-        <div class="work-card">
-          <div class="work-media">
-            <span class="work-badge"><span class="dot"></span>Mockup</span>
-            <img class="work-img" src="IMG/mockups/13.png" alt="Mock Ups" data-title="Mock Ups">
-            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
+      <div class="works-card-item mockup-pill-item" data-category="mock ups">
+        <div class="work-card mockup-pill">
+          <div class="mockup-pill-info">
+            <span class="mockup-pill-title">Mock Ups 13</span>
+            <span class="mockup-pill-sub"><span class="mockup-pill-dot"></span>Signage Mockup</span>
           </div>
-          <div class="work-caption">
-            <span class="work-caption-eyebrow">MOCK UPS</span>
-            <span class="work-caption-title">Mock Ups 13</span>
+          <div class="work-media mockup-pill-media">
+            <img class="work-img" src="IMG/mockups/13.png" alt="Mock Ups 13" data-title="Mock Ups 13">
+            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
           </div>
         </div>
       </div>
-      <div class="works-card-item" data-category="mock ups">
-        <div class="work-card">
-          <div class="work-media">
-            <span class="work-badge"><span class="dot"></span>Mockup</span>
-            <img class="work-img" src="IMG/mockups/14.png" alt="Mock Ups" data-title="Mock Ups">
-            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
+      <div class="works-card-item mockup-pill-item" data-category="mock ups">
+        <div class="work-card mockup-pill">
+          <div class="mockup-pill-info">
+            <span class="mockup-pill-title">Mock Ups 14</span>
+            <span class="mockup-pill-sub"><span class="mockup-pill-dot"></span>Apparel Mockup</span>
           </div>
-          <div class="work-caption">
-            <span class="work-caption-eyebrow">MOCK UPS</span>
-            <span class="work-caption-title">Mock Ups 14</span>
+          <div class="work-media mockup-pill-media">
+            <img class="work-img" src="IMG/mockups/14.png" alt="Mock Ups 14" data-title="Mock Ups 14">
+            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
           </div>
         </div>
       </div>
-      <div class="works-card-item" data-category="mock ups">
-        <div class="work-card">
-          <div class="work-media">
-            <span class="work-badge"><span class="dot"></span>Mockup</span>
-            <img class="work-img" src="IMG/mockups/15.png" alt="Mock Ups" data-title="Mock Ups">
-            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
+      <div class="works-card-item mockup-pill-item" data-category="mock ups">
+        <div class="work-card mockup-pill">
+          <div class="mockup-pill-info">
+            <span class="mockup-pill-title">Mock Ups 15</span>
+            <span class="mockup-pill-sub"><span class="mockup-pill-dot"></span>Frame Mockup</span>
           </div>
-          <div class="work-caption">
-            <span class="work-caption-eyebrow">MOCK UPS</span>
-            <span class="work-caption-title">Mock Ups 15</span>
+          <div class="work-media mockup-pill-media">
+            <img class="work-img" src="IMG/mockups/15.png" alt="Mock Ups 15" data-title="Mock Ups 15">
+            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
           </div>
         </div>
       </div>
-      <div class="works-card-item" data-category="mock ups">
-        <div class="work-card">
-          <div class="work-media">
-            <span class="work-badge"><span class="dot"></span>Mockup</span>
-            <img class="work-img" src="IMG/mockups/16.png" alt="Mock Ups" data-title="Mock Ups">
-            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
+      <div class="works-card-item mockup-pill-item" data-category="mock ups">
+        <div class="work-card mockup-pill">
+          <div class="mockup-pill-info">
+            <span class="mockup-pill-title">Mock Ups 16</span>
+            <span class="mockup-pill-sub"><span class="mockup-pill-dot"></span>Box Mockup</span>
           </div>
-          <div class="work-caption">
-            <span class="work-caption-eyebrow">MOCK UPS</span>
-            <span class="work-caption-title">Mock Ups 16</span>
+          <div class="work-media mockup-pill-media">
+            <img class="work-img" src="IMG/mockups/16.png" alt="Mock Ups 16" data-title="Mock Ups 16">
+            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
           </div>
         </div>
       </div>
-      <div class="works-card-item" data-category="mock ups">
-        <div class="work-card">
-          <div class="work-media">
-            <span class="work-badge"><span class="dot"></span>Mockup</span>
-            <img class="work-img" src="IMG/mockups/17.png" alt="Mock Ups" data-title="Mock Ups">
-            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
+      <div class="works-card-item mockup-pill-item" data-category="mock ups">
+        <div class="work-card mockup-pill">
+          <div class="mockup-pill-info">
+            <span class="mockup-pill-title">Mock Ups 17</span>
+            <span class="mockup-pill-sub"><span class="mockup-pill-dot"></span>Layout Mockup</span>
           </div>
-          <div class="work-caption">
-            <span class="work-caption-eyebrow">MOCK UPS</span>
-            <span class="work-caption-title">Mock Ups 17</span>
+          <div class="work-media mockup-pill-media">
+            <img class="work-img" src="IMG/mockups/17.png" alt="Mock Ups 17" data-title="Mock Ups 17">
+            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
           </div>
         </div>
       </div>
-      <div class="works-card-item" data-category="mock ups">
-        <div class="work-card">
-          <div class="work-media">
-            <span class="work-badge"><span class="dot"></span>Mockup</span>
-            <img class="work-img" src="IMG/mockups/18.png" alt="Mock Ups" data-title="Mock Ups">
-            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
+      <div class="works-card-item mockup-pill-item" data-category="mock ups">
+        <div class="work-card mockup-pill">
+          <div class="mockup-pill-info">
+            <span class="mockup-pill-title">Mock Ups 18</span>
+            <span class="mockup-pill-sub"><span class="mockup-pill-dot"></span>Display Mockup</span>
           </div>
-          <div class="work-caption">
-            <span class="work-caption-eyebrow">MOCK UPS</span>
-            <span class="work-caption-title">Mock Ups 18</span>
+          <div class="work-media mockup-pill-media">
+            <img class="work-img" src="IMG/mockups/18.png" alt="Mock Ups 18" data-title="Mock Ups 18">
+            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
           </div>
         </div>
       </div>
-      <div class="works-card-item" data-category="mock ups">
-        <div class="work-card">
-          <div class="work-media">
-            <span class="work-badge"><span class="dot"></span>Mockup</span>
-            <img class="work-img" src="IMG/mockups/19.png" alt="Mock Ups" data-title="Mock Ups">
-            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
+      <div class="works-card-item mockup-pill-item" data-category="mock ups">
+        <div class="work-card mockup-pill">
+          <div class="mockup-pill-info">
+            <span class="mockup-pill-title">Mock Ups 19</span>
+            <span class="mockup-pill-sub"><span class="mockup-pill-dot"></span>Concept Mockup</span>
           </div>
-          <div class="work-caption">
-            <span class="work-caption-eyebrow">MOCK UPS</span>
-            <span class="work-caption-title">Mock Ups 19</span>
+          <div class="work-media mockup-pill-media">
+            <img class="work-img" src="IMG/mockups/19.png" alt="Mock Ups 19" data-title="Mock Ups 19">
+            <div class="work-action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
           </div>
         </div>
       </div>
       </div>
-      <button class="row-arrow row-next" aria-label="Next">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-      </button>
-      </div>
-      <div class="works-row-dots"></div>
     </div>
 
     <div class="works-cat-block reels-carousel-block" data-cat="Reels">
