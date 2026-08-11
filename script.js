@@ -99,7 +99,27 @@
     panel.style.left = 'auto';
   }
 
+  /* Pause every role-typewriter trigger (the "Chat on WhatsApp / Chat on
+     Viber" nav button) while the panel is open, and resume it — picking
+     up exactly where it left off — once the panel closes, however it
+     closes (X button, tapping outside, resize, or scroll). Dispatched as
+     real events rather than relying on a plain click listener, since
+     e.stopImmediatePropagation() below would otherwise block any other
+     click handler on the same trigger element from ever firing. */
+  function pauseTypewriters() {
+    triggers.forEach(t => t.dispatchEvent(new Event('tw:pause')));
+  }
+  function resumeTypewriters() {
+    triggers.forEach(t => t.dispatchEvent(new Event('tw:resume')));
+  }
+
   if (wrap && panel && triggers.length) {
+    function closePanel() {
+      if (!wrap.classList.contains('open')) return;
+      wrap.classList.remove('open');
+      resumeTypewriters();
+    }
+
     triggers.forEach(t => {
       t.addEventListener('click', e => {
         e.preventDefault();
@@ -107,6 +127,7 @@
         const willOpen = !wrap.classList.contains('open');
         if (willOpen) positionPanel(t);
         wrap.classList.toggle('open');
+        if (willOpen) pauseTypewriters(); else resumeTypewriters();
 
         const mobileNav = document.getElementById('navLinks');
         const ham = document.getElementById('hamburger');
@@ -120,18 +141,18 @@
     if (closeBtn) {
       closeBtn.addEventListener('click', e => {
         e.stopPropagation();
-        wrap.classList.remove('open');
+        closePanel();
       });
     }
 
     document.addEventListener('click', e => {
       if (!wrap.contains(e.target) && !e.target.closest('.nav-cta')) {
-        wrap.classList.remove('open');
+        closePanel();
       }
     });
 
-    window.addEventListener('resize', () => wrap.classList.remove('open'));
-    window.addEventListener('scroll', () => wrap.classList.remove('open'), { passive: true });
+    window.addEventListener('resize', () => closePanel());
+    window.addEventListener('scroll', () => closePanel(), { passive: true });
   }
 })();
 
@@ -640,11 +661,11 @@ document.addEventListener('DOMContentLoaded', () => {
   let resumeWorksAutoSlide = () => {};
 
   /* ── LOGO FAN: auto-looping cascade, same on mobile and desktop —
-     cards drift through the center continuously on their own.
-     Can also be dragged/swiped left-right to spin it manually —
-     auto-loop pauses while dragging and picks back up right after
-     release. Also pauses while a card is opened in the lightbox
-     (or while hovered on desktop) and resumes once it's closed. ── */
+     cards drift through the center continuously on their own, no
+     longer pausing on hover (that made it look "stuck" whenever the
+     cursor happened to rest over the fan while scrolling — now it
+     only pauses while actively being dragged/swiped, or while a
+     card is opened in the lightbox). ── */
   (function() {
     const wraps = Array.from(document.querySelectorAll('.logo-fan-wrap'));
     if (!wraps.length) return;
@@ -660,17 +681,27 @@ document.addEventListener('DOMContentLoaded', () => {
       let phase = 0;          // continuously advancing position in the loop (in "slots")
       let lastTime = null;
       let hardPaused = false; // paused by the lightbox
-      let hoverPaused = false; // paused by mouse hover (desktop only)
       let isDragging = false; // paused while the user is actively dragging
-      const speed = 0.24;     // slots per second — a touch snappier so the left/right glide is noticeable
+      const speed = 0.55;     // slots per second — halved for a slower drift
 
       // Wider spread than before so the side-to-side drift actually
       // reads as movement instead of a subtle wobble near the center.
       const radiusForWidth = () =>
-        window.innerWidth <= 480 ? 140 : window.innerWidth <= 900 ? 190 : 260;
+        window.innerWidth <= 480 ? 140 : window.innerWidth <= 900 ? 190
+        : window.innerWidth <= 1400 ? 260 : window.innerWidth <= 1800 ? 340 : 420;
+
+      // Prev/next arrows + a "3 / 9" counter, scoped to this wrap only —
+      // lets you jump straight to any card (e.g. 8 or 9) on click,
+      // no need to wait for or rely on the auto-loop timing at all.
+      const outer      = wrap.closest('.logo-fan-outer');
+      const block       = wrap.closest('.logo-fan-block');
+      const prevBtn     = outer && outer.querySelector('.logo-fan-prev');
+      const nextBtn     = outer && outer.querySelector('.logo-fan-next');
+      const counterEl   = block && block.querySelector('.logo-fan-counter-current');
 
       function render() {
         const radius = radiusForWidth();
+        let centerIdx = 0, bestDepth = -1;
         cards.forEach((card, i) => {
           // true circular rotation — each card sweeps around a wheel,
           // so it naturally swings out to the side, dips behind the
@@ -699,28 +730,32 @@ document.addEventListener('DOMContentLoaded', () => {
           card.style.zIndex = String(Math.round(depth * 20));
           card.style.pointerEvents = depth < 0.3 ? 'none' : '';
           card.classList.toggle('is-center', depth > 0.97);
+
+          if (depth > bestDepth) { bestDepth = depth; centerIdx = i; }
         });
+        if (counterEl) counterEl.textContent = String(centerIdx + 1);
       }
 
       function tick(t) {
         if (lastTime === null) lastTime = t;
         const dt = (t - lastTime) / 1000;
         lastTime = t;
-        if (!hardPaused && !hoverPaused && !isDragging) {
+        if (!hardPaused && !isDragging) {
           phase += speed * dt; // keeps growing — sin/cos wrap it for free
         }
         render();
         requestAnimationFrame(tick);
       }
 
-      wrap.addEventListener('mouseenter', () => { hoverPaused = true; });
-      wrap.addEventListener('mouseleave', () => { hoverPaused = false; });
       window.addEventListener('resize', render);
 
       pausers.push(() => { hardPaused = true; });
       resumers.push(() => { hardPaused = false; lastTime = null; });
 
       requestAnimationFrame(tick);
+
+      if (prevBtn) prevBtn.addEventListener('click', () => { phase -= 1; lastTime = null; });
+      if (nextBtn) nextBtn.addEventListener('click', () => { phase += 1; lastTime = null; });
 
       // ── Manual drag/swipe control — mouse on desktop, touch on
       // mobile. Dragging spins the fan directly; letting go hands
@@ -755,6 +790,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (dragMoved) suppressClick = true;
         lastTime = null; // avoids a big dt jump when the loop resumes
       }
+
+      // Browsers make <img> elements natively draggable — that native
+      // "ghost image" drag would otherwise hijack the gesture the moment
+      // the cursor is over the (biggest, most likely-to-be-hovered) center
+      // card, making the fan feel like it "sticks"/magnetizes there.
+      wrap.addEventListener('dragstart', (e) => e.preventDefault());
 
       wrap.addEventListener('mousedown', dragStart);
       window.addEventListener('mousemove', dragMove);
@@ -1240,6 +1281,16 @@ document.addEventListener('DOMContentLoaded', () => {
        stops it from switching underneath the user after they've
        already acted on it (e.g. opened Viber/WhatsApp in a new tab). */
     el.addEventListener('click', () => { stopped = true; });
+
+    /* Pause/resume on demand (e.g. from the "Let's Connect" panel: freeze
+       the text while the panel is open, then pick back up — same
+       role/charIndex, no reset — once it's closed). */
+    el.addEventListener('tw:pause', () => { stopped = true; });
+    el.addEventListener('tw:resume', () => {
+      if (!stopped) return;
+      stopped = false;
+      tick();
+    });
 
     function tick() {
       if (stopped) return;

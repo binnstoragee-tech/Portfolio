@@ -82,20 +82,16 @@
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 
 .btn-send {
-  margin-top: 0.5rem; padding: 1rem 2.5rem;
+  margin-top: 0.5rem; padding: 0.95rem 2.4rem;
   background: var(--neon); color: var(--dark);
   font-family: 'Barlow', sans-serif; font-weight: 700;
-  font-size: 0.8rem; letter-spacing: 3px; text-transform: uppercase;
-  border: none; cursor: pointer;
-  clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
-  transition: all 0.3s; position: relative; overflow: hidden; align-self: flex-start;
+  font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  align-self: flex-start;
 }
-.btn-send::before {
-  content: ''; position: absolute; inset: 0;
-  background: var(--neon2); transform: scaleX(0); transform-origin: left; transition: transform 0.3s;
-}
-.btn-send:hover::before { transform: scaleX(1); }
-.btn-send span { position: relative; z-index: 1; }
+.btn-send:hover { background: var(--neon2); }
 
 @media (max-width: 768px) {
   .contact-wrapper { grid-template-columns: 1fr; gap: 2.5rem; }
@@ -209,7 +205,7 @@
 
 <section id="contact">
   <div class="section-inner">
-    <div class="section-label">05 // Contact</div>
+    <div class="section-label">Contact</div>
     <h2 class="section-title">GET IN <span class="accent">TOUCH</span></h2>
     <div class="section-divider"></div>
 

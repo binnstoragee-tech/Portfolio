@@ -244,7 +244,7 @@
    tap any pill to pop the full mockup open in the lightbox. ────── */
 .mockup-pill-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 1rem 1.1rem;
 }
 .mockup-pill-item { margin: 0; animation: pillFloat 5.5s ease-in-out infinite; }
@@ -387,8 +387,52 @@
 }
 .logo-fan-card .work-card { width: 100%; border-radius: 16px; overflow: hidden; }
 .logo-fan-card .work-img { aspect-ratio: 3/4; border-radius: 16px; }
+.logo-fan-card, .logo-fan-card img {
+  -webkit-user-drag: none;
+  user-drag: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
 .logo-fan-card.is-center .work-img {
   box-shadow: 0 0 45px rgba(255,255,255,0.35), 0 12px 30px rgba(0,0,0,0.5);
+}
+
+.logo-fan-outer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.logo-fan-arrow {
+  position: relative;
+  z-index: 30;
+  flex: 0 0 auto;
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(15,15,15,0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--text);
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: border-color 0.25s, color 0.25s, background 0.25s, transform 0.2s;
+}
+.logo-fan-arrow:hover { border-color: var(--neon); color: var(--neon); background: rgba(255,255,255,0.06); }
+.logo-fan-arrow:active { transform: scale(0.9); }
+.logo-fan-counter {
+  text-align: center;
+  margin-top: 0.6rem;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  color: var(--muted);
+}
+.logo-fan-counter-current { color: var(--neon); }
+@media (max-width: 480px) {
+  .logo-fan-arrow { width: 34px; height: 34px; font-size: 1.05rem; }
 }
 
 .logo-fan-caption {
@@ -987,7 +1031,7 @@
 
 <section id="works">
   <div class="section-inner">
-    <div class="section-label">02.5 // Works</div>
+    <div class="section-label">Works</div>
     <h2 class="section-title">SAMPLE <span class="accent">WORKS</span></h2>
     <div class="section-divider"></div>
 
@@ -999,15 +1043,22 @@
         </div>
         <a class="works-cat-seeall" href="https://www.behance.net/robinfrancisco" target="_blank" rel="noopener">See all <span class="arrow">›</span></a>
       </div>
-      <div class="logo-fan-wrap">
-        <div class="logo-fan-card"><div class="work-card"><img class="work-img" src="IMG/logo/1.jpg" alt="Logo Design" data-title="Logo Design 01"></div></div>
-        <div class="logo-fan-card"><div class="work-card"><img class="work-img" src="IMG/logo/2.jpg" alt="Logo Design" data-title="Logo Design 02"></div></div>
-        <div class="logo-fan-card"><div class="work-card"><img class="work-img" src="IMG/logo/3.jpg" alt="Logo Design" data-title="Logo Design 03"></div></div>
-        <div class="logo-fan-card"><div class="work-card"><img class="work-img" src="IMG/logo/4.jpg" alt="Logo Design" data-title="Logo Design 04"></div></div>
-        <div class="logo-fan-card"><div class="work-card"><img class="work-img" src="IMG/logo/5.jpg" alt="Logo Design" data-title="Logo Design 05"></div></div>
-        <div class="logo-fan-card"><div class="work-card"><img class="work-img" src="IMG/logo/6.jpg" alt="Logo Design" data-title="Logo Design 06"></div></div>
-        <div class="logo-fan-card"><div class="work-card"><img class="work-img" src="IMG/logo/7.jpg" alt="Logo Design" data-title="Logo Design 07"></div></div>
+      <div class="logo-fan-outer">
+        <button class="logo-fan-arrow logo-fan-prev" type="button" aria-label="Previous logo">‹</button>
+        <div class="logo-fan-wrap">
+          <div class="logo-fan-card"><div class="work-card"><img class="work-img" src="IMG/logo/1.jpg" alt="Logo Design" data-title="Logo Design 01"></div></div>
+          <div class="logo-fan-card"><div class="work-card"><img class="work-img" src="IMG/logo/2.jpg" alt="Logo Design" data-title="Logo Design 02"></div></div>
+          <div class="logo-fan-card"><div class="work-card"><img class="work-img" src="IMG/logo/3.jpg" alt="Logo Design" data-title="Logo Design 03"></div></div>
+          <div class="logo-fan-card"><div class="work-card"><img class="work-img" src="IMG/logo/4.jpg" alt="Logo Design" data-title="Logo Design 04"></div></div>
+          <div class="logo-fan-card"><div class="work-card"><img class="work-img" src="IMG/logo/5.jpg" alt="Logo Design" data-title="Logo Design 05"></div></div>
+          <div class="logo-fan-card"><div class="work-card"><img class="work-img" src="IMG/logo/6.jpg" alt="Logo Design" data-title="Logo Design 06"></div></div>
+          <div class="logo-fan-card"><div class="work-card"><img class="work-img" src="IMG/logo/7.jpg" alt="Logo Design" data-title="Logo Design 07"></div></div>
+          <div class="logo-fan-card"><div class="work-card"><img class="work-img" src="IMG/logo/8.jpg" alt="Logo Design" data-title="Logo Design 08"></div></div>
+          <div class="logo-fan-card"><div class="work-card"><img class="work-img" src="IMG/logo/9.jpg" alt="Logo Design" data-title="Logo Design 09"></div></div>
+        </div>
+        <button class="logo-fan-arrow logo-fan-next" type="button" aria-label="Next logo">›</button>
       </div>
+      <div class="logo-fan-counter"><span class="logo-fan-counter-current">1</span> / 9</div>
     </div>
 
     <div class="works-cat-block" data-cat="Branding">

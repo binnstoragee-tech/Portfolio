@@ -40,6 +40,8 @@
   text-align: center;
   padding: 6rem 3rem 1.5rem;
   min-height: 100vh;
+  min-height: 100dvh; /* avoids the big empty gap iOS Safari leaves under
+    100vh when the address bar is showing/hiding */
   position: relative;
 }
 
@@ -62,6 +64,7 @@
   align-items: center;
   justify-content: center;
   min-height: min(calc(100vh - 7.5rem), 640px);
+  min-height: min(calc(100dvh - 7.5rem), 640px);
 }
 
 /* Name line above the big wordmark — "Robin Francisco" */
@@ -122,6 +125,8 @@
   z-index: 0;
   pointer-events: none;
   background: radial-gradient(ellipse 70% 55% at 50% 45%, rgba(0,0,0,0.85), rgba(0,0,0,0.45) 55%, transparent 80%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 78%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 78%);
 }
 .hero-banner-img { position: relative; z-index: 1; }
 
@@ -259,6 +264,7 @@
 @media (max-width: 768px) {
   .home-hero-glow {
     min-height: calc(100vh - 66px);
+    min-height: calc(100dvh - 66px);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -279,7 +285,7 @@
      alone, overriding the desktop min()-capped height — this keeps
      Tools / Programming Languages below the fold on load, so they
      only reveal once the person actually scrolls. */
-  .home-hero-stage { min-height: calc(100vh - 7.5rem); }
+  .home-hero-stage { min-height: calc(100vh - 7.5rem); min-height: calc(100dvh - 7.5rem); }
 
   /* Show the full "Francisco / Portfolio" wordmark image, bled wider so it's not tiny */
   .hero-banner-wrap {
@@ -296,9 +302,14 @@
     mask-image: linear-gradient(to bottom, #000 0%, #000 90%, transparent 100%);
   }
 
-  /* Tools row: bleed past the section padding so icons render bigger, no side cropping */
+  /* Tools row: bleed past the section padding so icons render bigger, no side cropping.
+     Top margin bumped up so the hero image's bottom vignette shadow has room to fade
+     out before the Tools graphic starts — otherwise the shadow bleeds onto the Tools
+     hub icon at the top of tools.png on mobile. */
   .tools-wrap {
-    margin: 0.6rem auto 0;
+    position: relative;
+    z-index: 2;
+    margin: 2.5rem auto 0;
     max-width: none;
     width: calc(100% + 3rem);
     margin-left: -1.5rem;
@@ -463,6 +474,16 @@
   background: radial-gradient(ellipse 800px 600px at 15% 40%, rgba(220,220,220,0.02), transparent 55%);
 }
 
+/* On big screens the default 1400px content width leaves dead
+   space beside the grids — let Works stretch further (capped so
+   it doesn't get absurd on ultrawide monitors). */
+@media (min-width: 1300px) {
+  #works .section-inner { max-width: min(1800px, 94vw); }
+}
+@media (min-width: 1700px) {
+  #works .section-inner { max-width: min(2000px, 90vw); }
+}
+
 .works-carousel-wrap { padding: 0.5rem 0 1rem; }
 
 /* ── PER-CATEGORY BLOCKS — heading once, then a clean grid of that
@@ -546,6 +567,10 @@
   margin-top: 0.5rem;
 }
 
+@media (min-width: 1401px) {
+  .logo-fan-wrap { min-height: 340px; }
+  .logo-fan-card { width: 190px; margin-left: -95px; top: 4rem; }
+}
 @media (max-width: 900px) {
   .logo-fan-wrap { padding: 2.6rem 0.5rem 1.2rem; min-height: 250px; }
   .logo-fan-card { width: 118px; margin-left: -59px; top: 3rem; }
@@ -1187,9 +1212,9 @@
     <li><a href="#education"  data-nav>Education</a></li>
     <li><a href="#experience" data-nav>Experience</a></li>
     <li><a href="#contact"    data-nav>Contact</a></li>
-    <li class="nav-cta-mobile-item"><a class="nav-cta nav-cta-mobile role-typewriter" href="https://wa.me/639695159058" target="_blank" rel="noopener" data-roles="Chat on Viber, Chat on WhatsApp" data-role-links="viber://chat?number=%2B639695159058, https://wa.me/639695159058" data-hold="10000"></a></li>
+    <li class="nav-cta-mobile-item"><a class="nav-cta nav-cta-mobile role-typewriter" href="https://wa.me/639695159058" target="_blank" rel="noopener" data-roles="Chat on Viber, Chat on WhatsApp" data-role-links="viber://chat?number=%2B639695159058, https://wa.me/639695159058" data-hold="5000"></a></li>
   </ul>
-  <a class="nav-cta role-typewriter" href="https://wa.me/639695159058" target="_blank" rel="noopener" data-roles="Chat on Viber, Chat on WhatsApp" data-role-links="viber://chat?number=%2B639695159058, https://wa.me/639695159058" data-hold="10000"></a>
+  <a class="nav-cta role-typewriter" href="https://wa.me/639695159058" target="_blank" rel="noopener" data-roles="Chat on Viber, Chat on WhatsApp" data-role-links="viber://chat?number=%2B639695159058, https://wa.me/639695159058" data-hold="5000"></a>
 </nav>
 
 <nav class="mobile-bottom-nav" id="mobileBottomNav" aria-label="Primary">
@@ -1382,7 +1407,7 @@
 
 <section id="about">
   <div class="section-inner">
-    <div class="section-label reveal">02 // About Me</div>
+    <div class="section-label reveal">About Me</div>
     <h2 class="section-title reveal">WHO <span class="accent">I AM</span></h2>
     <div class="section-divider reveal"></div>
 
@@ -1415,7 +1440,7 @@
 
 <section id="works">
   <div class="section-inner">
-    <div class="section-label reveal">02.5 // Works</div>
+    <div class="section-label reveal">Works</div>
     <h2 class="section-title reveal">SAMPLE <span class="accent">WORKS</span></h2>
     <div class="section-divider reveal"></div>
 
@@ -1431,6 +1456,8 @@
         <div class="logo-fan-card"><div class="work-card"><img class="work-img" src="IMG/logo/5.jpg" alt="Logo Design" data-title="Logo Design 05"></div></div>
         <div class="logo-fan-card"><div class="work-card"><img class="work-img" src="IMG/logo/6.jpg" alt="Logo Design" data-title="Logo Design 06"></div></div>
         <div class="logo-fan-card"><div class="work-card"><img class="work-img" src="IMG/logo/7.jpg" alt="Logo Design" data-title="Logo Design 07"></div></div>
+        <div class="logo-fan-card"><div class="work-card"><img class="work-img" src="IMG/logo/10.jpg" alt="Logo Design" data-title="Logo Design 10"></div></div>
+        <div class="logo-fan-card"><div class="work-card"><img class="work-img" src="IMG/logo/11.jpg" alt="Logo Design" data-title="Logo Design 11"></div></div>
       </div>
     </div>
 
@@ -1774,7 +1801,7 @@
 
 <section id="education">
   <div class="section-inner">
-    <div class="section-label reveal">03 // Education</div>
+    <div class="section-label reveal">Education</div>
     <h2 class="section-title reveal">MY <span class="accent">JOURNEY</span></h2>
     <div class="section-divider reveal"></div>
 
@@ -1808,7 +1835,7 @@
 
 <section id="experience">
   <div class="section-inner">
-    <div class="section-label reveal">04 // Experience</div>
+    <div class="section-label reveal">Experience</div>
     <h2 class="section-title reveal">WORK <span class="accent">HISTORY</span></h2>
     <div class="section-divider reveal"></div>
 
@@ -1880,7 +1907,7 @@
 
 <section id="contact">
   <div class="section-inner">
-    <div class="section-label reveal">05 // Contact</div>
+    <div class="section-label reveal">Contact</div>
     <h2 class="section-title reveal">GET IN <span class="accent">TOUCH</span></h2>
     <div class="section-divider reveal"></div>
 

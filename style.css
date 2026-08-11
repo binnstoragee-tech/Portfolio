@@ -266,7 +266,11 @@ nav {
 
 /* ── SECTION COMMON ──────────────────────────────────────── */
 section {
-  min-height: 100vh;
+  min-height: 100vh; /* fallback for old browsers */
+  min-height: 100dvh; /* iOS Safari: 100vh counts the space behind the
+    address bar even when it's hidden, leaving a big empty gap under
+    short sections on mobile. 100dvh tracks the *actual* visible
+    viewport instead, so the section only ever fills real screen space. */
   position: relative;
   z-index: 2;
 }
@@ -280,37 +284,16 @@ section {
   font-family: 'Share Tech Mono', monospace;
   font-size: 0.7rem;
   color: var(--neon);
-  letter-spacing: 4px;
+  letter-spacing: 3px;
   text-transform: uppercase;
   margin-bottom: 1.2rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.8rem;
-  padding: 0.5rem 1.1rem 0.5rem 0.7rem;
-  background: linear-gradient(90deg, rgba(255,138,61,0.10), rgba(255,90,31,0.02));
-  border: 1px solid rgba(255,138,61,0.28);
-  border-left: 2px solid var(--neon);
-  clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
-}
-.section-label::before {
-  content: '';
-  width: 7px; height: 7px;
-  flex-shrink: 0;
-  border-radius: 50%;
-  background: var(--neon);
-  box-shadow: 0 0 8px var(--neon), 0 0 18px var(--neon2);
-  animation: labelDotPulse 2.2s ease-in-out infinite;
-}
-@keyframes labelDotPulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50%      { opacity: 0.45; transform: scale(1.4); }
 }
 
 .section-title {
   position: relative;
   font-family: 'Poppins', 'Bebas Neue', cursive;
   font-weight: 800;
-  font-size: clamp(1.7rem, 6vw, 4.4rem);
+  font-size: clamp(1.5rem, 5vw, 3.4rem);
   letter-spacing: 0.5px;
   line-height: 1.02;
   margin-bottom: 0.5rem;
@@ -340,27 +323,9 @@ section {
 }
 
 .section-divider {
-  width: 90px; height: 2px;
-  background: linear-gradient(to right, var(--neon), rgba(255,90,31,0.15));
+  width: 60px; height: 1px;
+  background: linear-gradient(to right, var(--neon), transparent);
   margin: 1.7rem 0 3.2rem;
-  position: relative;
-}
-.section-divider::before {
-  content: '';
-  position: absolute;
-  left: 0; top: -2px;
-  width: 16px; height: 6px;
-  background: var(--neon);
-  box-shadow: 0 0 10px var(--neon), 0 0 20px var(--neon2);
-}
-.section-divider::after {
-  content: '';
-  position: absolute;
-  right: -10px; top: -3px;
-  width: 8px; height: 8px;
-  background: var(--neon2);
-  box-shadow: 0 0 8px var(--neon2);
-  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
 }
 
 /* ── SCROLL REVEAL (3D tilt-in) ──────────────────────────── */
