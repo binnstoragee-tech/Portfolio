@@ -626,6 +626,28 @@
 .row-prev { left: 0; }
 .row-next { right: 0; }
 .row-arrow.disabled { opacity: 0.3; pointer-events: none; }
+@media (max-width: 899px) {
+  .row-arrow { display: none !important; }
+}
+/* Desktop: buttons sit outside the row (flex siblings) instead of
+   floating on top of the clips, matching the Websites carousel. */
+@media (min-width: 900px) {
+  .works-row-wrap {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    position: static;
+  }
+  .works-row-wrap .works-row {
+    flex: 1;
+    padding: 0.3rem 0.1rem 0.6rem;
+  }
+  .works-row-wrap .row-arrow {
+    position: static;
+    flex-shrink: 0;
+    transform: none;
+  }
+}
 
 .works-row-dots {
   display: none;
@@ -845,10 +867,11 @@
 .site-shot-wrap {
   position: relative; width: 100%;
   aspect-ratio: 16/9; overflow: hidden;
+  background: #0a0a0a;
 }
 .site-shot {
   width: 100%; height: 100%;
-  object-fit: cover; object-position: top;
+  object-fit: contain; object-position: top;
   display: block;
   transition: transform 0.7s cubic-bezier(0.22,1,0.36,1), filter 0.4s ease;
 }
@@ -944,6 +967,9 @@
 @media (max-width: 640px) {
   .sites-arrow-btn { width: 2.3rem; height: 2.3rem; }
   .sites-arrow-btn svg { width: 15px; height: 15px; }
+}
+@media (max-width: 768px) {
+  .sites-arrow-btn { display: none; }
 }
 </style>
 
@@ -1102,7 +1128,10 @@
 
 #contact {
   background: radial-gradient(ellipse 900px 700px at 50% 100%, rgba(255,255,255,0.022), transparent 60%);
+  min-height: auto;
+  padding-bottom: 0;
 }
+#contact .section-inner { padding-bottom: 2rem; }
 
 .contact-wrapper {
   display: grid; grid-template-columns: 1fr 1.4fr;
@@ -1193,6 +1222,91 @@
   .form-row { grid-template-columns: 1fr; }
 }
 
+/* ── TILT SHOWCASE — Social Media & Branding reel ────────── */
+.tilt-showcase {
+  min-height: auto;
+  background: var(--dark);
+  position: relative;
+  overflow: hidden;
+  padding: 0 0 3rem;
+}
+.tilt-showcase::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 900px 520px at 12% 0%, rgba(255,138,61,0.06), transparent 60%);
+  pointer-events: none;
+}
+.tilt-showcase::after {
+  content: '';
+  position: absolute; left: 0; right: 0; top: 0; height: 260px;
+  background: linear-gradient(to bottom, var(--dark) 0%, rgba(10,10,10,0.9) 30%, rgba(10,10,10,0.55) 60%, transparent 100%);
+  pointer-events: none; z-index: 3;
+}
+.tilt-showcase .section-inner { padding-bottom: 0; }
+.tilt-showcase-sub {
+  color: #999999; font-size: 0.95rem; line-height: 1.85;
+  max-width: 480px; margin-top: -1.4rem;
+}
+
+.tilt-stage {
+  position: relative;
+  height: 660px;
+  margin-top: -1.5rem;
+  overflow: hidden;
+  perspective: 1700px;
+  -webkit-perspective: 1700px;
+}
+.tilt-grid {
+  position: absolute;
+  top: -70px; left: 50%;
+  display: flex;
+  gap: 2px;
+  width: max-content;
+  transform: translateX(-50%) rotateX(60deg) rotateZ(0deg);
+  transform-style: preserve-3d;
+}
+.tilt-col { display: flex; flex-direction: column; gap: 2px; }
+
+.tilt-card {
+  width: 150px; height: 200px;
+  border-radius: 0;
+  flex-shrink: 0;
+}
+.tilt-card .work-img {
+  width: 100%; height: 100%;
+  aspect-ratio: unset;
+  border-radius: 0;
+}
+
+.tilt-fade-top {
+  position: absolute; left: 0; right: 0; top: 0; height: 240px;
+  background: linear-gradient(to bottom, var(--dark) 0%, rgba(10,10,10,0.85) 25%, rgba(10,10,10,0.5) 55%, transparent 100%);
+  pointer-events: none; z-index: 2;
+}
+.tilt-fade-bottom {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 300px;
+  background: linear-gradient(to bottom, transparent, var(--dark) 88%);
+  pointer-events: none; z-index: 2;
+}
+.tilt-fade-side { position: absolute; top: 0; bottom: 0; width: 120px; pointer-events: none; z-index: 2; }
+.tilt-fade-left  { left: 0;  background: linear-gradient(to right, var(--dark), transparent); }
+.tilt-fade-right { right: 0; background: linear-gradient(to left,  var(--dark), transparent); }
+
+@media (max-width: 1024px) {
+  .tilt-stage { height: 540px; }
+  .tilt-card { width: 128px; height: 172px; }
+}
+@media (max-width: 768px) {
+  .tilt-showcase { overflow: visible; margin-bottom: -70px; position: relative; z-index: 1; }
+  .tilt-stage { height: 340px; margin-top: 0.5rem; perspective: 1500px; }
+  .tilt-grid { gap: 1px; transform: translateX(-50%) rotateX(62deg) rotateZ(0deg); }
+  .tilt-col { gap: 1px; }
+  .tilt-card { width: 78px; height: 106px; border-radius: 0; }
+  .tilt-card .work-img { border-radius: 0; }
+  .tilt-fade-bottom { height: 180px; }
+  .tilt-fade-side { width: 50px; }
+}
+
 </style>
 </head>
 <body class="is-single-page">
@@ -1212,9 +1326,9 @@
     <li><a href="#education"  data-nav>Education</a></li>
     <li><a href="#experience" data-nav>Experience</a></li>
     <li><a href="#contact"    data-nav>Contact</a></li>
-    <li class="nav-cta-mobile-item"><a class="nav-cta nav-cta-mobile role-typewriter" href="https://wa.me/639695159058" target="_blank" rel="noopener" data-roles="Chat on Viber, Chat on WhatsApp" data-role-links="viber://chat?number=%2B639695159058, https://wa.me/639695159058" data-hold="5000"></a></li>
+    <li class="nav-cta-mobile-item"><a class="nav-cta nav-cta-mobile" href="viber://chat?number=%2B639695159058" target="_blank" rel="noopener">Message Now</a></li>
   </ul>
-  <a class="nav-cta role-typewriter" href="https://wa.me/639695159058" target="_blank" rel="noopener" data-roles="Chat on Viber, Chat on WhatsApp" data-role-links="viber://chat?number=%2B639695159058, https://wa.me/639695159058" data-hold="5000"></a>
+  <a class="nav-cta" href="viber://chat?number=%2B639695159058" target="_blank" rel="noopener">Message Now</a>
 </nav>
 
 <nav class="mobile-bottom-nav" id="mobileBottomNav" aria-label="Primary">
@@ -1623,9 +1737,6 @@
         <button class="row-arrow row-prev" aria-label="Previous">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
         </button>
-        <button class="row-arrow row-next" aria-label="Next">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-        </button>
         <div class="works-row">
           <div class="work-item work-item--story reveal" data-category="video">
             <div class="work-card">
@@ -1682,6 +1793,9 @@
             </div>
           </div>
         </div>
+        <button class="row-arrow row-next" aria-label="Next">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
       </div>
       <div class="works-row-dots"></div>
     </div>
@@ -1714,6 +1828,17 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
         </button>
         <div class="sites-carousel">
+          <div class="work-item reveal" data-category="websites">
+            <div class="work-card site-card">
+              <a class="site-card-link" href="https://www.mazigeneraltrade.com/" target="_blank" rel="noopener">
+                <div class="site-shot-wrap"><img class="site-shot" src="IMG/mgt.png" alt="Mazi General Trading screenshot"></div>
+                <div class="site-card-footer">
+                  <span class="site-name-badge">Mazi General Trading</span>
+                  <span class="site-visit-btn">View Website <span class="arrow">↗</span></span>
+                </div>
+              </a>
+            </div>
+          </div>
           <div class="work-item reveal" data-category="websites">
             <div class="work-card site-card">
               <a class="site-card-link" href="https://binnstoragee-tech.github.io/Mazi-Hardware-Catalog/" target="_blank" rel="noopener">
@@ -1754,6 +1879,17 @@
                 <div class="site-card-footer">
                   <span class="site-name-badge">Outright Trading</span>
                   <span class="site-visit-btn">View Website <span class="arrow">↗</span></span>
+                </div>
+              </a>
+            </div>
+          </div>
+          <div class="work-item reveal" data-category="websites">
+            <div class="work-card site-card">
+              <a class="site-card-link" href="pli-studio.html">
+                <div class="site-shot-wrap"><div class="site-shot" style="background:linear-gradient(135deg,#FBEEE4 0%,#F6E1D2 45%,#EFCBB0 75%,#BE7355 100%); display:flex; align-items:center; justify-content:center;"><span style="font-family:'Bebas Neue',cursive; letter-spacing:3px; font-size:1.1rem; color:#241C18; opacity:0.55;">3D · PEACH · FABRIC</span></div></div>
+                <div class="site-card-footer">
+                  <span class="site-name-badge">Pli Studio</span>
+                  <span class="site-visit-btn">View Case Study <span class="arrow">↗</span></span>
                 </div>
               </a>
             </div>
@@ -1967,6 +2103,173 @@
       </form>
 
     </div>
+  </div>
+</section>
+
+<!-- ── TILT SHOWCASE — Social Media & Branding reel ────────── -->
+<section class="tilt-showcase">
+
+  <div class="tilt-stage">
+    <div class="tilt-grid">
+      <div class="tilt-col">
+        <div class="work-card tilt-card">
+          <img class="work-img" src="IMG/socmed/1.jpg" alt="Social Media Campaign" data-title="Social Media Campaign">
+        </div>
+        <div class="work-card tilt-card">
+          <img class="work-img" src="IMG/socmed/2.jpg" alt="Social Media Campaign" data-title="Social Media Campaign">
+        </div>
+        <div class="work-card tilt-card">
+          <img class="work-img" src="IMG/socmed/3.jpg" alt="Social Media Campaign" data-title="Social Media Campaign">
+        </div>
+        <div class="work-card tilt-card">
+          <img class="work-img" src="IMG/socmed/4.jpg" alt="Social Media Campaign" data-title="Social Media Campaign">
+        </div>
+      </div>
+      <div class="tilt-col">
+        <div class="work-card tilt-card">
+          <img class="work-img" src="IMG/socmed/5.jpg" alt="Social Media Campaign" data-title="Social Media Campaign">
+        </div>
+        <div class="work-card tilt-card">
+          <img class="work-img" src="IMG/branding/1.jpg" alt="Brand Identity" data-title="Brand Identity">
+        </div>
+        <div class="work-card tilt-card">
+          <img class="work-img" src="IMG/branding/2.jpg" alt="Brand Identity" data-title="Brand Identity">
+        </div>
+        <div class="work-card tilt-card">
+          <img class="work-img" src="IMG/branding/3.jpg" alt="Brand Identity" data-title="Brand Identity">
+        </div>
+      </div>
+      <div class="tilt-col">
+        <div class="work-card tilt-card">
+          <img class="work-img" src="IMG/mockups/1.jpg" alt="Mock Ups 01" data-title="Mock Ups 01">
+        </div>
+        <div class="work-card tilt-card">
+          <img class="work-img" src="IMG/mockups/2.jpg" alt="Mock Ups 02" data-title="Mock Ups 02">
+        </div>
+        <div class="work-card tilt-card">
+          <img class="work-img" src="IMG/mockups/3.jpg" alt="Mock Ups 03" data-title="Mock Ups 03">
+        </div>
+        <div class="work-card tilt-card">
+          <img class="work-img" src="IMG/mockups/4.jpg" alt="Mock Ups 04" data-title="Mock Ups 04">
+        </div>
+      </div>
+      <div class="tilt-col">
+        <div class="work-card tilt-card">
+          <img class="work-img" src="IMG/mockups/5.jpg" alt="Mock Ups 05" data-title="Mock Ups 05">
+        </div>
+        <div class="work-card tilt-card">
+          <img class="work-img" src="IMG/mockups/6.jpg" alt="Mock Ups 06" data-title="Mock Ups 06">
+        </div>
+        <div class="work-card tilt-card">
+          <img class="work-img" src="IMG/mockups/7.jpg" alt="Mock Ups 07" data-title="Mock Ups 07">
+        </div>
+        <div class="work-card tilt-card">
+          <img class="work-img" src="IMG/mockups/8.jpg" alt="Mock Ups 08" data-title="Mock Ups 08">
+        </div>
+      </div>
+      <div class="tilt-col">
+        <div class="work-card tilt-card">
+          <img class="work-img" src="IMG/mockups/9.jpg" alt="Mock Ups 09" data-title="Mock Ups 09">
+        </div>
+        <div class="work-card tilt-card">
+          <img class="work-img" src="IMG/others/1.jpg" alt="Others" data-title="Others">
+        </div>
+        <div class="work-card tilt-card">
+          <img class="work-img" src="IMG/others/2.jpg" alt="Others" data-title="Others">
+        </div>
+        <div class="work-card tilt-card">
+          <img class="work-img" src="IMG/others/3.jpg" alt="Others" data-title="Others">
+        </div>
+      </div>
+      <div class="tilt-col">
+        <div class="work-card tilt-card">
+          <img class="work-img" src="IMG/socmed/1.jpg" alt="Social Media Campaign" data-title="Social Media Campaign">
+        </div>
+        <div class="work-card tilt-card">
+          <img class="work-img" src="IMG/socmed/2.jpg" alt="Social Media Campaign" data-title="Social Media Campaign">
+        </div>
+        <div class="work-card tilt-card">
+          <img class="work-img" src="IMG/socmed/3.jpg" alt="Social Media Campaign" data-title="Social Media Campaign">
+        </div>
+        <div class="work-card tilt-card">
+          <img class="work-img" src="IMG/socmed/4.jpg" alt="Social Media Campaign" data-title="Social Media Campaign">
+        </div>
+      </div>
+      <div class="tilt-col">
+        <div class="work-card tilt-card">
+          <img class="work-img" src="IMG/socmed/5.jpg" alt="Social Media Campaign" data-title="Social Media Campaign">
+        </div>
+        <div class="work-card tilt-card">
+          <img class="work-img" src="IMG/branding/1.jpg" alt="Brand Identity" data-title="Brand Identity">
+        </div>
+        <div class="work-card tilt-card">
+          <img class="work-img" src="IMG/branding/2.jpg" alt="Brand Identity" data-title="Brand Identity">
+        </div>
+        <div class="work-card tilt-card">
+          <img class="work-img" src="IMG/branding/3.jpg" alt="Brand Identity" data-title="Brand Identity">
+        </div>
+      </div>
+      <div class="tilt-col">
+        <div class="work-card tilt-card">
+          <img class="work-img" src="IMG/mockups/1.jpg" alt="Mock Ups 01" data-title="Mock Ups 01">
+        </div>
+        <div class="work-card tilt-card">
+          <img class="work-img" src="IMG/mockups/2.jpg" alt="Mock Ups 02" data-title="Mock Ups 02">
+        </div>
+        <div class="work-card tilt-card">
+          <img class="work-img" src="IMG/mockups/3.jpg" alt="Mock Ups 03" data-title="Mock Ups 03">
+        </div>
+        <div class="work-card tilt-card">
+          <img class="work-img" src="IMG/mockups/4.jpg" alt="Mock Ups 04" data-title="Mock Ups 04">
+        </div>
+      </div>
+      <div class="tilt-col">
+        <div class="work-card tilt-card">
+          <img class="work-img" src="IMG/mockups/5.jpg" alt="Mock Ups 05" data-title="Mock Ups 05">
+        </div>
+        <div class="work-card tilt-card">
+          <img class="work-img" src="IMG/mockups/6.jpg" alt="Mock Ups 06" data-title="Mock Ups 06">
+        </div>
+        <div class="work-card tilt-card">
+          <img class="work-img" src="IMG/mockups/7.jpg" alt="Mock Ups 07" data-title="Mock Ups 07">
+        </div>
+        <div class="work-card tilt-card">
+          <img class="work-img" src="IMG/mockups/8.jpg" alt="Mock Ups 08" data-title="Mock Ups 08">
+        </div>
+      </div>
+      <div class="tilt-col">
+        <div class="work-card tilt-card">
+          <img class="work-img" src="IMG/mockups/9.jpg" alt="Mock Ups 09" data-title="Mock Ups 09">
+        </div>
+        <div class="work-card tilt-card">
+          <img class="work-img" src="IMG/others/1.jpg" alt="Others" data-title="Others">
+        </div>
+        <div class="work-card tilt-card">
+          <img class="work-img" src="IMG/others/2.jpg" alt="Others" data-title="Others">
+        </div>
+        <div class="work-card tilt-card">
+          <img class="work-img" src="IMG/others/3.jpg" alt="Others" data-title="Others">
+        </div>
+      </div>
+      <div class="tilt-col">
+        <div class="work-card tilt-card">
+          <img class="work-img" src="IMG/socmed/1.jpg" alt="Social Media Campaign" data-title="Social Media Campaign">
+        </div>
+        <div class="work-card tilt-card">
+          <img class="work-img" src="IMG/socmed/2.jpg" alt="Social Media Campaign" data-title="Social Media Campaign">
+        </div>
+        <div class="work-card tilt-card">
+          <img class="work-img" src="IMG/socmed/3.jpg" alt="Social Media Campaign" data-title="Social Media Campaign">
+        </div>
+        <div class="work-card tilt-card">
+          <img class="work-img" src="IMG/socmed/4.jpg" alt="Social Media Campaign" data-title="Social Media Campaign">
+        </div>
+      </div>
+    </div>
+    <div class="tilt-fade-top"></div>
+    <div class="tilt-fade-bottom"></div>
+    <div class="tilt-fade-side tilt-fade-left"></div>
+    <div class="tilt-fade-side tilt-fade-right"></div>
   </div>
 </section>
 

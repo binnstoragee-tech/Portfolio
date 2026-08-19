@@ -874,15 +874,21 @@ document.addEventListener('DOMContentLoaded', () => {
           const dot = document.createElement('button');
           dot.className = 'works-row-dot';
           dot.setAttribute('aria-label', `Go to clip ${i + 1}`);
-          dot.addEventListener('click', () => {
-            cards[i].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-          });
           dotsWrap.appendChild(dot);
         });
       }
       const dots = dotsWrap ? Array.from(dotsWrap.children) : [];
 
       let activeIndex = 0;
+      // Same lock used by the other carousels — while a button/dot
+      // triggered scroll is animating, ignore the IntersectionObserver
+      // so a stale in-flight event from a card we're scrolling past
+      // can't overwrite the index we just set. Without this, a couple
+      // of quick clicks desync activeIndex from what's on screen and
+      // Back/Next stop responding correctly.
+      let isProgrammaticScroll = false;
+      let scrollEndTimer = null;
+
       const setActive = (index) => {
         activeIndex = index;
         cards.forEach((c, i) => c.classList.toggle('is-active', i === index));
@@ -892,8 +898,21 @@ document.addEventListener('DOMContentLoaded', () => {
       };
       setActive(0);
 
+      const goTo = (index) => {
+        if (!cards.length) return;
+        const clamped = Math.max(0, Math.min(cards.length - 1, index));
+        setActive(clamped);
+        isProgrammaticScroll = true;
+        clearTimeout(scrollEndTimer);
+        cards[clamped].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        scrollEndTimer = setTimeout(() => { isProgrammaticScroll = false; }, 500);
+      };
+
+      if (dotsWrap) dots.forEach((dot, i) => dot.addEventListener('click', () => goTo(i)));
+
       if (cards.length) {
         const obs = new IntersectionObserver((entries) => {
+          if (isProgrammaticScroll) return;
           entries.forEach(entry => {
             if (entry.isIntersecting && entry.intersectionRatio > 0.6) {
               setActive(cards.indexOf(entry.target));
@@ -905,11 +924,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const scrollAmount = () => row.clientWidth * 0.85;
       prev.addEventListener('click', () => {
-        if (cards.length) cards[Math.max(0, activeIndex - 1)].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        if (cards.length) goTo(activeIndex - 1);
         else row.scrollBy({ left: -scrollAmount(), behavior: 'smooth' });
       });
       next.addEventListener('click', () => {
-        if (cards.length) cards[Math.min(cards.length - 1, activeIndex + 1)].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        if (cards.length) goTo(activeIndex + 1);
         else row.scrollBy({ left: scrollAmount(), behavior: 'smooth' });
       });
 
@@ -948,15 +967,21 @@ document.addEventListener('DOMContentLoaded', () => {
           const dot = document.createElement('button');
           dot.className = 'sites-dot';
           dot.setAttribute('aria-label', `Go to website ${i + 1}`);
-          dot.addEventListener('click', () => {
-            cards[i].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-          });
+          dot.addEventListener('click', () => goTo(i));
           dotsWrap.appendChild(dot);
         });
       }
       const dots = dotsWrap ? Array.from(dotsWrap.children) : [];
 
       let activeIndex = 0;
+      // While a button/dot-triggered scroll is animating, ignore the
+      // IntersectionObserver so an in-flight (stale) event from a card
+      // we're scrolling past can't overwrite the index we just set —
+      // this is what caused prev/next to desync after a couple of
+      // quick clicks.
+      let isProgrammaticScroll = false;
+      let scrollEndTimer = null;
+
       const setActive = (index) => {
         activeIndex = index;
         cards.forEach((c, i) => c.classList.toggle('is-active', i === index));
@@ -966,7 +991,19 @@ document.addEventListener('DOMContentLoaded', () => {
       };
       setActive(0);
 
+      const goTo = (index) => {
+        const clamped = Math.max(0, Math.min(cards.length - 1, index));
+        setActive(clamped); // update immediately — no waiting on the observer
+        isProgrammaticScroll = true;
+        clearTimeout(scrollEndTimer);
+        cards[clamped].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        // Smooth-scroll has no reliable end event across browsers here,
+        // so release the lock shortly after the animation should finish.
+        scrollEndTimer = setTimeout(() => { isProgrammaticScroll = false; }, 500);
+      };
+
       const obs = new IntersectionObserver((entries) => {
+        if (isProgrammaticScroll) return;
         entries.forEach(entry => {
           if (entry.isIntersecting && entry.intersectionRatio > 0.6) {
             setActive(cards.indexOf(entry.target));
@@ -975,12 +1012,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }, { root: carousel, threshold: [0.6] });
       cards.forEach(c => obs.observe(c));
 
-      if (prevBtn) prevBtn.addEventListener('click', () => {
-        cards[Math.max(0, activeIndex - 1)].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-      });
-      if (nextBtn) nextBtn.addEventListener('click', () => {
-        cards[Math.min(cards.length - 1, activeIndex + 1)].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-      });
+      if (prevBtn) prevBtn.addEventListener('click', () => goTo(activeIndex - 1));
+      if (nextBtn) nextBtn.addEventListener('click', () => goTo(activeIndex + 1));
     });
   })();
 
@@ -992,10 +1025,18 @@ document.addEventListener('DOMContentLoaded', () => {
   (function() {
     document.querySelectorAll('.reels-carousel-block').forEach(block => {
       const carousel = block.querySelector('.reels-carousel');
-      const prevBtn  = block.querySelector('.reels-prev');
-      const nextBtn  = block.querySelector('.reels-next');
+      let prevBtn = block.querySelector('.reels-prev');
+      let nextBtn = block.querySelector('.reels-next');
       const dotsWrap = block.querySelector('.reels-dots');
       if (!carousel) return;
+
+      // Belt-and-suspenders: on mobile/tablet widths, remove the
+      // prev/next arrow buttons from the DOM entirely (not just
+      // hide via CSS) so they can never render there.
+      if (window.matchMedia('(max-width: 899px)').matches) {
+        if (prevBtn) { prevBtn.remove(); prevBtn = null; }
+        if (nextBtn) { nextBtn.remove(); nextBtn = null; }
+      }
 
       const cards = Array.from(carousel.children);
       if (!cards.length) return;
@@ -1005,15 +1046,20 @@ document.addEventListener('DOMContentLoaded', () => {
           const dot = document.createElement('button');
           dot.className = 'reels-dot';
           dot.setAttribute('aria-label', `Go to reel ${i + 1}`);
-          dot.addEventListener('click', () => {
-            cards[i].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-          });
           dotsWrap.appendChild(dot);
         });
       }
       const dots = dotsWrap ? Array.from(dotsWrap.children) : [];
 
       let activeIndex = 0;
+      // Same lock used by the Websites carousel — while a button/dot
+      // triggered scroll is animating, ignore the IntersectionObserver
+      // so a stale in-flight event from a card we're scrolling past
+      // can't overwrite the index we just set (this was causing
+      // prev/next to desync after a couple of quick clicks).
+      let isProgrammaticScroll = false;
+      let scrollEndTimer = null;
+
       const setActive = (index) => {
         activeIndex = index;
         cards.forEach((c, i) => c.classList.toggle('is-active', i === index));
@@ -1023,7 +1069,21 @@ document.addEventListener('DOMContentLoaded', () => {
       };
       setActive(0);
 
+      const goTo = (index) => {
+        const clamped = Math.max(0, Math.min(cards.length - 1, index));
+        setActive(clamped); // update immediately — no waiting on the observer
+        isProgrammaticScroll = true;
+        clearTimeout(scrollEndTimer);
+        cards[clamped].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        scrollEndTimer = setTimeout(() => { isProgrammaticScroll = false; }, 500);
+      };
+
+      if (dots.length) {
+        dots.forEach((dot, i) => dot.addEventListener('click', () => goTo(i)));
+      }
+
       const obs = new IntersectionObserver((entries) => {
+        if (isProgrammaticScroll) return;
         entries.forEach(entry => {
           if (entry.isIntersecting && entry.intersectionRatio > 0.6) {
             setActive(cards.indexOf(entry.target));
@@ -1032,12 +1092,30 @@ document.addEventListener('DOMContentLoaded', () => {
       }, { root: carousel, threshold: [0.6] });
       cards.forEach(c => obs.observe(c));
 
-      if (prevBtn) prevBtn.addEventListener('click', () => {
-        cards[Math.max(0, activeIndex - 1)].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-      });
-      if (nextBtn) nextBtn.addEventListener('click', () => {
-        cards[Math.min(cards.length - 1, activeIndex + 1)].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-      });
+      if (prevBtn) prevBtn.addEventListener('click', () => goTo(activeIndex - 1));
+      if (nextBtn) nextBtn.addEventListener('click', () => goTo(activeIndex + 1));
+    });
+  })();
+
+  /* ── HORIZONTAL CAROUSEL SCROLL FIX ──────────────────────────
+     Any element with horizontal scroll-snap (works-row, reels
+     carousel, sites carousel) can trap a mouse-wheel/trackpad
+     gesture that's mostly vertical — the browser tries to apply
+     it to the snap container instead of letting the page scroll,
+     which feels like scrolling "gets stuck" over these sections.
+     Fix: when a wheel event over one of these is clearly a
+     vertical gesture (deltaY bigger than deltaX), hand it to the
+     page instead of the carousel. ─────────────────────────────── */
+  (function() {
+    const scrollers = document.querySelectorAll('.works-row, .reels-carousel, .sites-carousel');
+    scrollers.forEach(el => {
+      el.addEventListener('wheel', (e) => {
+        if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+          e.preventDefault();
+          window.scrollBy({ top: e.deltaY, left: 0, behavior: 'auto' });
+        }
+        // otherwise it's a horizontal gesture — let the carousel handle it normally
+      }, { passive: false });
     });
   })();
 
